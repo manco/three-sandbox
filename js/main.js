@@ -9,19 +9,20 @@ class LoggingLoader {
         this.onError = (xhr) => { };
         this.loader = new THREE.OBJLoader(manager);
     }
-    load(url, onLoadFun) {
-        this.loader.load(
-            url, onLoadFun, this.onProgress, this.onError
+    load(url) {
+        return new Promise(
+            (resolve) => this.loader.load(url, resolve, this.onProgress, this.onError)
         );
     }
 }
 
 const camera = createCamera();
 function createCamera() {
-    const c = new THREE.PerspectiveCamera( 45, window.innerWidth / window.innerHeight, 1, 2000 );
+    const c = new THREE.PerspectiveCamera( 50, window.innerWidth / window.innerHeight, 1, 3000 );
     c.position.z = 250;
-    const pointLight = new THREE.PointLight(0xffffff, 0.8);
-    c.add(pointLight);
+    c.position.x = 0;
+    c.position.y = 150;
+    c.add(new THREE.PointLight(0xffffff, 0.8));
     return c;
 }
 const renderer = createRenderer();
@@ -34,10 +35,15 @@ function createRenderer() {
 const scene = createScene();
 function createScene() {
     const s = new THREE.Scene();
-    const ambientLight = new THREE.AmbientLight(0xcccccc, 0.4);
-    s.add( ambientLight );
+    s.add( new THREE.AmbientLight(0xcccccc, 0.4) );
+    s.add( new THREE.GridHelper( 1000, 10 ) );
+    s.add(new THREE.AxesHelper(300));
     return s;
 }
+const control = new THREE.TransformControls( camera, renderer.domElement );
+control.setMode( "translate" );
+control.addEventListener( 'change', render );
+
 function createObjLoader() {
     const manager = new THREE.LoadingManager();
     manager.onProgress = ( item, loaded, total ) => console.log( item, loaded, total );
@@ -56,19 +62,37 @@ animate();
 function init() {
 	container = document.createElement( 'div' );
 	document.body.appendChild( container );
-    const loader = createObjLoader();
-    loader.load(
-        'https://threejs.org/examples/models/obj/male02/male02.obj',
-        (object) => {
-            object.position.y = -95;
-            scene.add(object);
-        }
-        );
-	scene.add( camera );
+
+	scene.add(camera);
+	//scene.add(new THREE.CameraHelper( camera ));
+    scene.add(control);
+
+    const modelsF = loadModels();
+    modelsF.then(
+        models => {
+            // control.attach(models[0]);
+            // control.position = models[0].position;
+            models.forEach(m => { scene.add(m); } )
+        } );
 
 	container.appendChild( renderer.domElement );
 	document.addEventListener( 'mousemove', onDocumentMouseMove, false );
 	window.addEventListener( 'resize', onWindowResize, false );
+}
+
+function loadModels() {
+    const loader = createObjLoader();
+    const m1 =
+        loader.load('models/modul_01.obj')
+        .then((obj) => { obj.position.set(-600, -90, -20); return obj; });
+    const m2 =
+        loader.load('models/modul_02.obj')
+        .then((obj) => { obj.position.set(-600, -60, -20); return obj; });
+    const m3 =
+        loader.load('models/modul_03.obj')
+        .then((obj) => { obj.position.set(-600, -30, -20); return obj; });
+
+    return Promise.all([m1, m2, m3]);
 }
 
 function onWindowResize() {
@@ -90,8 +114,6 @@ function animate() {
 }
 
 function render() {
-	camera.position.x += ( mouseX - camera.position.x ) * .05;
-	camera.position.y += ( - mouseY - camera.position.y ) * .05;
 	camera.lookAt( scene.position );
 	renderer.render( scene, camera );
 }
