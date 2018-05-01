@@ -40,9 +40,6 @@ function createScene() {
     s.add(new THREE.AxesHelper(300));
     return s;
 }
-const control = new THREE.TransformControls( camera, renderer.domElement );
-control.setMode( "translate" );
-control.addEventListener( 'change', render );
 
 function createObjLoader() {
     const manager = new THREE.LoadingManager();
@@ -64,14 +61,10 @@ function init() {
 	document.body.appendChild( container );
 
 	scene.add(camera);
-	//scene.add(new THREE.CameraHelper( camera ));
-    scene.add(control);
 
     const modelsF = loadModels();
     modelsF.then(
         models => {
-            // control.attach(models[0]);
-            // control.position = models[0].position;
             models.forEach(m => { scene.add(m); } )
         } );
 
