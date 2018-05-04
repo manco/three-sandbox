@@ -27,7 +27,7 @@ function createLight() {
     light.shadow.mapSize.height = 1024;
     return light;
 }
-const frustumSize = 1000;
+const frustumSize = 500;
 function setFrustum(cam) {
     const aspect = window.innerWidth / window.innerHeight;
     cam.left = -frustumSize * aspect / 2;
@@ -47,7 +47,7 @@ function createCamera() {
 }
 const renderer = createRenderer();
 function createRenderer() {
-    const r = new THREE.WebGLRenderer();
+    const r = new THREE.WebGLRenderer({ antialias: true });
     r.setPixelRatio( window.devicePixelRatio );
     r.setSize( window.innerWidth, window.innerHeight );
     r.shadowMap.enabled = true;
@@ -61,14 +61,14 @@ controls.update();
 const scene = createScene();
 function createScene() {
     const s = new THREE.Scene();
-    // s.add( new THREE.AmbientLight(0xcccccc, 0.6) );
+    s.add( new THREE.AmbientLight(0xcccccc, 0.4) );
     return s;
 }
 const ground = createGround();
 function createGround() {
     const material = new THREE.MeshPhongMaterial( {
         color: 0xa0adaf,
-        shininess: 150,
+        shininess: 50,
         specular: 0x111111
     } );
     const g = new THREE.Mesh(
@@ -89,22 +89,14 @@ function init() {
 	scene.add(ground);
 	scene.add(light);
 
-    const material = new THREE.MeshPhongMaterial( {
-        color: 0xff0000,
-        shininess: 150,
-        specular: 0x222222
-    } );
-    const geometry = new THREE.BoxGeometry( 30, 30, 30 );
-    const cube = new THREE.Mesh( geometry, material );
-    cube.position.set( 80, 30, 80 );
-    cube.castShadow = true;
-    scene.add( cube );
-
     const modelsF = loadModels();
     modelsF.then(
         models => {
-            models.forEach(m => { scene.add(m); m.castShadow = true;} )
-        } );
+            models.forEach(m => {
+                scene.add(m);
+                m.children.map( (x => x.castShadow = true ));
+            });
+        });
 
 	container.appendChild( renderer.domElement );
 	window.addEventListener( 'resize', onWindowResize, false );
