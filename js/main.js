@@ -1,13 +1,8 @@
-class LoggingLoader {
-    constructor(manager) {
-        this.onProgress = (xhr) => {
-            if (xhr.lengthComputable) {
-                const percentComplete = xhr.loaded / xhr.total * 100;
-                console.log(Math.round(percentComplete) + '% downloaded');
-            }
-        };
+class PromisingLoader {
+    constructor() {
+        this.onProgress = (xhr) => { };
         this.onError = (xhr) => { };
-        this.loader = new THREE.OBJLoader(manager);
+        this.loader = new THREE.OBJLoader();
     }
     load(url) {
         return new Promise(
@@ -16,13 +11,38 @@ class LoggingLoader {
     }
 }
 
+const light = createLight();
+function createLight() {
+    const light = new THREE.DirectionalLight( 0xffffff, 0.7 );
+    light.name = 'Dir. Light';
+    light.position.set( 100, 300, 100 );
+    light.castShadow = true;
+    light.shadow.camera.near = 1;
+    light.shadow.camera.far = 500;
+    light.shadow.camera.right = 150;
+    light.shadow.camera.left = - 150;
+    light.shadow.camera.top	= 150;
+    light.shadow.camera.bottom = - 150;
+    light.shadow.mapSize.width = 1024;
+    light.shadow.mapSize.height = 1024;
+    return light;
+}
+const frustumSize = 1000;
+function setFrustum(cam) {
+    const aspect = window.innerWidth / window.innerHeight;
+    cam.left = -frustumSize * aspect / 2;
+    cam.right = frustumSize * aspect / 2;
+    cam.top = frustumSize / 2;
+    cam.bottom = -frustumSize / 2;
+    cam.updateProjectionMatrix();
+}
 const camera = createCamera();
 function createCamera() {
-    const c = new THREE.PerspectiveCamera( 50, window.innerWidth / window.innerHeight, 1, 3000 );
+    const c = new THREE.OrthographicCamera();
     c.position.z = 250;
-    c.position.x = 0;
+    c.position.x = 90;
     c.position.y = 150;
-    c.add(new THREE.PointLight(0xffffff, 0.8));
+    setFrustum(c);
     return c;
 }
 const renderer = createRenderer();
@@ -30,51 +50,68 @@ function createRenderer() {
     const r = new THREE.WebGLRenderer();
     r.setPixelRatio( window.devicePixelRatio );
     r.setSize( window.innerWidth, window.innerHeight );
+    r.shadowMap.enabled = true;
+    r.shadowMap.type = THREE.BasicShadowMap;
     return r;
 }
+const controls = new THREE.OrbitControls( camera, renderer.domElement );
+controls.target.set( 0, 2, 0 );
+controls.update();
+
 const scene = createScene();
 function createScene() {
     const s = new THREE.Scene();
-    s.add( new THREE.AmbientLight(0xcccccc, 0.4) );
-    s.add( new THREE.GridHelper( 1000, 10 ) );
-    s.add(new THREE.AxesHelper(300));
+    // s.add( new THREE.AmbientLight(0xcccccc, 0.6) );
     return s;
 }
-
-function createObjLoader() {
-    const manager = new THREE.LoadingManager();
-    manager.onProgress = ( item, loaded, total ) => console.log( item, loaded, total );
-    return new LoggingLoader(manager);
+const ground = createGround();
+function createGround() {
+    const material = new THREE.MeshPhongMaterial( {
+        color: 0xa0adaf,
+        shininess: 150,
+        specular: 0x111111
+    } );
+    const g = new THREE.Mesh(
+        new THREE.BoxGeometry( 10, 0.15, 10 ), material );
+    g.scale.multiplyScalar( 100 );
+    g.receiveShadow = true;
+    return g;
 }
-
-let container;
-let mouseX = 0, mouseY = 0;
-let windowHalfX = window.innerWidth / 2;
-let windowHalfY = window.innerHeight / 2;
 
 init();
 animate();
 
-
 function init() {
-	container = document.createElement( 'div' );
+	const container = document.createElement( 'div' );
 	document.body.appendChild( container );
 
 	scene.add(camera);
+	scene.add(ground);
+	scene.add(light);
+
+    const material = new THREE.MeshPhongMaterial( {
+        color: 0xff0000,
+        shininess: 150,
+        specular: 0x222222
+    } );
+    const geometry = new THREE.BoxGeometry( 30, 30, 30 );
+    const cube = new THREE.Mesh( geometry, material );
+    cube.position.set( 80, 30, 80 );
+    cube.castShadow = true;
+    scene.add( cube );
 
     const modelsF = loadModels();
     modelsF.then(
         models => {
-            models.forEach(m => { scene.add(m); } )
+            models.forEach(m => { scene.add(m); m.castShadow = true;} )
         } );
 
 	container.appendChild( renderer.domElement );
-	document.addEventListener( 'mousemove', onDocumentMouseMove, false );
 	window.addEventListener( 'resize', onWindowResize, false );
 }
 
 function loadModels() {
-    const loader = createObjLoader();
+    const loader = new PromisingLoader();
     const m1 =
         loader.load('models/modul_01.obj')
         .then((obj) => { obj.position.set(-600, -90, -20); return obj; });
@@ -87,18 +124,9 @@ function loadModels() {
 
     return Promise.all([m1, m2, m3]);
 }
-
 function onWindowResize() {
-	windowHalfX = window.innerWidth / 2;
-	windowHalfY = window.innerHeight / 2;
-	camera.aspect = window.innerWidth / window.innerHeight;
-	camera.updateProjectionMatrix();
-	renderer.setSize( window.innerWidth, window.innerHeight );
-}
-
-function onDocumentMouseMove( event ) {
-	mouseX = ( event.clientX - windowHalfX ) / 2;
-	mouseY = ( event.clientY - windowHalfY ) / 2;
+    setFrustum(camera);
+    renderer.setSize( window.innerWidth, window.innerHeight );
 }
 
 function animate() {
