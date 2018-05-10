@@ -4,10 +4,15 @@ class PromisingLoader {
         this.onError = (xhr) => { };
         this.loader = new THREE.OBJLoader();
     }
-    load(url) {
+    loadSingleMesh(url) {
         return new Promise(
             (resolve) => this.loader.load(url, resolve, this.onProgress, this.onError)
-        );
+        ).then(obj => {
+            if (obj.children.length > 1) {
+                console.warn("loadSingleMesh: ${url} resolved to group of meshes: ${obj.children}")
+            }
+            return obj.children[0]
+        });
     }
 }
 
@@ -94,8 +99,9 @@ function init() {
         models => {
             models.forEach(m => {
                 scene.add(m);
-                m.children.map( (x => x.castShadow = true ));
-            });
+                m.castShadow = true; m.receiveShadow = true;
+            }
+            );
         });
 
 	container.appendChild( renderer.domElement );
@@ -105,14 +111,17 @@ function init() {
 function loadModels() {
     const loader = new PromisingLoader();
     const m1 =
-        loader.load('models/modul_01.obj')
-        .then((obj) => { obj.position.set(-600, -90, -20); return obj; });
+        loader.loadSingleMesh('models/modul_01.obj')
+        .then((obj) => { obj.position.set(60, 60, 60); return obj; })
+    ;
     const m2 =
-        loader.load('models/modul_02.obj')
-        .then((obj) => { obj.position.set(-600, -60, -20); return obj; });
+        loader.loadSingleMesh('models/modul_02.obj')
+        .then((obj) => { obj.position.set(70, 80 ,70); return obj; })
+    ;
     const m3 =
-        loader.load('models/modul_03.obj')
-        .then((obj) => { obj.position.set(-600, -30, -20); return obj; });
+        loader.loadSingleMesh('models/modul_03.obj')
+        .then((obj) => { obj.position.set(80, 80, 80); return obj; })
+    ;
 
     return Promise.all([m1, m2, m3]);
 }
