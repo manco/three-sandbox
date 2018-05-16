@@ -16,10 +16,77 @@ class PromisingLoader {
     }
 }
 
+class Floor {
+    constructor(singleTileWidth) {
+        const tiles = 20;
+        const width = singleTileWidth * tiles;
+        this.mesh = Floor.createFloor(width);
+        this.grid = MeshGrid.createGrid(this.mesh, tiles);
+    }
+    static createFloor(width) {
+        const material = new THREE.MeshPhongMaterial( {
+            color: 0x6e6b72,
+            shininess: 50,
+            specular: 0x111111
+        } );
+        const g = new THREE.Mesh(
+            new THREE.PlaneBufferGeometry( width, width ), material );
+        g.rotateX( - Math.PI / 2 );
+        g.name = "Floor";
+        g.receiveShadow = true;
+        return g;
+    }
+    addTo(scene) {
+        scene.add(this.mesh);
+        scene.add(this.grid);
+    }
+}
+class MeshGrid {
+    static createGrid(mesh, elementsCount) {
+        const helper = new THREE.GridHelper(meshWidth(mesh), elementsCount);
+        helper.position.y = mesh.position.y + 1;
+        helper.material.opacity = 1;
+        helper.name = mesh.name + "Grid";
+        return helper;
+    }
+}
+
+class Wall {
+    constructor(singleTileWidth) {
+        const tiles = 20;
+        const width = singleTileWidth * tiles;
+        this.mesh = Wall.createWall(width);
+        this.grid = MeshGrid.createGrid(this.mesh, tiles);
+        this.grid.rotateX( - Math.PI / 2 );
+    }
+    static createWall(width) {
+        const material = new THREE.MeshPhongMaterial( {
+            color: 0xa0adaf,
+            shininess: 50,
+            opacity: 1,
+            transparent: false,
+            specular: 0x111111
+        } );
+        const g = new THREE.Mesh(new THREE.PlaneBufferGeometry(width, width), material );
+        g.position.set(0, width / 2, 0);
+        g.name = "Wall";
+        g.receiveShadow = true;
+        return g;
+    }
+    addTo(scene) {
+        scene.add(this.mesh);
+        scene.add(this.grid);
+    }
+}
+
+function meshWidth(mesh) {
+    return mesh.geometry.parameters.width;
+}
+
 const light = createLight();
 function createLight() {
     const light = new THREE.DirectionalLight( 0xffffff, 0.7 );
-    light.name = 'Dir. Light';
+    light.name = 'DirLight';
     light.position.set( 100, 300, 100 );
     light.castShadow = true;
     light.shadow.camera.near = 1;
@@ -63,24 +130,11 @@ const controls = new THREE.OrbitControls( camera, renderer.domElement );
 controls.target.set( 0, 2, 0 );
 controls.update();
 
-const scene = createScene();
+var scene = createScene(); //var because I want it available as window.scene
 function createScene() {
     const s = new THREE.Scene();
     s.add( new THREE.AmbientLight(0xcccccc, 0.4) );
     return s;
-}
-const ground = createGround();
-function createGround() {
-    const material = new THREE.MeshPhongMaterial( {
-        color: 0xa0adaf,
-        shininess: 50,
-        specular: 0x111111
-    } );
-    const g = new THREE.Mesh(
-        new THREE.BoxGeometry( 10, 0.15, 10 ), material );
-    g.scale.multiplyScalar( 100 );
-    g.receiveShadow = true;
-    return g;
 }
 
 init();
@@ -91,17 +145,24 @@ function init() {
 	document.body.appendChild( container );
 
 	scene.add(camera);
-	scene.add(ground);
 	scene.add(light);
 
     const modelsF = loadModels();
+    const modelsScale = 3;
     modelsF.then(
         models => {
             models.forEach(m => {
                 scene.add(m);
                 m.castShadow = true; m.receiveShadow = true;
+                m.scale.multiplyScalar( modelsScale );
             }
             );
+            models[0].geometry.computeBoundingBox();
+            const bbox = models[0].geometry.boundingBox;
+            const modelWidth = bbox.max.x - bbox.min.x;
+
+            new Floor(modelWidth * modelsScale).addTo(scene);
+            new Wall(modelWidth * modelsScale).addTo(scene);
         });
 
 	container.appendChild( renderer.domElement );
@@ -112,15 +173,15 @@ function loadModels() {
     const loader = new PromisingLoader();
     const m1 =
         loader.loadSingleMesh('models/modul_01.obj')
-        .then((obj) => { obj.position.set(60, 60, 60); return obj; })
+        .then((obj) => { obj.position.set(0, 60, 0); return obj; })
     ;
     const m2 =
         loader.loadSingleMesh('models/modul_02.obj')
-        .then((obj) => { obj.position.set(70, 80 ,70); return obj; })
+        .then((obj) => { obj.position.set(0, 60, 10); return obj; })
     ;
     const m3 =
         loader.loadSingleMesh('models/modul_03.obj')
-        .then((obj) => { obj.position.set(80, 80, 80); return obj; })
+        .then((obj) => { obj.position.set(0, 60, 0); return obj; })
     ;
 
     return Promise.all([m1, m2, m3]);
