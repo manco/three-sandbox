@@ -106,6 +106,7 @@ function setFrustum(cam) {
     cam.right = frustumSize * aspect / 2;
     cam.top = frustumSize / 2;
     cam.bottom = -frustumSize / 2;
+    cam.near = -1000;
     cam.updateProjectionMatrix();
 }
 const camera = createCamera();
