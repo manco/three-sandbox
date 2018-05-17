@@ -173,15 +173,27 @@ function loadModels() {
     const loader = new PromisingLoader();
     const m1 =
         loader.loadSingleMesh('models/modul_01.obj')
-        .then((obj) => { obj.position.set(0, 60, 0); return obj; })
+        .then((obj) => {
+            obj.rotateX(- Math.PI / 2);
+            obj.position.set(0, 0, 0);
+            return obj;
+        })
     ;
     const m2 =
         loader.loadSingleMesh('models/modul_02.obj')
-        .then((obj) => { obj.position.set(0, 60, 10); return obj; })
+        .then((obj) => {
+            obj.rotateX(- Math.PI / 2);
+            obj.position.set(0, 0, 0);
+            return obj;
+        })
     ;
     const m3 =
         loader.loadSingleMesh('models/modul_03.obj')
-        .then((obj) => { obj.position.set(0, 60, 0); return obj; })
+        .then((obj) => {
+            obj.rotateX(- Math.PI / 2);
+            obj.position.set(0, 0, 0);
+            return obj;
+        })
     ;
 
     return Promise.all([m1, m2, m3]);
