@@ -15,7 +15,6 @@ class PromisingLoader {
         });
     }
 }
-
 class Floor {
     constructor(singleTileWidth) {
         const tiles = 20;
@@ -43,14 +42,17 @@ class Floor {
 }
 class MeshGrid {
     static createGrid(mesh, elementsCount) {
-        const helper = new THREE.GridHelper(meshWidth(mesh), elementsCount);
+        const helper = new THREE.GridHelper(MeshGrid.meshWidth(mesh), elementsCount);
         helper.position.y = mesh.position.y + 1;
         helper.material.opacity = 1;
         helper.name = mesh.name + "Grid";
         return helper;
     }
-}
 
+    static meshWidth(mesh) {
+        return mesh.geometry.parameters.width;
+    }
+}
 class Wall {
     constructor(singleTileWidth) {
         const tiles = 20;
@@ -79,10 +81,49 @@ class Wall {
     }
 }
 
-function meshWidth(mesh) {
-    return mesh.geometry.parameters.width;
+class ModulesLibrary {
+    constructor() {
+        this.loader = new PromisingLoader();
+        this.scale = 3;
+        this.modules = null;
+    }
+    loadModules(modelsArray) {
+        if (this.modules == null) {
+            this.modules = Promise.all(
+                modelsArray.map(m => this.loader.loadSingleMesh(m).then(m => this.initModel(m)))
+            );
+        } else {
+            throw "sorry, modules already loaded or being loaded";
+        }
+    }
+
+    initModel(m) {
+        m.rotateX(-Math.PI / 2);
+        m.position.set(0, 0, 0);
+        m.castShadow = true;
+        m.receiveShadow = true;
+        m.scale.multiplyScalar(this.scale);
+        m.geometry.computeBoundingBox();
+        return m;
+    }
+}
+/*
+
+1. slots list
+2. Slot { lower, tabletop, upper }
+4. addModule(m) {
+    emptySlot = slots.filter { !hasModuleOfType(m) }.headOption
+    .map {
+        newM = m.clone()
+        emptySlot.put(newM)
+        newM.addTo(scene)
+        newM.position.x = SlotWidth * slot.index
+    }
+
+
 }
 
+ */
 const light = createLight();
 function createLight() {
     const light = new THREE.DirectionalLight( 0xffffff, 0.7 );
@@ -148,39 +189,30 @@ function init() {
 	scene.add(camera);
 	scene.add(light);
 
-    const modelsF = loadModels();
-    const modelsScale = 3;
-    modelsF.then(
-        models => {
-            models.forEach(m => {
-                scene.add(m);
-                m.rotateX(- Math.PI / 2);
-                m.position.set(0, 0, 0);
-                m.castShadow = true;
-                m.receiveShadow = true;
-                m.scale.multiplyScalar( modelsScale );
-            }
-            );
-            models[0].geometry.computeBoundingBox();
-            const bbox = models[0].geometry.boundingBox;
-            const modelWidth = bbox.max.x - bbox.min.x;
+	const modulesLibrary = new ModulesLibrary();
+    modulesLibrary.loadModules([
+        'models/szafka_dol.obj',
+        'models/blat.obj',
+        'models/szafka_gora.obj'
+    ]);
+    modulesLibrary.modules.then(ms => ms.forEach(m => scene.add(m)));
 
-            new Floor(modelWidth * modelsScale).addTo(scene);
-            new Wall(modelWidth * modelsScale).addTo(scene);
-        });
+    const moduleWidthF = modulesLibrary.modules.then(
+        ms => {
+            const bbox = ms[0].geometry.boundingBox;
+            return modulesLibrary.scale * (bbox.max.x - bbox.min.x);
+        }
+    );
+
+    moduleWidthF.then(moduleWidth => {
+        new Floor(moduleWidth).addTo(scene);
+        new Wall(moduleWidth).addTo(scene);
+    });
 
 	container.appendChild( renderer.domElement );
 	window.addEventListener( 'resize', onWindowResize, false );
 }
 
-function loadModels() {
-    const loader = new PromisingLoader();
-    const m1 = loader.loadSingleMesh('models/szafka_dol.obj');
-    const m2 = loader.loadSingleMesh('models/blat.obj');
-    const m3 = loader.loadSingleMesh('models/szafka_gora.obj');
-
-    return Promise.all([m1, m2, m3]);
-}
 function onWindowResize() {
     setFrustum(camera);
     renderer.setSize( window.innerWidth, window.innerHeight );
