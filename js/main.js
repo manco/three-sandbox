@@ -154,7 +154,10 @@ function init() {
         models => {
             models.forEach(m => {
                 scene.add(m);
-                m.castShadow = true; m.receiveShadow = true;
+                m.rotateX(- Math.PI / 2);
+                m.position.set(0, 0, 0);
+                m.castShadow = true;
+                m.receiveShadow = true;
                 m.scale.multiplyScalar( modelsScale );
             }
             );
@@ -172,30 +175,9 @@ function init() {
 
 function loadModels() {
     const loader = new PromisingLoader();
-    const m1 =
-        loader.loadSingleMesh('models/modul_01.obj')
-        .then((obj) => {
-            obj.rotateX(- Math.PI / 2);
-            obj.position.set(0, 0, 0);
-            return obj;
-        })
-    ;
-    const m2 =
-        loader.loadSingleMesh('models/modul_02.obj')
-        .then((obj) => {
-            obj.rotateX(- Math.PI / 2);
-            obj.position.set(0, 0, 0);
-            return obj;
-        })
-    ;
-    const m3 =
-        loader.loadSingleMesh('models/modul_03.obj')
-        .then((obj) => {
-            obj.rotateX(- Math.PI / 2);
-            obj.position.set(0, 0, 0);
-            return obj;
-        })
-    ;
+    const m1 = loader.loadSingleMesh('models/szafka_dol.obj');
+    const m2 = loader.loadSingleMesh('models/blat.obj');
+    const m3 = loader.loadSingleMesh('models/szafka_gora.obj');
 
     return Promise.all([m1, m2, m3]);
 }
