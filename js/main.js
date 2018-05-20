@@ -1,3 +1,21 @@
+/*
+    TODO
+
+    1. move codebase to typescript
+    2. split codebase into multiple files
+    3. think of IoC regarding building scene
+
+    4. kitchen should have field slotWidth
+    5. try to display outlines of obj's
+    6. Floor / MeshGrid / Wall better class design
+    7. KitchenSlots should be implemented as stream
+    8. unit tests. It's time for unit tests
+
+    (...)
+
+    * buttons to add / remove kitchen.modules
+ */
+
 class PromisingLoader {
     constructor() {
         this.onProgress = (xhr) => { };
@@ -9,7 +27,7 @@ class PromisingLoader {
             (resolve) => this.loader.load(url, resolve, this.onProgress, this.onError)
         ).then(obj => {
             if (obj.children.length > 1) {
-                console.warn("loadSingleMesh: ${url} resolved to group of meshes: ${obj.children}")
+                console.warn(`loadSingleMesh: ${url} resolved to group of meshes: ${obj.children}`)
             }
             return obj.children[0]
         });
@@ -81,49 +99,110 @@ class Wall {
     }
 }
 
+class Module {
+    constructor(mesh, type, width) {
+        this.mesh = mesh;
+        this.type = type;
+        this.width = width;
+    }
+    clone() {
+        return new Module(this.mesh.clone(), this.type, this.width);
+    }
+}
 class ModulesLibrary {
     constructor() {
         this.loader = new PromisingLoader();
         this.scale = 3;
-        this.modules = null;
+        this.prototypes = null;
     }
-    loadModules(modelsArray) {
-        if (this.modules == null) {
-            this.modules = Promise.all(
-                modelsArray.map(m => this.loader.loadSingleMesh(m).then(m => this.initModel(m)))
+    loadPrototypes(definitions) {
+        if (this.prototypes == null) {
+            this.prototypes = Promise.all(
+                definitions.map(
+                    d =>
+                        this.loader.loadSingleMesh(d.url)
+                            .then(m => {
+                                this.initMesh(m);
+                                const bbox = m.geometry.boundingBox;
+                                const width = this.scale * (bbox.max.x - bbox.min.x);
+                                return new Module(m, d.type, width)
+                            })
+                )
             );
         } else {
-            throw "sorry, modules already loaded or being loaded";
+            throw "sorry, prototypes already loaded or being loaded";
         }
     }
 
-    initModel(m) {
+    createModule(type) {
+        return this.ofType(type)
+            .then(m => m.clone());
+    }
+
+    ofType(type) {
+        return this.prototypes
+            .then(modules => modules.find(m => m.type === type));
+    }
+
+    initMesh(m) {
         m.rotateX(-Math.PI / 2);
         m.position.set(0, 0, 0);
         m.castShadow = true;
         m.receiveShadow = true;
         m.scale.multiplyScalar(this.scale);
         m.geometry.computeBoundingBox();
-        return m;
     }
 }
-/*
+const ModuleTypes = makeEnum(["STANDING", "TABLETOP", "HANGING"]);
 
-1. slots list
-2. Slot { lower, tabletop, upper }
-4. addModule(m) {
-    emptySlot = slots.filter { !hasModuleOfType(m) }.headOption
-    .map {
-        newM = m.clone()
-        emptySlot.put(newM)
-        newM.addTo(scene)
-        newM.position.x = SlotWidth * slot.index
+class KitchenSlot {
+    constructor() {
+        this.modulesByTypes = new Map()
+    }
+    alreadyContains(moduleType) {
+        return this.modulesByTypes.has(moduleType);
+    }
+    put(module, index, scene) {
+        if (this.alreadyContains(module.type)) {
+            throw "module already set in this slot"
+        }
+        this.modulesByTypes.set(module.type, module);
+        module.mesh.position.x = index * module.width;
+        scene.add(module.mesh);
+    }
+    remove(moduleType, scene) {
+        const module = this.modulesByTypes.get(moduleType);
+        scene.remove(module.mesh);
+        this.modulesByTypes.delete(moduleType);
+    }
+}
+class Kitchen {
+    constructor(library, scene) {
+        this.moduleLibrary = library;
+        this.scene = scene;
+
+        this.slots = Array.from(new Array(10), () => new KitchenSlot());
+    }
+    addModule(moduleType) {
+        const availableSlotIndex = this.slots.findIndex(s => !s.alreadyContains(moduleType));
+        if (availableSlotIndex === -1) {
+            console.log("no more available slots :(")
+        } else {
+            this.moduleLibrary
+                .createModule(moduleType)
+                .then(m => this.slots[availableSlotIndex].put(m, availableSlotIndex, scene));
+        }
     }
 
-
+    removeModule(moduleType) {
+        const occupiedSlotIndex = this.slots.findIndex(s => s.alreadyContains(moduleType));
+        if (occupiedSlotIndex === -1) {
+            console.log("no occupied slots")
+        } else {
+            this.slots[occupiedSlotIndex].remove(moduleType, scene);
+        }
+    }
 }
-
- */
 const light = createLight();
 function createLight() {
     const light = new THREE.DirectionalLight( 0xffffff, 0.7 );
@@ -179,6 +258,9 @@ function createScene() {
     return s;
 }
 
+const modulesLibrary = new ModulesLibrary();
+const kitchen = new Kitchen(modulesLibrary, scene);
+
 init();
 animate();
 
@@ -189,20 +271,17 @@ function init() {
 	scene.add(camera);
 	scene.add(light);
 
-	const modulesLibrary = new ModulesLibrary();
-    modulesLibrary.loadModules([
-        'models/szafka_dol.obj',
-        'models/blat.obj',
-        'models/szafka_gora.obj'
+    modulesLibrary.loadPrototypes([
+        { url: 'models/szafka_dol.obj', type: ModuleTypes.STANDING },
+        { url: 'models/blat.obj', type: ModuleTypes.TABLETOP },
+        { url: 'models/szafka_gora.obj', type: ModuleTypes.HANGING }
     ]);
-    modulesLibrary.modules.then(ms => ms.forEach(m => scene.add(m)));
 
-    const moduleWidthF = modulesLibrary.modules.then(
-        ms => {
-            const bbox = ms[0].geometry.boundingBox;
-            return modulesLibrary.scale * (bbox.max.x - bbox.min.x);
-        }
-    );
+    kitchen.addModule(ModuleTypes.STANDING);
+    kitchen.addModule(ModuleTypes.TABLETOP);
+    kitchen.addModule(ModuleTypes.HANGING);
+
+    const moduleWidthF = modulesLibrary.ofType(ModuleTypes.STANDING).then(m => m.width);
 
     moduleWidthF.then(moduleWidth => {
         new Floor(moduleWidth).addTo(scene);
@@ -226,4 +305,12 @@ function animate() {
 function render() {
 	camera.lookAt( scene.position );
 	renderer.render( scene, camera );
+}
+
+function makeEnum(arr){
+    let obj = {};
+    for (let val of arr){
+        obj[val] = Symbol(val);
+    }
+    return Object.freeze(obj);
 }
