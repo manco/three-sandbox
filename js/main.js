@@ -10,16 +10,18 @@
     7. KitchenSlots should be implemented as stream
     8. unit tests. It's time for unit tests
 
+    9. load models from somewhere else
+
     (...)
 
-    * try to display outlines of obj's
+    O try to display outlines of obj's
     * panel klienta (podawanie wymiarów)
-    * wypełnienie całej ściany na podstawie wymiarów
-    * podawanie koloru korpusów (brył)
-    * ROZPOZNANIE: nakładanie tekstur, jak to się robi i czy łatwiej mieć osobną bryłę?
-    * ROZPOZNANIE: raytracing z kursora do szafki (zaznaczanie aktywnej szafki)
-    * Lista szafek z boku
-    * Przycisk 'zamów' i wysłanie emaila <--- jak to zabezpieczyć?
+    O wypełnienie całej ściany na podstawie wymiarów
+    O podawanie koloru korpusów (brył)
+    O ROZPOZNANIE: nakładanie tekstur, jak to się robi i czy łatwiej mieć osobną bryłę?
+    O ROZPOZNANIE: raytracing z kursora do szafki (zaznaczanie aktywnej szafki)
+    O Lista szafek z boku
+    O Przycisk 'zamów' i wysłanie emaila <--- jak to zabezpieczyć?
     *
  */
 
@@ -41,11 +43,9 @@ class PromisingLoader {
     }
 }
 class Floor {
-    constructor(singleTileWidth) {
-        const tiles = 20;
-        const width = singleTileWidth * tiles;
+    constructor() {
+        const width = 1200;
         this.mesh = Floor.createFloor(width);
-        this.grid = MeshGrid.createGrid(this.mesh, tiles);
     }
     static createFloor(width) {
         const material = new THREE.MeshPhongMaterial( {
@@ -62,47 +62,23 @@ class Floor {
     }
     addTo(scene) {
         scene.add(this.mesh);
-        scene.add(this.grid);
-    }
-}
-class MeshGrid {
-    static createGrid(mesh, elementsCount) {
-        const helper = new THREE.GridHelper(MeshGrid.meshWidth(mesh), elementsCount);
-        helper.position.y = mesh.position.y + 1;
-        helper.material.opacity = 1;
-        helper.name = mesh.name + "Grid";
-        return helper;
-    }
-
-    static meshWidth(mesh) {
-        return mesh.geometry.parameters.width;
     }
 }
 class Wall {
-    constructor(singleTileWidth) {
-        const tiles = 20;
-        const width = singleTileWidth * tiles;
-        this.mesh = Wall.createWall(width);
-        this.grid = MeshGrid.createGrid(this.mesh, tiles);
-        this.grid.rotateX( - Math.PI / 2 );
-    }
-    static createWall(width) {
+    static createWall(name, width, height) {
         const material = new THREE.MeshPhongMaterial( {
             color: 0xa0adaf,
             shininess: 50,
-            opacity: 1,
-            transparent: false,
-            specular: 0x111111
+            opacity: 0.3,
+            transparent: true,
+            specular: 0x111111,
+            side: THREE.DoubleSide
         } );
-        const g = new THREE.Mesh(new THREE.PlaneBufferGeometry(width, width), material );
-        g.position.set(0, width / 2, 0);
-        g.name = "Wall";
-        g.receiveShadow = true;
-        return g;
-    }
-    addTo(scene) {
-        scene.add(this.mesh);
-        scene.add(this.grid);
+        const mesh = new THREE.Mesh(new THREE.PlaneBufferGeometry(width, height), material );
+        mesh.position.set(0, height / 2, 0);
+        mesh.name = "Wall" + name;
+        mesh.receiveShadow = true;
+        return mesh;
     }
 }
 
@@ -182,6 +158,9 @@ class KitchenSlot {
         scene.remove(module.mesh);
         this.modulesByTypes.delete(moduleType);
     }
+    removeAll(scene) {
+        Array.from(this.modulesByTypes.values()).forEach(t => this.remove(t, scene));
+    }
 }
 class Kitchen {
     constructor(library, scene) {
@@ -189,7 +168,9 @@ class Kitchen {
         this.scene = scene;
 
         this.slots = Array.from(new Array(10), () => new KitchenSlot());
+        this.walls = [];
     }
+
     addModule(moduleType) {
         const availableSlotIndex = this.slots.findIndex(s => !s.alreadyContains(moduleType));
         if (availableSlotIndex === -1) {
@@ -200,6 +181,10 @@ class Kitchen {
                 .then(m => this.slots[availableSlotIndex].put(m, availableSlotIndex, scene));
         }
     }
+    addWall(wall, scene) {
+        this.walls.push(wall);
+        scene.add(wall);
+    }
 
     removeModule(moduleType) {
         const occupiedSlotIndex = this.slots.findIndex(s => s.alreadyContains(moduleType));
@@ -208,6 +193,11 @@ class Kitchen {
         } else {
             this.slots[occupiedSlotIndex].remove(moduleType, scene);
         }
+    }
+    removeAll(scene) {
+        this.slots.forEach(slot => slot.removeAll(scene));
+        this.walls.forEach(wall => scene.remove(wall));
+        this.walls = [];
     }
 }
 const light = createLight();
@@ -272,9 +262,6 @@ init();
 animate();
 
 function init() {
-	const container = document.createElement( 'div' );
-	document.body.appendChild( container );
-
 	scene.add(camera);
 	scene.add(light);
 
@@ -284,24 +271,48 @@ function init() {
         { url: 'models/szafka_gora.obj', type: ModuleTypes.HANGING }
     ]);
 
-    kitchen.addModule(ModuleTypes.STANDING);
-    kitchen.addModule(ModuleTypes.TABLETOP);
-    kitchen.addModule(ModuleTypes.HANGING);
+    new Floor().addTo(scene);
 
-    const moduleWidthF = modulesLibrary.ofType(ModuleTypes.STANDING).then(m => m.width);
-
-    moduleWidthF.then(moduleWidth => {
-        new Floor(moduleWidth).addTo(scene);
-        new Wall(moduleWidth).addTo(scene);
-    });
-
-	container.appendChild( renderer.domElement );
+    document.getElementById("WebGL-output").appendChild( renderer.domElement );
 	window.addEventListener( 'resize', onWindowResize, false );
 }
 
 function onWindowResize() {
     setFrustum(camera);
     renderer.setSize( window.innerWidth, window.innerHeight );
+}
+
+function initWalls() {
+
+    kitchen.removeAll(scene);
+
+    const [ width, depth, height ] = [
+        document.getElementById("kitchen-width").value,
+        document.getElementById("kitchen-depth").value,
+        document.getElementById("kitchen-height").value
+    ];
+
+    const wallA = Wall.createWall("A", width, height);
+
+    const wallB = Wall.createWall("B", depth, height);
+    wallB.position.setX(width/2);
+    wallB.position.setZ(depth/2);
+    wallB.rotateY( - Math.PI / 2);
+
+    const wallC = Wall.createWall("C", width, height);
+    wallC.position.setZ(depth);
+
+    const wallD = Wall.createWall("D", depth, height);
+    wallD.position.setX(-width/2);
+    wallD.position.setZ(depth/2);
+    wallD.rotateY(Math.PI / 2);
+
+    [
+        wallA,
+        wallB,
+        wallC,
+        wallD
+    ].forEach(wall => { wall.position.setY(height/2); kitchen.addWall(wall, scene); } );
 }
 
 function animate() {

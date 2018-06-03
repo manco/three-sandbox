@@ -1,14 +1,34 @@
 <!doctype html>
 <html>
+<meta charset="utf-8">
 <head>
-    <title>Rotating logo - WebGL experiment</title>
+    <title>Kuchnioplaner</title>
 </head>
 <style>
+    #gui-panel {
+        position : absolute;
+        top : 10px;
+        left : 10px;
+        background-color : #7f7f7f;
+    }
   body { margin: 0; }
   canvas { width: 100%; height: 100% }
 </style>
 <body>
-    <div id="container"></div>
+    <div id="gui-panel">
+        <label for="kitchen-width">Szerokość</label>
+        <input type="text" id="kitchen-width" value="500"/><br/>
+
+        <label for="kitchen-depth">Długość</label>
+        <input type="text" id="kitchen-depth" value="200"/><br/>
+
+        <label for="kitchen-height">Wysokość</label>
+        <input type="text" id="kitchen-height" value="240"/><br/>
+
+        <button onclick="initWalls()">Rysuj</button>
+    </div>
+    <div id="WebGL-output" style="height:100px;"></div>
+
     <script src="js/three.min.js"></script>
     <script src="js/OBJLoader.js"></script>
     <script src="js/OrbitControls.js"></script>
