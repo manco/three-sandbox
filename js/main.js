@@ -6,14 +6,21 @@
     3. think of IoC regarding building scene
 
     4. kitchen should have field slotWidth
-    5. try to display outlines of obj's
     6. Floor / MeshGrid / Wall better class design
     7. KitchenSlots should be implemented as stream
     8. unit tests. It's time for unit tests
 
     (...)
 
-    * buttons to add / remove kitchen.modules
+    * try to display outlines of obj's
+    * panel klienta (podawanie wymiarów)
+    * wypełnienie całej ściany na podstawie wymiarów
+    * podawanie koloru korpusów (brył)
+    * ROZPOZNANIE: nakładanie tekstur, jak to się robi i czy łatwiej mieć osobną bryłę?
+    * ROZPOZNANIE: raytracing z kursora do szafki (zaznaczanie aktywnej szafki)
+    * Lista szafek z boku
+    * Przycisk 'zamów' i wysłanie emaila <--- jak to zabezpieczyć?
+    *
  */
 
 class PromisingLoader {
