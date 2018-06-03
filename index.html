@@ -9,8 +9,8 @@
         position : absolute;
         top : 10px;
         left : 10px;
-        background-color : #7f7f7f;
     }
+    input { width: 50px; }
   body { margin: 0; }
   canvas { width: 100%; height: 100% }
 </style>
@@ -25,9 +25,21 @@
         <label for="kitchen-height">Wysokość</label>
         <input type="text" id="kitchen-height" value="240"/><br/>
 
-        <button onclick="initWalls()">Rysuj</button>
+        <label for="checkbox-wallA">Ściana A</label>
+        <input type="checkbox" class="gui-checkbox" id="checkbox-wallA" value="A" checked="checked"/><br/>
+
+        <label for="checkbox-wallB">Ściana B</label>
+        <input type="checkbox" class="gui-checkbox" id="checkbox-wallB" value="B"/><br/>
+
+        <label for="checkbox-wallC">Ściana C</label>
+        <input type="checkbox" class="gui-checkbox" id="checkbox-wallC" value="C"/><br/>
+
+        <label for="checkbox-wallD">Ściana D</label>
+        <input type="checkbox" class="gui-checkbox" id="checkbox-wallD" value="D"/><br/>
+
+        <button onclick="drawKitchen()">Rysuj</button>
     </div>
-    <div id="WebGL-output" style="height:100px;"></div>
+    <div id="WebGL-output" style="margin-left:200px"></div>
 
     <script src="js/three.min.js"></script>
     <script src="js/OBJLoader.js"></script>

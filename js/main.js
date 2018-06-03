@@ -92,6 +92,12 @@ class Module {
         return new Module(this.mesh.clone(), this.type, this.width);
     }
 }
+
+function meshWidthX(m) {
+    const bbox = m.geometry.boundingBox;
+    return bbox.max.x - bbox.min.x;
+}
+
 class ModulesLibrary {
     constructor() {
         this.loader = new PromisingLoader();
@@ -106,9 +112,7 @@ class ModulesLibrary {
                         this.loader.loadSingleMesh(d.url)
                             .then(m => {
                                 this.initMesh(m);
-                                const bbox = m.geometry.boundingBox;
-                                const width = this.scale * (bbox.max.x - bbox.min.x);
-                                return new Module(m, d.type, width)
+                                return new Module(m, d.type, this.scale * meshWidthX(m))
                             })
                 )
             );
@@ -137,8 +141,12 @@ class ModulesLibrary {
     }
 }
 const ModuleTypes = makeEnum(["STANDING", "TABLETOP", "HANGING"]);
+const ModuleTypesAll = [ModuleTypes.STANDING, ModuleTypes.TABLETOP, ModuleTypes.HANGING];
 
-class KitchenSlot {
+/**
+ * Need to know the original wall! (bbox.min.x, rotation etc...)
+ */
+class WallSlot {
     constructor() {
         this.modulesByTypes = new Map()
     }
@@ -159,7 +167,7 @@ class KitchenSlot {
         this.modulesByTypes.delete(moduleType);
     }
     removeAll(scene) {
-        Array.from(this.modulesByTypes.values()).forEach(t => this.remove(t, scene));
+        Array.from(this.modulesByTypes.keys()).forEach(t => this.remove(t, scene));
     }
 }
 class Kitchen {
@@ -167,38 +175,64 @@ class Kitchen {
         this.moduleLibrary = library;
         this.scene = scene;
 
-        this.slots = Array.from(new Array(10), () => new KitchenSlot());
+        this.wallAslots = Array.from(new Array(10), () => new WallSlot());
         this.walls = [];
     }
 
     addModule(moduleType) {
-        const availableSlotIndex = this.slots.findIndex(s => !s.alreadyContains(moduleType));
+        const availableSlotIndex = this.wallAslots.findIndex(s => !s.alreadyContains(moduleType));
         if (availableSlotIndex === -1) {
             console.log("no more available slots :(")
         } else {
-            this.moduleLibrary
-                .createModule(moduleType)
-                .then(m => this.slots[availableSlotIndex].put(m, availableSlotIndex, scene));
+            this.addModule(moduleType, availableSlotIndex);
         }
     }
-    addWall(wall, scene) {
+    addModule(moduleType, index) {
+        this.moduleLibrary
+            .createModule(moduleType)
+            .then(m => this.wallAslots[index].put(m, index, scene));
+    }
+    addWall(wall) {
         this.walls.push(wall);
-        scene.add(wall);
+        this.scene.add(wall);
+    }
+
+    findWall(name) {
+        return this.walls.find(w => w.name === ("Wall" + name))
     }
 
     removeModule(moduleType) {
-        const occupiedSlotIndex = this.slots.findIndex(s => s.alreadyContains(moduleType));
+        const occupiedSlotIndex = this.wallAslots.findIndex(s => s.alreadyContains(moduleType));
         if (occupiedSlotIndex === -1) {
             console.log("no occupied slots")
         } else {
-            this.slots[occupiedSlotIndex].remove(moduleType, scene);
+            this.wallAslots[occupiedSlotIndex].remove(moduleType, scene);
         }
     }
+
+    fillWallWithModules(wall) {
+        if (wall.name !== "WallA") {
+            console.warn("sorry, only Wall A supported for now:)");
+            return;
+        }
+        this.slotWidthF().then(slotWidth => {
+            const items = meshWidthX(wall) / slotWidth;
+            for (let i = 0; i < items; i++) {
+                ModuleTypesAll.forEach(type => this.addModule(type, i))
+            }
+        })
+    }
+
     removeAll(scene) {
-        this.slots.forEach(slot => slot.removeAll(scene));
+        this.wallAslots.forEach(slot => slot.removeAll(scene));
         this.walls.forEach(wall => scene.remove(wall));
         this.walls = [];
     }
+
+    slotWidthF() {
+        return this.moduleLibrary.ofType(ModuleTypes.STANDING).then(m => m.width);
+    }
+
 }
 const light = createLight();
 function createLight() {
@@ -282,9 +316,13 @@ function onWindowResize() {
     renderer.setSize( window.innerWidth, window.innerHeight );
 }
 
-function initWalls() {
-
+function drawKitchen() {
     kitchen.removeAll(scene);
+    initWalls();
+    initModules();
+}
+
+function initWalls() {
 
     const [ width, depth, height ] = [
         document.getElementById("kitchen-width").value,
@@ -295,24 +333,31 @@ function initWalls() {
     const wallA = Wall.createWall("A", width, height);
 
     const wallB = Wall.createWall("B", depth, height);
-    wallB.position.setX(width/2);
-    wallB.position.setZ(depth/2);
+    wallB.position.x = width/2;
+    wallB.position.z = depth/2;
     wallB.rotateY( - Math.PI / 2);
 
     const wallC = Wall.createWall("C", width, height);
-    wallC.position.setZ(depth);
+    wallC.position.z = depth;
 
     const wallD = Wall.createWall("D", depth, height);
-    wallD.position.setX(-width/2);
-    wallD.position.setZ(depth/2);
+    wallD.position.x = -width/2;
+    wallD.position.z = depth/2;
     wallD.rotateY(Math.PI / 2);
-
     [
         wallA,
         wallB,
         wallC,
         wallD
-    ].forEach(wall => { wall.position.setY(height/2); kitchen.addWall(wall, scene); } );
+    ].forEach(wall => { wall.position.setY(height/2); wall.geometry.computeBoundingBox(); kitchen.addWall(wall, scene); } );
+}
+
+function initModules() {
+    const chosenWalls = Array.from(document.getElementsByClassName("gui-checkbox"))
+        .filter(c => c.checked)
+        .map(w => kitchen.findWall(w.value));
+
+    chosenWalls.forEach(wall => kitchen.fillWallWithModules(wall, scene))
 }
 
 function animate() {
