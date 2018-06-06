@@ -65,7 +65,7 @@ class WallSlot {
             throw "module already set in this slot"
         }
         this.modulesByTypes.set(module.type, module);
-        module.mesh.position.x = index * module.width;
+        module.mesh.position.x = index * module.width - this.wall.mesh.geometry.boundingBox.max.x;
         scene.add(module.mesh);
     }
     remove(moduleType, scene) {
@@ -114,7 +114,8 @@ export class Kitchen {
             return;
         }
         this.slotWidthF().then(slotWidth => {
-            const items = meshWidthX(wall.mesh) / slotWidth;
+            const moduleWidth = meshWidthX(wall.mesh);
+            const items = Math.floor(moduleWidth / slotWidth);
             for (let i = 0; i < items; i++) {
                 ModuleTypesAll.forEach(type => this.addModuleToWallASlot(type, i))
             }
