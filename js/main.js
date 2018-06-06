@@ -126,28 +126,32 @@ function initWalls() {
 
     const wallA = new Wall("A", width, height);
 
-    const wallB = new Wall("B", depth, height);
-    wallB.mesh.position.x = width/2;
-    wallB.mesh.position.z = depth/2;
-    wallB.mesh.rotateY( - Math.PI / 2);
+    const wallB = new Wall("B", depth, height,
+        m => {
+            m.translateX(width/2);
+            m.translateZ(depth/2);
+        },
+        m => m.rotateY( - Math.PI / 2)
+    );
 
-    const wallC = new Wall("C", width, height);
-    wallC.mesh.position.z = depth;
+    const wallC = new Wall("C", width, height,
+        m => m.translateZ(depth),
+        m => m.rotateZ(Math.PI)
+    );
 
-    const wallD = new Wall("D", depth, height);
-    wallD.mesh.position.x = -width/2;
-    wallD.mesh.position.z = depth/2;
-    wallD.mesh.rotateY(Math.PI / 2);
+    const wallD = new Wall("D", depth, height,
+        m => {
+            m.translateX(-width/2);
+            m.translateZ(depth/2);
+        },
+        m => m.rotateY(Math.PI / 2)
+    );
     [
         wallA,
         wallB,
         wallC,
         wallD
-    ].forEach(wall => {
-        wall.mesh.position.setY(height/2);
-        wall.mesh.geometry.computeBoundingBox();
-        kitchen.addWall(wall);
-    } );
+    ].forEach(wall => kitchen.addWall(wall) );
 }
 
 function initModules() {

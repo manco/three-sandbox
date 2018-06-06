@@ -23,10 +23,17 @@ export class Floor {
         scene.add(this.mesh);
     }
 }
+
 export class Wall {
 
-    constructor(name, width, height) {
+    constructor(name, width, height, translate = _ => {}, rotate = _ => {}) {
+        this.translateMesh = translate;
+        this.rotateMesh = rotate;
         this.mesh = Wall.createMesh(name, width, height);
+        this.mesh.translateY(height / 2);
+        this.translateMesh(this.mesh);
+        this.rotateMesh(this.mesh);
+        this.mesh.geometry.computeBoundingBox();
         this.wallSlots = Array.from(new Array(10), () => new WallSlot(this));
     }
 
@@ -42,16 +49,12 @@ export class Wall {
             side: THREE.DoubleSide
         } );
         const mesh = new THREE.Mesh(new THREE.PlaneBufferGeometry(width, height), material );
-        mesh.position.set(0, height / 2, 0);
         mesh.name = "Wall" + name;
         mesh.receiveShadow = true;
         return mesh;
     }
 }
 
-/**
- * Need to know the original wall! (bbox.min.x, rotation etc...)
- */
 class WallSlot {
     constructor(wall) {
         this.wall = wall;
@@ -66,6 +69,8 @@ class WallSlot {
         }
         this.modulesByTypes.set(module.type, module);
         module.mesh.position.x = index * module.width - this.wall.mesh.geometry.boundingBox.max.x;
+        this.wall.translateMesh(module.mesh);
+        this.wall.rotateMesh(module.mesh);
         scene.add(module.mesh);
     }
     remove(moduleType, scene) {
@@ -85,10 +90,14 @@ export class Kitchen {
         this.walls = [];
     }
 
-    addModuleToWallASlot(moduleType, slotIndex) {
-        this.moduleLibrary
-            .createModule(moduleType)
-            .then(m => this.walls[0].wallSlots[slotIndex].put(m, slotIndex, this.scene));
+    addModuleToWallSlots(wall, count, moduleType) {
+        for (let i = 0; i < count; i++) {
+            this.moduleLibrary
+                .createModule(moduleType)
+                .then(m => {
+                    wall.wallSlots[i].put(m, i, this.scene);
+                });
+        }
     }
     addWall(wall) {
         this.walls.push(wall);
@@ -99,26 +108,11 @@ export class Kitchen {
         return this.walls.find(w => w.name() === ("Wall" + name))
     }
 
-    // removeModule(moduleType) {
-    //     const occupiedSlotIndex = this.walls[0].wallSlots.findIndex(s => s.alreadyContains(moduleType));
-    //     if (occupiedSlotIndex === -1) {
-    //         console.log("no occupied slots")
-    //     } else {
-    //         this.walls[0].wallSlots[occupiedSlotIndex].remove(moduleType, this.scene);
-    //     }
-    // }
-
     fillWallWithModules(wall) {
-        if (wall.mesh.name !== "WallA") {
-            console.warn("sorry, only Wall A supported for now:)");
-            return;
-        }
         this.slotWidthF().then(slotWidth => {
-            const moduleWidth = meshWidthX(wall.mesh);
-            const items = Math.floor(moduleWidth / slotWidth);
-            for (let i = 0; i < items; i++) {
-                ModuleTypesAll.forEach(type => this.addModuleToWallASlot(type, i))
-            }
+            const wallWidth = meshWidthX(wall.mesh); //FIXME to nie ma sensu dla scian B, D
+            const items = Math.floor(wallWidth / slotWidth);
+            ModuleTypesAll.forEach(type => this.addModuleToWallSlots(wall, items, type))
         })
     }
 
