@@ -24,7 +24,15 @@ export class Floor {
     }
 }
 export class Wall {
-    static createWall(name, width, height) {
+
+    constructor(name, width, height) {
+        this.mesh = Wall.createMesh(name, width, height);
+        this.wallSlots = Array.from(new Array(10), () => new WallSlot(this));
+    }
+
+    name() { return this.mesh.name; }
+
+    static createMesh(name, width, height) {
         const material = new THREE.MeshPhongMaterial( {
             color: 0xa0adaf,
             shininess: 50,
@@ -45,7 +53,8 @@ export class Wall {
  * Need to know the original wall! (bbox.min.x, rotation etc...)
  */
 class WallSlot {
-    constructor() {
+    constructor(wall) {
+        this.wall = wall;
         this.modulesByTypes = new Map()
     }
     alreadyContains(moduleType) {
@@ -73,57 +82,50 @@ export class Kitchen {
         this.moduleLibrary = library;
         this.scene = scene;
 
-        this.wallAslots = Array.from(new Array(10), () => new WallSlot());
         this.walls = [];
     }
 
-    addModule(moduleType) {
-        const availableSlotIndex = this.wallAslots.findIndex(s => !s.alreadyContains(moduleType));
-        if (availableSlotIndex === -1) {
-            console.log("no more available slots :(")
-        } else {
-            this.addModule(moduleType, availableSlotIndex);
-        }
-    }
-    addModule(moduleType, index) {
+    addModuleToWallASlot(moduleType, slotIndex) {
         this.moduleLibrary
             .createModule(moduleType)
-            .then(m => this.wallAslots[index].put(m, index, this.scene));
+            .then(m => this.walls[0].wallSlots[slotIndex].put(m, slotIndex, this.scene));
     }
     addWall(wall) {
         this.walls.push(wall);
-        this.scene.add(wall);
+        this.scene.add(wall.mesh);
     }
 
-    findWall(name) {
-        return this.walls.find(w => w.name === ("Wall" + name))
+    findWallByName(name) {
+        return this.walls.find(w => w.name() === ("Wall" + name))
     }
 
-    removeModule(moduleType) {
-        const occupiedSlotIndex = this.wallAslots.findIndex(s => s.alreadyContains(moduleType));
-        if (occupiedSlotIndex === -1) {
-            console.log("no occupied slots")
-        } else {
-            this.wallAslots[occupiedSlotIndex].remove(moduleType, this.scene);
-        }
-    }
+    // removeModule(moduleType) {
+    //     const occupiedSlotIndex = this.walls[0].wallSlots.findIndex(s => s.alreadyContains(moduleType));
+    //     if (occupiedSlotIndex === -1) {
+    //         console.log("no occupied slots")
+    //     } else {
+    //         this.walls[0].wallSlots[occupiedSlotIndex].remove(moduleType, this.scene);
+    //     }
+    // }
 
     fillWallWithModules(wall) {
-        if (wall.name !== "WallA") {
+        if (wall.mesh.name !== "WallA") {
             console.warn("sorry, only Wall A supported for now:)");
             return;
         }
         this.slotWidthF().then(slotWidth => {
-            const items = meshWidthX(wall) / slotWidth;
+            const items = meshWidthX(wall.mesh) / slotWidth;
             for (let i = 0; i < items; i++) {
-                ModuleTypesAll.forEach(type => this.addModule(type, i))
+                ModuleTypesAll.forEach(type => this.addModuleToWallASlot(type, i))
             }
         })
     }
 
     removeAll() {
-        this.wallAslots.forEach(slot => slot.removeAll(this.scene));
-        this.walls.forEach(wall => this.scene.remove(wall));
+        this.walls.forEach(wall => {
+            wall.wallSlots.forEach(slot => slot.removeAll(this.scene));
+            this.scene.remove(wall.mesh);
+        });
         this.walls = [];
     }
 

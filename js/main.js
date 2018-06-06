@@ -90,7 +90,7 @@ animate();
 function init() {
 
     function loadKitchen() {
-        kitchen.removeAll(scene);
+        kitchen.removeAll();
         initWalls();
         initModules();
     }
@@ -124,38 +124,38 @@ function initWalls() {
         document.getElementById("kitchen-height").value
     ];
 
-    const wallA = Wall.createWall("A", width, height);
+    const wallA = new Wall("A", width, height);
 
-    const wallB = Wall.createWall("B", depth, height);
-    wallB.position.x = width/2;
-    wallB.position.z = depth/2;
-    wallB.rotateY( - Math.PI / 2);
+    const wallB = new Wall("B", depth, height);
+    wallB.mesh.position.x = width/2;
+    wallB.mesh.position.z = depth/2;
+    wallB.mesh.rotateY( - Math.PI / 2);
 
-    const wallC = Wall.createWall("C", width, height);
-    wallC.position.z = depth;
+    const wallC = new Wall("C", width, height);
+    wallC.mesh.position.z = depth;
 
-    const wallD = Wall.createWall("D", depth, height);
-    wallD.position.x = -width/2;
-    wallD.position.z = depth/2;
-    wallD.rotateY(Math.PI / 2);
+    const wallD = new Wall("D", depth, height);
+    wallD.mesh.position.x = -width/2;
+    wallD.mesh.position.z = depth/2;
+    wallD.mesh.rotateY(Math.PI / 2);
     [
         wallA,
         wallB,
         wallC,
         wallD
     ].forEach(wall => {
-        wall.position.setY(height/2);
-        wall.geometry.computeBoundingBox();
-        kitchen.addWall(wall, scene);
+        wall.mesh.position.setY(height/2);
+        wall.mesh.geometry.computeBoundingBox();
+        kitchen.addWall(wall);
     } );
 }
 
 function initModules() {
     const chosenWalls = Array.from(document.getElementsByClassName("gui-checkbox"))
         .filter(c => c.checked)
-        .map(w => kitchen.findWall(w.value));
+        .map(w => kitchen.findWallByName(w.value));
 
-    chosenWalls.forEach(wall => kitchen.fillWallWithModules(wall, scene))
+    chosenWalls.forEach(wall => kitchen.fillWallWithModules(wall))
 }
 
 function animate() {
