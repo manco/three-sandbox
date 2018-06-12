@@ -70,6 +70,7 @@ class WallSlot {
         this.modulesByTypes.set(module.type, module);
         module.mesh.position.x = index * module.width - this.wall.mesh.geometry.boundingBox.max.x;
         this.wall.translateMesh(module.mesh);
+        module.initRotation();
         this.wall.rotateMesh(module.mesh);
         scene.add(module.mesh);
     }

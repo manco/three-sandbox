@@ -2,13 +2,17 @@ import {PromisingLoader} from "./loader.js";
 import {makeEnum, meshWidthX} from "./utils.js";
 
 export class Module {
-    constructor(mesh, type, width) {
+    constructor(mesh, type, width, rotateFun) {
         this.mesh = mesh;
         this.type = type;
         this.width = width;
+        this.rotateFun = rotateFun;
+    }
+    initRotation() {
+        this.rotateFun(this.mesh);
     }
     clone() {
-        return new Module(this.mesh.clone(), this.type, this.width);
+        return new Module(this.mesh.clone(), this.type, this.width, this.rotateFun);
     }
 }
 
@@ -26,7 +30,12 @@ export class ModulesLibrary {
                         this.loader.loadSingleMesh(d.url)
                             .then(m => {
                                 this.initMesh(m);
-                                return new Module(m, d.type, this.scale * meshWidthX(m))
+                                return new Module(
+                                    m,
+                                    d.type,
+                                    this.scale * meshWidthX(m),
+                                    mm => mm.rotateX(-Math.PI / 2)
+                                );
                             })
                 )
             );
@@ -46,8 +55,6 @@ export class ModulesLibrary {
     }
 
     initMesh(m) {
-        m.rotateX(-Math.PI / 2);
-        m.position.set(0, 0, 0);
         m.castShadow = true;
         m.receiveShadow = true;
         m.scale.multiplyScalar(this.scale);

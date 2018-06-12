@@ -3,6 +3,7 @@ import {Wall, Floor, Kitchen} from './kitchen.js'
 /*
     TODO
 
+    0. robic rotate na Module z korekta? lub spytac Rafala jak sa obiekty wzgledem osi
     1. move codebase to typescript
     * 2. split codebase into multiple files
     3. think of IoC regarding building scene
