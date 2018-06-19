@@ -119,6 +119,9 @@ function init() {
 
 function initWalls() {
 
+    const axisY = new THREE.Vector3(0, 1, 0);
+    const x0 = 0;
+
     const [ width, depth, height ] = [
         document.getElementById("kitchen-width").value,
         document.getElementById("kitchen-depth").value,
@@ -132,7 +135,7 @@ function initWalls() {
             m.translateX(width/2);
             m.translateZ(depth/2);
         },
-        m => m.rotateY( - Math.PI / 2)
+        m => m.rotateOnWorldAxis(axisY, - Math.PI / 2)
     );
 
     const wallC = new Wall("C", width, height,
@@ -145,7 +148,7 @@ function initWalls() {
             m.translateX(-width/2);
             m.translateZ(depth/2);
         },
-        m => m.rotateY(Math.PI / 2)
+        m => m.rotateOnWorldAxis(axisY, Math.PI / 2)
     );
     [
         wallA,

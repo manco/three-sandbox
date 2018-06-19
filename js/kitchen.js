@@ -68,10 +68,13 @@ class WallSlot {
             throw "module already set in this slot"
         }
         this.modulesByTypes.set(module.type, module);
-        module.mesh.position.x = module.width/2 + index * module.width - this.wall.mesh.geometry.boundingBox.max.x;
+
         this.wall.translateMesh(module.mesh);
         module.initRotation();
         this.wall.rotateMesh(module.mesh);
+        module.mesh.translateX(module.width/2 - this.wall.mesh.geometry.boundingBox.max.x);
+        module.mesh.translateX(index * module.width);
+        module.mesh.translateY(- module.depth/2 - this.wall.mesh.geometry.boundingBox.max.z);
         scene.add(module.mesh);
     }
     remove(moduleType, scene) {
@@ -111,7 +114,7 @@ export class Kitchen {
 
     fillWallWithModules(wall) {
         this.slotWidthF().then(slotWidth => {
-            const wallWidth = meshWidthX(wall.mesh); //FIXME to nie ma sensu dla scian B, D
+            const wallWidth = meshWidthX(wall.mesh);
             const items = Math.floor(wallWidth / slotWidth);
             ModuleTypesAll.forEach(type => this.addModuleToWallSlots(wall, items, type))
         })

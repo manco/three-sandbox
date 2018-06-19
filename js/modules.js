@@ -1,18 +1,19 @@
 import {PromisingLoader} from "./loader.js";
-import {makeEnum, meshWidthX} from "./utils.js";
+import {makeEnum, meshWidthX, meshDepthY} from "./utils.js";
 
 export class Module {
-    constructor(mesh, type, width, rotateFun) {
+    constructor(mesh, type, width, depth, rotateFun) {
         this.mesh = mesh;
         this.type = type;
         this.width = width;
+        this.depth = depth;
         this.rotateFun = rotateFun;
     }
     initRotation() {
         this.rotateFun(this.mesh);
     }
     clone() {
-        return new Module(this.mesh.clone(), this.type, this.width, this.rotateFun);
+        return new Module(this.mesh.clone(), this.type, this.width, this.depth, this.rotateFun);
     }
 }
 
@@ -34,6 +35,7 @@ export class ModulesLibrary {
                                     m,
                                     d.type,
                                     this.scale * meshWidthX(m),
+                                    this.scale * meshDepthY(m),
                                     mm => mm.rotateX(-Math.PI / 2)
                                 );
                             })

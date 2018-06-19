@@ -3,6 +3,11 @@ export function meshWidthX(m) {
     return bbox.max.x - bbox.min.x;
 }
 
+export function meshDepthY(m) {
+    const bbox = m.geometry.boundingBox;
+    return bbox.max.y - bbox.min.y;
+}
+
 export function makeEnum(arr){
     let obj = {};
     for (let val of arr){
