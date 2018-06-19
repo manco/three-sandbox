@@ -3,7 +3,7 @@ import {ModuleTypes, ModuleTypesAll} from './modules.js'
 
 export class Floor {
     constructor() {
-        const width = 1200;
+        const width = 1800;
         this.mesh = Floor.createFloor(width);
     }
     static createFloor(width) {
@@ -34,7 +34,7 @@ export class Wall {
         this.translateMesh(this.mesh);
         this.rotateMesh(this.mesh);
         this.mesh.geometry.computeBoundingBox();
-        this.wallSlots = Array.from(new Array(10), () => new WallSlot(this));
+        this.wallSlots = Array.from(new Array(50), () => new WallSlot(this));
     }
 
     name() { return this.mesh.name; }

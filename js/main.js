@@ -84,6 +84,7 @@ function createScene() {
 
 const modulesLibrary = new ModulesLibrary();
 const kitchen = new Kitchen(modulesLibrary, scene);
+window.kitchen = kitchen;
 
 init();
 animate();
@@ -123,10 +124,11 @@ function initWalls() {
     const x0 = 0;
 
     const [ width, depth, height ] = [
-        document.getElementById("kitchen-width").value,
+        x0 + document.getElementById("kitchen-width").value,
         document.getElementById("kitchen-depth").value,
         document.getElementById("kitchen-height").value
     ];
+
 
     const wallA = new Wall("A", width, height);
 
