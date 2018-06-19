@@ -68,7 +68,7 @@ class WallSlot {
             throw "module already set in this slot"
         }
         this.modulesByTypes.set(module.type, module);
-        module.mesh.position.x = index * module.width - this.wall.mesh.geometry.boundingBox.max.x;
+        module.mesh.position.x = module.width/2 + index * module.width - this.wall.mesh.geometry.boundingBox.max.x;
         this.wall.translateMesh(module.mesh);
         module.initRotation();
         this.wall.rotateMesh(module.mesh);
