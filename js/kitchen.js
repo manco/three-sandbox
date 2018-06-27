@@ -8,7 +8,7 @@ export class Floor {
     }
     static createFloor(width) {
         const material = new THREE.MeshPhongMaterial( {
-            color: 0x6e6b72,
+            color: 0xbdbdbd,
             shininess: 50,
             specular: 0x111111
         } );

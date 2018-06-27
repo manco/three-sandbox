@@ -3,7 +3,6 @@ import {Wall, Floor, Kitchen} from './kitchen.js'
 /*
     TODO
 
-    0. robic rotate na Module z korekta? lub spytac Rafala jak sa obiekty wzgledem osi
     1. move codebase to typescript
     * 2. split codebase into multiple files
     3. think of IoC regarding building scene
@@ -18,11 +17,11 @@ import {Wall, Floor, Kitchen} from './kitchen.js'
 
     O try to display outlines of obj's
     * panel klienta (podawanie wymiarów)
-    O wypełnienie całej ściany na podstawie wymiarów
+    * wypełnienie całej ściany na podstawie wymiarów
+    O Lista szafek z boku
     O podawanie koloru korpusów (brył)
     O ROZPOZNANIE: nakładanie tekstur, jak to się robi i czy łatwiej mieć osobną bryłę?
     O ROZPOZNANIE: raytracing z kursora do szafki (zaznaczanie aktywnej szafki)
-    O Lista szafek z boku
     O Przycisk 'zamów' i wysłanie emaila <--- jak to zabezpieczyć?
     *
  */
@@ -79,6 +78,7 @@ const scene = createScene();
 function createScene() {
     const s = new THREE.Scene();
     s.add( new THREE.AmbientLight(0xcccccc, 0.4) );
+    s.background = new THREE.Color(0xa9a9a9);
     return s;
 }
 
