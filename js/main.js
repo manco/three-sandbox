@@ -92,9 +92,32 @@ animate();
 function init() {
 
     function loadKitchen() {
+
+        const [ width, depth, height ] = [
+            document.getElementById("kitchen-width").value,
+            document.getElementById("kitchen-depth").value,
+            document.getElementById("kitchen-height").value
+        ];
+
+        const chosenWallNames = Array.from(document.getElementsByClassName("gui-checkbox"))
+            .filter(c => c.checked)
+            .map(w => w.value);
+
         kitchen.removeAll();
-        initWalls();
-        initModules();
+
+        const floor = new Floor(width, depth,
+            m => m.translateZ(depth /2),
+            m => m.rotateX(- Math.PI / 2 )
+        );
+        kitchen.setFloor(floor);
+
+        const factories = wallsFactories(width, depth, height);
+
+        chosenWallNames.forEach(wallName => {
+            const wall = factories.get(wallName)();
+            kitchen.addWall(wall);
+            kitchen.fillWallWithModules(wall);
+        })
     }
     document.getElementById("drawKitchenButton").addEventListener('click', loadKitchen);
 
@@ -117,21 +140,13 @@ function init() {
 	window.addEventListener( 'resize', onWindowResize, false );
 }
 
-function initWalls() {
+function wallsFactories(width, depth, height) {
 
     const axisY = new THREE.Vector3(0, 1, 0);
-    const x0 = 0;
 
-    const [ width, depth, height ] = [
-        x0 + document.getElementById("kitchen-width").value,
-        document.getElementById("kitchen-depth").value,
-        document.getElementById("kitchen-height").value
-    ];
+    const wallA = () => new Wall("A", width, height);
 
-
-    const wallA = new Wall("A", width, height);
-
-    const wallB = new Wall("B", depth, height,
+    const wallB = () => new Wall("B", depth, height,
         m => {
             m.translateX(width/2);
             m.translateZ(depth/2);
@@ -139,38 +154,20 @@ function initWalls() {
         m => m.rotateOnWorldAxis(axisY, - Math.PI / 2)
     );
 
-    const wallC = new Wall("C", width, height,
+    const wallC = () => new Wall("C", width, height,
         m => m.translateZ(depth),
         m => m.rotateZ(Math.PI)
     );
 
-    const wallD = new Wall("D", depth, height,
+    const wallD = () => new Wall("D", depth, height,
         m => {
             m.translateX(-width/2);
             m.translateZ(depth/2);
         },
         m => m.rotateOnWorldAxis(axisY, Math.PI / 2)
     );
-    [
-        wallA,
-        wallB,
-        wallC,
-        wallD
-    ].forEach(wall => kitchen.addWall(wall) );
 
-    const floor = new Floor(width, depth,
-        m => m.translateZ(depth /2),
-        m => m.rotateX(- Math.PI / 2 )
-        );
-    kitchen.setFloor(floor);
-}
-
-function initModules() {
-    const chosenWalls = Array.from(document.getElementsByClassName("gui-checkbox"))
-        .filter(c => c.checked)
-        .map(w => kitchen.findWallByName(w.value));
-
-    chosenWalls.forEach(wall => kitchen.fillWallWithModules(wall))
+    return new Map([["A", wallA], ["B", wallB], ["C", wallC], ["D", wallD]]);
 }
 
 function animate() {
