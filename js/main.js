@@ -78,7 +78,7 @@ const scene = createScene();
 function createScene() {
     const s = new THREE.Scene();
     s.add( new THREE.AmbientLight(0xcccccc, 0.4) );
-    s.background = new THREE.Color(0xa9a9a9);
+    s.background = new THREE.Color(0xa0adaf);
     return s;
 }
 
@@ -107,7 +107,6 @@ function init() {
     window.scene = scene; //for three.js inspector
     scene.add(camera);
     scene.add(light);
-    new Floor().addTo(scene);
 
     document.getElementById("WebGL-output").appendChild( renderer.domElement );
 
@@ -158,6 +157,12 @@ function initWalls() {
         wallC,
         wallD
     ].forEach(wall => kitchen.addWall(wall) );
+
+    const floor = new Floor(width, depth,
+        m => m.translateZ(depth /2),
+        m => m.rotateX(- Math.PI / 2 )
+        );
+    kitchen.setFloor(floor);
 }
 
 function initModules() {

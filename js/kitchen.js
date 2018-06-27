@@ -2,19 +2,18 @@ import {meshWidthX} from "./utils.js";
 import {ModuleTypes, ModuleTypesAll} from './modules.js'
 
 export class Floor {
-    constructor() {
-        const width = 1800;
-        this.mesh = Floor.createFloor(width);
+    constructor(width, depth,  translate = _ => {}, rotate = _ => {}) {
+        this.mesh = Floor.createFloor(width, depth);
+        translate(this.mesh);
+        rotate(this.mesh);
     }
-    static createFloor(width) {
+    static createFloor(width, depth) {
         const material = new THREE.MeshPhongMaterial( {
             color: 0xbdbdbd,
-            shininess: 50,
-            specular: 0x111111
+            side: THREE.DoubleSide
         } );
         const g = new THREE.Mesh(
-            new THREE.PlaneBufferGeometry( width, width ), material );
-        g.rotateX( - Math.PI / 2 );
+            new THREE.PlaneBufferGeometry( width, depth ), material );
         g.name = "Floor";
         g.receiveShadow = true;
         return g;
@@ -41,11 +40,7 @@ export class Wall {
 
     static createMesh(name, width, height) {
         const material = new THREE.MeshPhongMaterial( {
-            color: 0xa0adaf,
-            shininess: 50,
-            opacity: 0.3,
-            transparent: true,
-            specular: 0x111111,
+            color: 0xbdbdbd,
             side: THREE.DoubleSide
         } );
         const mesh = new THREE.Mesh(new THREE.PlaneBufferGeometry(width, height), material );
@@ -92,6 +87,7 @@ export class Kitchen {
         this.scene = scene;
 
         this.walls = [];
+        this.floor = null;
     }
 
     addModuleToWallSlots(wall, count, moduleType) {
@@ -106,6 +102,10 @@ export class Kitchen {
     addWall(wall) {
         this.walls.push(wall);
         this.scene.add(wall.mesh);
+    }
+    setFloor(floor) {
+        this.floor = floor;
+        this.floor.addTo(scene);
     }
 
     findWallByName(name) {
@@ -126,6 +126,10 @@ export class Kitchen {
             this.scene.remove(wall.mesh);
         });
         this.walls = [];
+        if (this.floor != null) {
+            this.scene.remove(this.floor.mesh);
+            this.floor = null;
+        }
     }
 
     slotWidthF() {
