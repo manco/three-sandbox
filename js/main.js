@@ -55,11 +55,12 @@ function setFrustum(cam) {
 const camera = createCamera();
 function createCamera() {
     const c = new THREE.OrthographicCamera();
-    c.position.z = 250;
-    c.position.x = 90;
-    c.position.y = 150;
+    centerCamera(c);
     setFrustum(c);
     return c;
+}
+function centerCamera(cam) {
+    cam.position.set(90, 150, 250);
 }
 const renderer = createRenderer();
 function createRenderer() {
@@ -120,6 +121,7 @@ function init() {
         })
     }
     document.getElementById("drawKitchenButton").addEventListener('click', loadKitchen);
+    document.addEventListener('dblclick', () => centerCamera(camera));
 
     modulesLibrary.loadPrototypes([
         { url: 'models/szafka_dol.obj', type: ModuleTypes.STANDING },
