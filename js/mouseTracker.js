@@ -1,6 +1,7 @@
 export class MouseTracker {
-    constructor() {
+    constructor(canvas) {
         this.xy = new THREE.Vector2(0, 0);
+        this.canvas = canvas;
     }
 
     registerMouseMoveListener() {
@@ -13,6 +14,6 @@ export class MouseTracker {
             that.xy.x = relX / canvas.clientWidth *  2 - 1;
             that.xy.y = relY / canvas.clientHeight * -2 + 1;
         }
-        window.addEventListener('mousemove', onMouseMove, false);
+        this.canvas.addEventListener('mousemove', onMouseMove, false);
     }
 }
