@@ -80,9 +80,9 @@ const modulesLibrary = new ModulesLibrary();
 const kitchen = new Kitchen(modulesLibrary, scene);
 window.kitchen = kitchen;
 
-const canvas = document.getElementById("canvas");
+const canvasContainer = document.getElementById("canvasContainer");
 
-const mouseTracker = new MouseTracker(canvas);
+const mouseTracker = new MouseTracker(canvasContainer);
 
 const moduleSelector = new ModuleSelector(camera, mouseTracker);
 
@@ -132,7 +132,7 @@ function init() {
     scene.add(camera);
     scene.add(light);
 
-    canvas.appendChild( renderer.domElement );
+    canvasContainer.appendChild( renderer.domElement );
 
     function onWindowResize() {
         setFrustum(camera);
@@ -141,7 +141,7 @@ function init() {
 	window.addEventListener( 'resize', onWindowResize, false );
 
     mouseTracker.registerMouseMoveListener();
-    canvas.addEventListener('click', () => moduleSelector.selectMesh(), false);
+    canvasContainer.addEventListener('click', () => moduleSelector.selectMesh(), false);
 }
 
 function wallsFactories(width, depth, height) {

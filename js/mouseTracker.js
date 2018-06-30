@@ -7,12 +7,12 @@ export class MouseTracker {
     registerMouseMoveListener() {
         const that = this;
         function onMouseMove(event) {
-            const rect = canvas.getBoundingClientRect();
+            const rect = that.canvas.getBoundingClientRect();
             const relX = event.clientX - rect.left;
             const relY = event.clientY - rect.top;
 
-            that.xy.x = relX / canvas.clientWidth *  2 - 1;
-            that.xy.y = relY / canvas.clientHeight * -2 + 1;
+            that.xy.x = relX / that.canvas.clientWidth *  2 - 1;
+            that.xy.y = relY / that.canvas.clientHeight * -2 + 1;
         }
         this.canvas.addEventListener('mousemove', onMouseMove, false);
     }
