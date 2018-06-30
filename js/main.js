@@ -1,15 +1,13 @@
 import {ModulesLibrary, ModuleTypes} from './modules.js'
 import {Wall, Floor, Kitchen} from './kitchen.js'
 import {ModuleSelector} from "./selector.js";
+import {MouseTracker} from "./mouseTracker.js";
 /*
     TODO
 
     1. move codebase to typescript
     3. think of IoC regarding building scene
-
-    6. Floor / MeshGrid / Wall better class design
     8. unit tests. It's time for unit tests
-
     9. load models from somewhere else
 
     (...)
@@ -17,8 +15,6 @@ import {ModuleSelector} from "./selector.js";
     O Lista szafek z boku
     O podawanie koloru korpusów (brył)
     O ROZPOZNANIE: nakładanie tekstur, jak to się robi i czy łatwiej mieć osobną bryłę?
-    O raytracing - tylko jedna szafka zaznaczona na raz
-    O raytracing - sledzenie myszki
     O Przycisk 'zamów' i wysłanie emaila <--- jak to zabezpieczyć?
     *
  */
@@ -84,10 +80,12 @@ const modulesLibrary = new ModulesLibrary();
 const kitchen = new Kitchen(modulesLibrary, scene);
 window.kitchen = kitchen;
 
-const moduleSelector = new ModuleSelector(camera);
-window.moduleSelector = moduleSelector;
-
 const canvas = document.getElementById("canvas");
+
+const mouseTracker = new MouseTracker(canvas);
+
+const moduleSelector = new ModuleSelector(camera, mouseTracker);
+
 init();
 animate();
 
@@ -142,18 +140,8 @@ function init() {
     }
 	window.addEventListener( 'resize', onWindowResize, false );
 
-    window.addEventListener('mousemove', onMouseMove, false);
+    mouseTracker.registerMouseMoveListener();
     document.addEventListener('click', () => moduleSelector.selectMesh(), false);
-}
-
-function onMouseMove(event) {
-    const rect = canvas.getBoundingClientRect();
-    const relX = event.clientX - rect.left;
-    const relY = event.clientY - rect.top;
-
-    const x = relX / canvas.clientWidth *  2 - 1;
-    const y = relY / canvas.clientHeight * -2 + 1;
-    moduleSelector.updateMouse(x, y);
 }
 
 function wallsFactories(width, depth, height) {
