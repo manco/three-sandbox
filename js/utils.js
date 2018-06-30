@@ -15,3 +15,7 @@ export function makeEnum(arr){
     }
     return Object.freeze(obj);
 }
+
+export function flatten(arr) {
+    return [].concat(...arr)
+}

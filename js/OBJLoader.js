@@ -713,7 +713,7 @@ THREE.OBJLoader = ( function () {
 
 						} else {
 
-							material = new THREE.MeshPhongMaterial();
+							material = new THREE.MeshLambertMaterial();
 
 						}
 

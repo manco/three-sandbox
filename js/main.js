@@ -87,6 +87,8 @@ const modulesLibrary = new ModulesLibrary();
 const kitchen = new Kitchen(modulesLibrary, scene);
 window.kitchen = kitchen;
 
+const raycaster = new THREE.Raycaster();
+
 init();
 animate();
 
@@ -140,6 +142,8 @@ function init() {
         renderer.setSize( window.innerWidth, window.innerHeight );
     }
 	window.addEventListener( 'resize', onWindowResize, false );
+
+    document.addEventListener('click', selectMesh, false);
 }
 
 function wallsFactories(width, depth, height) {
@@ -172,8 +176,14 @@ function wallsFactories(width, depth, height) {
     return new Map([["A", wallA], ["B", wallB], ["C", wallC], ["D", wallD]]);
 }
 
+function selectMesh() {
+    const mesh = raycaster.intersectObjects(kitchen.allModules().map(m => m.mesh))[0].object;
+    mesh.material.emissive.setHex(0x00ff00);
+}
+
 function animate() {
 	requestAnimationFrame( animate );
     camera.lookAt(scene.position);
+    raycaster.setFromCamera( new THREE.Vector2(0, 0), camera );
     renderer.render(scene, camera);
 }

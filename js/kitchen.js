@@ -1,4 +1,4 @@
-import {meshWidthX} from "./utils.js";
+import {meshWidthX, flatten} from "./utils.js";
 import {ModuleTypes, ModuleTypesAll} from './modules.js'
 
 export class Floor {
@@ -8,7 +8,7 @@ export class Floor {
         rotate(this.mesh);
     }
     static createFloor(width, depth) {
-        const material = new THREE.MeshPhongMaterial( {
+        const material = new THREE.MeshLambertMaterial( {
             color: 0xbdbdbd,
             side: THREE.DoubleSide
         } );
@@ -39,7 +39,7 @@ export class Wall {
     name() { return this.mesh.name; }
 
     static createMesh(name, width, height) {
-        const material = new THREE.MeshPhongMaterial( {
+        const material = new THREE.MeshLambertMaterial( {
             color: 0xbdbdbd,
             side: THREE.DoubleSide
         } );
@@ -72,6 +72,10 @@ class WallSlot {
         module.mesh.translateY(- module.depth/2 - this.wall.mesh.geometry.boundingBox.max.z);
         scene.add(module.mesh);
     }
+    allModules() {
+        return Array.from(this.modulesByTypes.values());
+    }
+
     remove(moduleType, scene) {
         const module = this.modulesByTypes.get(moduleType);
         scene.remove(module.mesh);
@@ -108,16 +112,16 @@ export class Kitchen {
         this.floor.addTo(scene);
     }
 
-    findWallByName(name) {
-        return this.walls.find(w => w.name() === ("Wall" + name))
-    }
-
     fillWallWithModules(wall) {
         this.slotWidthF().then(slotWidth => {
             const wallWidth = meshWidthX(wall.mesh);
             const items = Math.floor(wallWidth / slotWidth);
             ModuleTypesAll.forEach(type => this.addModuleToWallSlots(wall, items, type))
         })
+    }
+
+    allModules() {
+        return flatten(flatten(this.walls.map(w => w.wallSlots)).map(s => s.allModules()));
     }
 
     removeAll() {

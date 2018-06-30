@@ -13,7 +13,9 @@ export class Module {
         this.rotateFun(this.mesh);
     }
     clone() {
-        return new Module(this.mesh.clone(), this.type, this.width, this.depth, this.rotateFun);
+        const cloned = new Module(this.mesh.clone(), this.type, this.width, this.depth, this.rotateFun);
+        cloned.mesh.material = new THREE.MeshLambertMaterial();
+        return cloned;
     }
 }
 
