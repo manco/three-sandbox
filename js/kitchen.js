@@ -1,4 +1,4 @@
-import {meshWidthX, flatten} from "./utils.js";
+import {meshWidthX, flatten} from "./utils/utils.js";
 import {ModuleTypes, ModuleTypesAll} from './modules.js'
 
 export class Floor {

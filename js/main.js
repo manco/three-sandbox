@@ -1,7 +1,7 @@
 import {ModulesLibrary, ModuleTypes} from './modules.js'
 import {Wall, Floor, Kitchen} from './kitchen.js'
 import {ModuleSelector} from "./selector.js";
-import {MouseTracker} from "./mouseTracker.js";
+import {MouseTracker} from "./utils/mouseTracker.js";
 /*
     TODO
 

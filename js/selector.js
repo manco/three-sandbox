@@ -6,7 +6,7 @@ export class ModuleSelector {
         this.selected = null;
         this.previousSelectedEmissiveColor = null;
     }
-    selectMesh() {
+    selectMesh() { //TODO split to meshSelector and moduleSelector, move meshSelector to utils
         if (this.selected != null) {
             this.selected.material.emissive.setHex(this.previousSelectedEmissiveColor);
         }

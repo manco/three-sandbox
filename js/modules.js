@@ -1,5 +1,5 @@
-import {PromisingLoader} from "./loader.js";
-import {makeEnum, meshWidthX, meshDepthY} from "./utils.js";
+import {PromisingLoader} from "./utils/loader.js";
+import {makeEnum, meshWidthX, meshDepthY} from "./utils/utils.js";
 
 export class Module {
     constructor(mesh, type, width, depth, rotateFun) {
