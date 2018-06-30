@@ -55,11 +55,8 @@ class WallSlot {
         this.wall = wall;
         this.modulesByTypes = new Map()
     }
-    alreadyContains(moduleType) {
-        return this.modulesByTypes.has(moduleType);
-    }
     put(module, index, scene) {
-        if (this.alreadyContains(module.type)) {
+        if (this.modulesByTypes.has(module.type)) {
             throw "module already set in this slot"
         }
         this.modulesByTypes.set(module.type, module);
@@ -71,6 +68,7 @@ class WallSlot {
         module.mesh.translateX(index * module.width);
         module.mesh.translateY(- module.depth/2 - this.wall.mesh.geometry.boundingBox.max.z);
         scene.add(module.mesh);
+        modulesListAdd(module);
     }
     allModules() {
         return Array.from(this.modulesByTypes.values());
@@ -140,4 +138,8 @@ export class Kitchen {
         return this.moduleLibrary.ofType(ModuleTypes.STANDING).then(m => m.width);
     }
 
+}
+
+function modulesListAdd(module) {
+    document.getElementById("modulesList").innerHTML += `<li>${module.type.toString()}${module.mesh.name}</li>`;
 }

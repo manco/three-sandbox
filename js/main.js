@@ -10,7 +10,9 @@ import {MouseTracker} from "./utils/mouseTracker.js";
     8. unit tests. It's time for unit tests
     9. load models from somewhere else
 
-    (...)
+    optymalizacja:
+       + nie wyliczac bounding box dla kazdego modelu, bazowac na wymiarach kuchni
+       + ^ moze dzieki temu wystarczy jedna geometria
 
     O Lista szafek z boku
     O podawanie koloru korpusów (brył)
