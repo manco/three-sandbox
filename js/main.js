@@ -141,7 +141,7 @@ function init() {
 	window.addEventListener( 'resize', onWindowResize, false );
 
     mouseTracker.registerMouseMoveListener();
-    document.addEventListener('click', () => moduleSelector.selectMesh(), false);
+    canvas.addEventListener('click', () => moduleSelector.selectMesh(), false);
 }
 
 function wallsFactories(width, depth, height) {
