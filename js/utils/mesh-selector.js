@@ -1,8 +1,10 @@
 export class MeshSelector {
     constructor(camera, mouseTracker) {
-        this.camera = camera;
-        this.raycaster = new THREE.Raycaster();
-        this.mouseTracker = mouseTracker;
+        const raycaster = new THREE.Raycaster();
+        this._castRay = meshes => {
+            raycaster.setFromCamera(mouseTracker.xy, camera);
+            return raycaster.intersectObjects(meshes).map(i => i.object);
+        };
         this.selected = null;
         this.previousSelectedEmissiveColor = null;
     }
@@ -11,8 +13,7 @@ export class MeshSelector {
             this.selected.material.emissive.setHex(this.previousSelectedEmissiveColor);
             this.selected = null;
         }
-        this.raycaster.setFromCamera(this.mouseTracker.xy, this.camera);
-        const intersectingMeshes = this.raycaster.intersectObjects(meshes).map(i => i.object);
+        const intersectingMeshes = this._castRay(meshes);
         if (intersectingMeshes.length > 0) {
             const mesh = intersectingMeshes[0];
             this.previousSelectedEmissiveColor = mesh.material.emissive.getHex();

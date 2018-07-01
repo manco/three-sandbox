@@ -2,6 +2,8 @@ import {ModulesLibrary, ModuleTypes} from './modules.js'
 import {Wall, Floor, Kitchen} from './kitchen.js'
 import {ModuleSelector} from "./module-selector.js";
 import {MouseTracker} from "./utils/mouseTracker.js";
+import {Renderer} from "./renderer.js";
+import {Camera} from "./camera.js";
 /*
     TODO
 
@@ -37,38 +39,6 @@ function createLight() {
     light.shadow.mapSize.height = 1024;
     return light;
 }
-const frustumSize = 500;
-function setFrustum(cam) {
-    const aspect = window.innerWidth / window.innerHeight;
-    cam.left = -frustumSize * aspect / 2;
-    cam.right = frustumSize * aspect / 2;
-    cam.top = frustumSize / 2;
-    cam.bottom = -frustumSize / 2;
-    cam.near = -1000;
-    cam.updateProjectionMatrix();
-}
-const camera = createCamera();
-function createCamera() {
-    const c = new THREE.OrthographicCamera();
-    centerCamera(c);
-    setFrustum(c);
-    return c;
-}
-function centerCamera(cam) {
-    cam.position.set(90, 150, 250);
-}
-const renderer = createRenderer();
-function createRenderer() {
-    const r = new THREE.WebGLRenderer({ antialias: true });
-    r.setPixelRatio( window.devicePixelRatio );
-    r.setSize( window.innerWidth, window.innerHeight );
-    r.shadowMap.enabled = true;
-    r.shadowMap.type = THREE.BasicShadowMap;
-    return r;
-}
-const controls = new THREE.OrbitControls( camera, renderer.domElement );
-controls.target.set( 0, 2, 0 );
-controls.update();
 
 const scene = createScene();
 function createScene() {
@@ -78,13 +48,19 @@ function createScene() {
     return s;
 }
 
+const camera = new Camera(scene);
+
+const renderer = new Renderer(scene, camera);
+
+const controls = new THREE.OrbitControls( camera.threeJsCamera, renderer.canvas() );
+controls.target.set( 0, 2, 0 );
+controls.update();
+
 const modulesLibrary = new ModulesLibrary();
 const kitchen = new Kitchen(modulesLibrary, scene);
 window.kitchen = kitchen;
 
-const canvasContainer = document.getElementById("canvasContainer");
-
-const mouseTracker = new MouseTracker(canvasContainer);
+const mouseTracker = new MouseTracker(renderer.canvas());
 
 const moduleSelector = new ModuleSelector(camera, kitchen, mouseTracker);
 
@@ -122,7 +98,7 @@ function init() {
         })
     }
     document.getElementById("drawKitchenButton").addEventListener('click', loadKitchen);
-    document.addEventListener('dblclick', () => centerCamera(camera));
+    renderer.canvas().addEventListener('dblclick', () => camera.centerCamera());
 
     modulesLibrary.loadPrototypes([
         { url: 'models/szafka_dol.obj', type: ModuleTypes.STANDING },
@@ -131,19 +107,12 @@ function init() {
     ]);
 
     window.scene = scene; //for three.js inspector
-    scene.add(camera);
     scene.add(light);
 
-    canvasContainer.appendChild( renderer.domElement );
-
-    function onWindowResize() {
-        setFrustum(camera);
-        renderer.setSize( window.innerWidth, window.innerHeight );
-    }
-	window.addEventListener( 'resize', onWindowResize, false );
+    document.getElementById("canvasContainer").appendChild( renderer.canvas() );
 
     mouseTracker.registerMouseMoveListener();
-    canvasContainer.addEventListener('click', () => moduleSelector.selectModule(), false);
+    renderer.canvas().addEventListener('click', () => moduleSelector.selectModule(), false);
 }
 
 function wallsFactories(width, depth, height) {
@@ -178,6 +147,6 @@ function wallsFactories(width, depth, height) {
 
 function animate() {
 	requestAnimationFrame( animate );
-    camera.lookAt(scene.position);
-    renderer.render(scene, camera);
+    camera.lookAtScene();
+    renderer.render();
 }

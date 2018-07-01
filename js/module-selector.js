@@ -2,7 +2,7 @@ import {MeshSelector} from "./utils/mesh-selector.js";
 
 export class ModuleSelector {
     constructor(camera, kitchen, mouseTracker) {
-        this.meshSelector = new MeshSelector(camera, mouseTracker);
+        this.meshSelector = new MeshSelector(camera.threeJsCamera, mouseTracker);
         this.kitchen = kitchen;
         this.selected = null;
     }
