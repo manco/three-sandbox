@@ -1,6 +1,6 @@
 import {ModulesLibrary, ModuleTypes} from './modules.js'
 import {Wall, Floor, Kitchen} from './kitchen.js'
-import {ModuleSelector} from "./selector.js";
+import {ModuleSelector} from "./module-selector.js";
 import {MouseTracker} from "./utils/mouseTracker.js";
 /*
     TODO
@@ -86,7 +86,7 @@ const canvasContainer = document.getElementById("canvasContainer");
 
 const mouseTracker = new MouseTracker(canvasContainer);
 
-const moduleSelector = new ModuleSelector(camera, mouseTracker);
+const moduleSelector = new ModuleSelector(camera, kitchen, mouseTracker);
 
 init();
 animate();
@@ -143,7 +143,7 @@ function init() {
 	window.addEventListener( 'resize', onWindowResize, false );
 
     mouseTracker.registerMouseMoveListener();
-    canvasContainer.addEventListener('click', () => moduleSelector.selectMesh(), false);
+    canvasContainer.addEventListener('click', () => moduleSelector.selectModule(), false);
 }
 
 function wallsFactories(width, depth, height) {
