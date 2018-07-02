@@ -4,24 +4,6 @@ import {ModuleSelector} from "./module-selector.js";
 import {MouseTracker} from "./utils/mouseTracker.js";
 import {Renderer} from "./renderer.js";
 import {Camera} from "./camera.js";
-/*
-    TODO
-
-    1. move codebase to typescript
-    3. think of IoC regarding building scene
-    8. unit tests. It's time for unit tests
-    9. load models from somewhere else
-
-    optymalizacja:
-       + nie wyliczac bounding box dla kazdego modelu, bazowac na wymiarach kuchni
-       + ^ moze dzieki temu wystarczy jedna geometria
-
-    O Lista szafek z boku
-    O podawanie koloru korpusów (brył)
-    O ROZPOZNANIE: nakładanie tekstur, jak to się robi i czy łatwiej mieć osobną bryłę?
-    O Przycisk 'zamów' i wysłanie emaila <--- jak to zabezpieczyć?
-    *
- */
 
 const light = createLight();
 function createLight() {
