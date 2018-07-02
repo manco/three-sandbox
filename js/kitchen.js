@@ -1,5 +1,6 @@
 import {meshWidthX, flatten} from "./utils/utils.js";
 import {ModuleTypes, ModuleTypesAll} from './modules.js'
+import {Observable} from "./utils/observable.js";
 
 export class Floor {
     constructor(width, depth,  translate = _ => {}, rotate = _ => {}) {
@@ -68,8 +69,8 @@ class WallSlot {
         module.mesh.translateX(index * module.width);
         module.mesh.translateY(- module.depth/2 - this.wall.mesh.geometry.boundingBox.max.z);
         scene.add(module.mesh);
-        modulesListAdd(module);
     }
+
     allModules() {
         return Array.from(this.modulesByTypes.values());
     }
@@ -83,8 +84,9 @@ class WallSlot {
         Array.from(this.modulesByTypes.keys()).forEach(t => this.remove(t, scene));
     }
 }
-export class Kitchen {
+export class Kitchen extends Observable {
     constructor(library, scene) {
+        super();
         this.moduleLibrary = library;
         this.scene = scene;
 
@@ -92,15 +94,6 @@ export class Kitchen {
         this.floor = null;
     }
 
-    addModuleToWallSlots(wall, count, moduleType) {
-        for (let i = 0; i < count; i++) {
-            this.moduleLibrary
-                .createModule(moduleType)
-                .then(m => {
-                    wall.wallSlots[i].put(m, i, this.scene);
-                });
-        }
-    }
     addWall(wall) {
         this.walls.push(wall);
         this.scene.add(wall.mesh);
@@ -118,6 +111,17 @@ export class Kitchen {
         })
     }
 
+    addModuleToWallSlots(wall, count, moduleType) {
+        for (let i = 0; i < count; i++) {
+            this.moduleLibrary
+                .createModule(moduleType)
+                .then(m => {
+                    wall.wallSlots[i].put(m, i, this.scene);
+                    this.notify({ type:"ADD", obj: m});
+                });
+        }
+    }
+
     allModules() {
         return flatten(flatten(this.walls.map(w => w.wallSlots)).map(s => s.allModules()));
     }
@@ -128,6 +132,7 @@ export class Kitchen {
             this.scene.remove(wall.mesh);
         });
         this.walls = [];
+        this.notify({type:"REMOVEALL"});
         if (this.floor != null) {
             this.scene.remove(this.floor.mesh);
             this.floor = null;
@@ -138,8 +143,4 @@ export class Kitchen {
         return this.moduleLibrary.ofType(ModuleTypes.STANDING).then(m => m.width);
     }
 
-}
-
-function modulesListAdd(module) {
-    document.getElementById("modulesList").innerHTML += `<li>${module.type.toString()}${module.mesh.name}</li>`;
 }

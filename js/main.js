@@ -95,6 +95,15 @@ function init() {
 
     mouseTracker.registerMouseMoveListener();
     renderer.canvas().addEventListener('click', () => moduleSelector.selectModule(), false);
+
+    kitchen.subscribe(msg => {
+        if (msg.type === "ADD") {
+            document.getElementById("modulesList").innerHTML += `<li>${msg.obj.type.toString()}${msg.obj.mesh.name}</li>`;
+        }
+        if (msg.type === "REMOVEALL") {
+            document.getElementById("modulesList").innerHTML = '';
+        }
+    })
 }
 
 function wallsFactories(width, depth, height) {
