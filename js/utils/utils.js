@@ -8,14 +8,6 @@ export function meshDepthY(m) {
     return bbox.max.y - bbox.min.y;
 }
 
-export function makeEnum(arr){
-    let obj = {};
-    for (let val of arr){
-        obj[val] = Symbol(val);
-    }
-    return Object.freeze(obj);
-}
-
 export function flatten(arr) {
     return [].concat(...arr)
 }

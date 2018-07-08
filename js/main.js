@@ -1,9 +1,10 @@
-import {ModulesLibrary, ModuleTypes} from './modules.js'
+import {ModulesLibrary} from './modules.js'
 import {Wall, Floor, Kitchen} from './kitchen.js'
 import {ModuleSelector} from "./module-selector.js";
 import {MouseTracker} from "./utils/mouseTracker.js";
 import {Renderer} from "./renderer.js";
 import {Camera} from "./camera.js";
+import {ModuleTypesAll} from "./modules.js";
 
 const light = createLight();
 function createLight() {
@@ -51,6 +52,9 @@ animate();
 
 function init() {
 
+    const guiPanel = document.getElementById("gui-panel");
+    ModuleTypesAll.forEach(t => guiPanel.innerHTML += `<ul id="modulesList-${t}"></ul>`);
+
     function loadKitchen() {
 
         const [ width, depth, height ] = [
@@ -83,9 +87,9 @@ function init() {
     renderer.canvas().addEventListener('dblclick', () => camera.centerCamera());
 
     modulesLibrary.loadPrototypes([
-        { url: 'models/szafka_dol.obj', type: ModuleTypes.STANDING },
-        { url: 'models/blat.obj', type: ModuleTypes.TABLETOP },
-        { url: 'models/szafka_gora.obj', type: ModuleTypes.HANGING }
+        { url: 'models/szafka_dol.obj', type: "STANDING" },
+        { url: 'models/blat.obj', type: "TABLETOP" },
+        { url: 'models/szafka_gora.obj', type: "HANGING" }
     ]);
 
     window.scene = scene; //for three.js inspector
@@ -96,12 +100,13 @@ function init() {
     mouseTracker.registerMouseMoveListener();
     renderer.canvas().addEventListener('click', () => moduleSelector.selectModule(), false);
 
+
     kitchen.subscribe(msg => {
         if (msg.type === "ADD") {
-            document.getElementById("modulesList").innerHTML += `<li>${msg.obj.type.toString()}${msg.obj.mesh.name}</li>`;
+            document.getElementById('modulesList-' + msg.obj.type).innerHTML += `<li>${msg.obj.mesh.name}</li>`;
         }
         if (msg.type === "REMOVEALL") {
-            document.getElementById("modulesList").innerHTML = '';
+            document.querySelectorAll('[id^=\"modulesList-\"]').forEach(ml => ml.innerHTML = '');
         }
     })
 }

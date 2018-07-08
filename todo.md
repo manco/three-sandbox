@@ -13,5 +13,9 @@ O ROZPOZNANIE: nakładanie tekstur, jak to się robi i czy łatwiej mieć osobn�
 O Przycisk 'zamów' i wysłanie emaila <--- jak to zabezpieczyć?
 
 lista szafek:
-- kuchnia dodaje/usuwa szafkę, emituje event: ADDED | REMOVED, view(?) manipuluje DOMem
-- czyli: kuchnia jest observable, w main.js (albo view.js?) sa rejestrowane funkcje manipulujace
+x kuchnia dodaje/usuwa szafkę, emituje event: ADDED | REMOVED, view(?) manipuluje DOMem
+x czyli: kuchnia jest observable, w main.js (albo view.js?) sa rejestrowane funkcje manipulujace
+- lepsze nazwy dla elementów
+- grupowanie elementów po typie
+- operacje na poziomie grupy (zmiana koloru)
+- zaznaczony raycastem element zaznacza sie tez na liscie

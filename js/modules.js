@@ -1,5 +1,5 @@
 import {PromisingLoader} from "./utils/loader.js";
-import {makeEnum, meshWidthX, meshDepthY} from "./utils/utils.js";
+import {meshWidthX, meshDepthY} from "./utils/utils.js";
 
 export class Module {
     constructor(mesh, type, width, depth, rotateFun) {
@@ -55,7 +55,7 @@ export class ModulesLibrary {
 
     ofType(type) {
         return this.prototypes
-            .then(modules => modules.find(m => m.type === type));
+            .then(modules => modules.find(m => type === m.type));
     }
 
     initMesh(m) {
@@ -65,5 +65,11 @@ export class ModulesLibrary {
         m.geometry.computeBoundingBox();
     }
 }
-export const ModuleTypes = makeEnum(["STANDING", "TABLETOP", "HANGING"]);
-export const ModuleTypesAll = [ModuleTypes.STANDING, ModuleTypes.TABLETOP, ModuleTypes.HANGING];
+
+export class ModuleType {
+    static get STANDING() { return "STANDING" };
+    static get TABLETOP() { return "TABLETOP" };
+    static get HANGING() { return "HANGING" };
+}
+
+export const ModuleTypesAll = [ModuleType.STANDING, ModuleType.TABLETOP, ModuleType.HANGING];

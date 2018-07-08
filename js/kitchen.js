@@ -1,5 +1,5 @@
 import {meshWidthX, flatten} from "./utils/utils.js";
-import {ModuleTypes, ModuleTypesAll} from './modules.js'
+import {ModuleType, ModuleTypesAll} from './modules.js'
 import {Observable} from "./utils/observable.js";
 
 export class Floor {
@@ -140,7 +140,7 @@ export class Kitchen extends Observable {
     }
 
     slotWidthF() {
-        return this.moduleLibrary.ofType(ModuleTypes.STANDING).then(m => m.width);
+        return this.moduleLibrary.ofType(ModuleType.STANDING).then(m => m.width);
     }
 
 }
