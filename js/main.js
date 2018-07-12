@@ -53,7 +53,10 @@ animate();
 function init() {
 
     const guiPanel = document.getElementById("gui-panel");
-    ModuleTypesAll.forEach(t => guiPanel.innerHTML += `<ul id="modulesList-${t}"></ul>`);
+    ModuleTypesAll.forEach(t => {
+        guiPanel.innerHTML += `<label>${t}</label><ul id="modulesList-${t}"></ul>`
+    });
+    document.getElementById("canvasContainer").appendChild( renderer.canvas() );
 
     function loadKitchen() {
 
@@ -95,20 +98,29 @@ function init() {
     window.scene = scene; //for three.js inspector
     scene.add(light);
 
-    document.getElementById("canvasContainer").appendChild( renderer.canvas() );
-
     mouseTracker.registerMouseMoveListener();
     renderer.canvas().addEventListener('click', () => moduleSelector.selectModule(), false);
 
-
     kitchen.subscribe(msg => {
         if (msg.type === "ADD") {
-            document.getElementById('modulesList-' + msg.obj.type).innerHTML += `<li>${msg.obj.mesh.name}</li>`;
+            document.getElementById('modulesList-' + msg.obj.type).innerHTML += `<li id="${msg.obj.id}">${msg.obj.mesh.name}</li>`;
         }
         if (msg.type === "REMOVEALL") {
             document.querySelectorAll('[id^=\"modulesList-\"]').forEach(ml => ml.innerHTML = '');
         }
-    })
+    });
+
+    moduleSelector.subscribe(msg => {
+        const objElement = document.getElementById(msg.obj.id);
+        if (objElement != null) {
+            if (msg.type === "DESELECTED") {
+                objElement.className = "";
+            }
+            if (msg.type === "SELECTED") {
+                objElement.className = "selectedModule";
+            }
+        }
+    });
 }
 
 function wallsFactories(width, depth, height) {

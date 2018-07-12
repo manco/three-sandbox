@@ -4,6 +4,7 @@ import {meshWidthX, meshDepthY} from "./utils/utils.js";
 export class Module {
     constructor(mesh, type, width, depth, rotateFun) {
         this.mesh = mesh;
+        this.id = mesh.uuid;
         this.type = type;
         this.width = width;
         this.depth = depth;

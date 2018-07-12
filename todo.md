@@ -16,6 +16,7 @@ lista szafek:
 x kuchnia dodaje/usuwa szafkę, emituje event: ADDED | REMOVED, view(?) manipuluje DOMem
 x czyli: kuchnia jest observable, w main.js (albo view.js?) sa rejestrowane funkcje manipulujace
 - lepsze nazwy dla elementów
-- grupowanie elementów po typie
+x grupowanie elementów po typie
 - operacje na poziomie grupy (zmiana koloru)
-- zaznaczony raycastem element zaznacza sie tez na liscie
+x zaznaczony raycastem element zaznacza sie tez na liscie
+- zaznaczony element listy zaznacza moduł (i mesh)
