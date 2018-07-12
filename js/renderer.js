@@ -11,13 +11,7 @@ export class Renderer {
 
         window.addEventListener( 'resize', resize, false );
 
-        this._getCanvasFun = () => renderer.domElement;
-        this._renderFun = () => renderer.render(scene, camera.threeJsCamera);
-    }
-    canvas() {
-        return this._getCanvasFun();
-    }
-    render() {
-        this._renderFun();
+        this.canvas = () => renderer.domElement;
+        this.render = () => renderer.render(scene, camera.threeJsCamera);
     }
 }
