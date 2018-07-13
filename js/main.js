@@ -104,6 +104,7 @@ function init() {
     kitchen.subscribe(msg => {
         if (msg.type === "ADD") {
             document.getElementById('modulesList-' + msg.obj.type).innerHTML += `<li id="${msg.obj.id}">${msg.obj.mesh.name}</li>`;
+            // add event, but first - create real node, not string html :(
         }
         if (msg.type === "REMOVEALL") {
             document.querySelectorAll('[id^=\"modulesList-\"]').forEach(ml => ml.innerHTML = '');

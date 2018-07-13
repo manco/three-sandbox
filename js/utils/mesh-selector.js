@@ -1,3 +1,5 @@
+import {MeshMarker} from "./mesh-marker.js";
+
 export class MeshSelector {
     constructor(camera, mouseTracker) {
         const raycaster = new THREE.Raycaster();
@@ -7,6 +9,7 @@ export class MeshSelector {
         };
         this.selected = null;
         this.previousSelectedEmissiveColor = null;
+        this.marker = new MeshMarker(0x00ff00);
     }
     selectMesh(meshes) {
         if (this.selected != null) {
@@ -18,7 +21,7 @@ export class MeshSelector {
             const mesh = intersectingMeshes[0];
             this.previousSelectedEmissiveColor = mesh.material.emissive.getHex();
             this.selected = mesh;
-            mesh.material.emissive.setHex(0x00ff00);
+            this.marker.mark(mesh);
         }
     }
 }
