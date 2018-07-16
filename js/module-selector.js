@@ -9,12 +9,18 @@ export class ModuleSelector extends Observable {
         this.selected = null;
     }
     selectModule() {
+        this._selectModule((meshes) => this.meshSelector.selectMeshByRaycast(meshes));
+    }
+    selectModuleById(id) {
+        this._selectModule((meshes) => this.meshSelector.selectMeshById(id, meshes));
+    }
+    _selectModule(selectMeshFun) {
         const allModules = this.kitchen.allModules();
-        this.meshSelector.selectMesh(allModules.map(m => m.mesh));
         if (this.selected != null) {
             this.notify({ type: "DESELECTED", obj: this.selected });
         }
-        this.selected = allModules.find(m => m.mesh === this.meshSelector.selected);
+        const meshSelected = selectMeshFun(allModules.map(m => m.mesh));
+        this.selected = allModules.find(m => m.mesh === meshSelected);
         if (this.selected != null) {
             this.notify({ type: "SELECTED", obj: this.selected });
         }
