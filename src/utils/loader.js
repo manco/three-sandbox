@@ -1,3 +1,4 @@
+import 'three/OBJLoader';
 const noop = (xhr) => {};
 export class PromisingLoader {
     constructor() {

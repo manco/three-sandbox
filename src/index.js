@@ -5,6 +5,7 @@ import {MouseTracker} from "./utils/mouseTracker.js";
 import {Renderer} from "./renderer.js";
 import {Camera} from "./camera.js";
 import {ModuleTypesAll} from "./modules.js";
+import 'three/OrbitControls';
 
 const light = createLight();
 function createLight() {
