@@ -5,7 +5,8 @@ module.exports = {
     entry: './src/index.js',
     output: {
         filename: 'bundle.js',
-        path: path.resolve(__dirname, 'dist')
+        path: path.resolve(__dirname, './static/dist'),
+        publicPath: '/dist/'
     },
     resolve: {
         alias: {
@@ -17,7 +18,11 @@ module.exports = {
         new webpack.ProvidePlugin({
             'THREE': 'three'
         }),
-    ]
+    ],
+        devServer: {
+        port: 9090,
+        contentBase: path.resolve(__dirname, './static')
+    }
 };
 // const path = require('path');
 //
@@ -35,16 +40,6 @@ module.exports = {
 //     },
 //     resolve: {
 //         extensions: [ '.tsx', '.ts', '.js' ]
-//     },
-//     output: {
-//         filename: 'bundle.js',
-//         path: path.resolve(__dirname, './static/dist'),
-//         publicPath: '/dist/'
-//     },
-//
-//     devServer: {
-//         port: 9090,
-//         contentBase: path.resolve(__dirname, './static')
 //     },
 //
 //     devtool: 'inline-source-map',
