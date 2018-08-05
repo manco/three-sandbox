@@ -1,6 +1,10 @@
+import {Vector2} from "three";
+
 export class MouseTracker {
+    private xy: Vector2;
+    private canvas: any;
     constructor(canvas) {
-        this.xy = new THREE.Vector2(0, 0);
+        this.xy = new Vector2(0, 0);
         this.canvas = canvas;
     }
 

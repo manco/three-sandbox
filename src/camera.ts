@@ -1,7 +1,12 @@
+import {OrthographicCamera} from "three";
+
 const frustumSize = 500;
 export class Camera {
+    public readonly centerCamera: () => void;
+    public readonly lookAtScene: () => void;
+    public readonly threeJsCamera: OrthographicCamera;
     constructor(scene) {
-        const cam = new THREE.OrthographicCamera();
+        const cam = new OrthographicCamera(0,0,0,0);
         scene.add(cam);
 
         function setFrustum() {

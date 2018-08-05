@@ -1,8 +1,11 @@
-import {MeshMarker} from "./mesh-marker.js";
+import {MeshMarker} from "./mesh-marker";
+import {Object3D, Raycaster} from "three";
 
 export class MeshSelector {
+    private readonly _castRay: (meshes) => Object3D[];
+    private readonly _select: (meshFun) => any;
     constructor(camera, mouseTracker) {
-        const raycaster = new THREE.Raycaster();
+        const raycaster = new Raycaster();
         this._castRay = meshes => {
             raycaster.setFromCamera(mouseTracker.xy, camera);
             return raycaster.intersectObjects(meshes).map(i => i.object);

@@ -1,8 +1,15 @@
-import {MeshSelector} from "./utils/mesh-selector.js";
-import {Observable} from "./utils/observable.js";
+import {MeshSelector} from "./utils/mesh-selector";
+import {Observable} from "./utils/observable";
+import {Kitchen} from "./kitchen"
+import {Module} from "./modules"
+import {Camera} from "./camera";
+import {MouseTracker} from "./utils/mouseTracker";
 
 export class ModuleSelector extends Observable {
-    constructor(camera, kitchen, mouseTracker) {
+    private meshSelector: MeshSelector;
+    private kitchen: Kitchen;
+    private selected: Module;
+    constructor(camera : Camera, kitchen : Kitchen, mouseTracker : MouseTracker) {
         super();
         this.meshSelector = new MeshSelector(camera.threeJsCamera, mouseTracker);
         this.kitchen = kitchen;
@@ -14,15 +21,16 @@ export class ModuleSelector extends Observable {
     selectModuleById(id) {
         this._selectModule((meshes) => this.meshSelector.selectMeshById(id, meshes));
     }
-    _selectModule(selectMeshFun) {
-        const allModules = this.kitchen.allModules();
+
+    private _selectModule(selectMeshFun) {
+        const allModules: Module[] = this.kitchen.allModules();
         if (this.selected != null) {
-            this.notify({ type: "DESELECTED", obj: this.selected });
+            super.notify({ type: "DESELECTED", obj: this.selected });
         }
         const meshSelected = selectMeshFun(allModules.map(m => m.mesh));
         this.selected = allModules.find(m => m.mesh === meshSelected);
         if (this.selected != null) {
-            this.notify({ type: "SELECTED", obj: this.selected });
+            super.notify({ type: "SELECTED", obj: this.selected });
         }
     }
 }

@@ -2,13 +2,23 @@ const path = require('path');
 const webpack = require('webpack');
 
 module.exports = {
-    entry: './src/index.js',
+    entry: './src/main.ts',
+    module: {
+        rules: [
+            {
+                test: /\.ts?$/,
+                use: 'ts-loader',
+                exclude: /node_modules/
+            }
+        ]
+    },
     output: {
         filename: 'bundle.js',
         path: path.resolve(__dirname, './static/dist'),
         publicPath: '/dist/'
     },
     resolve: {
+        extensions: [ '.tsx', '.ts', '.js' ],
         alias: {
             'three/OrbitControls': path.join(__dirname, 'node_modules/three/examples/js/controls/OrbitControls.js'),
             'three/OBJLoader': path.join(__dirname, 'node_modules/three/examples/js/loaders/OBJLoader.js')
@@ -19,28 +29,9 @@ module.exports = {
             'THREE': 'three'
         }),
     ],
-        devServer: {
+    devServer: {
         port: 9090,
         contentBase: path.resolve(__dirname, './static')
-    }
+    }//,
+    //devtool: 'inline-source-map'
 };
-// const path = require('path');
-//
-// module.exports = {
-//
-//     entry: './src/ts/main.tsx',
-//     module: {
-//         rules: [
-//             {
-//                 test: /\.tsx?$/,
-//                 use: 'ts-loader',
-//                 exclude: /node_modules/
-//             }
-//         ]
-//     },
-//     resolve: {
-//         extensions: [ '.tsx', '.ts', '.js' ]
-//     },
-//
-//     devtool: 'inline-source-map',
-// }

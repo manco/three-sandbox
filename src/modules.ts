@@ -1,7 +1,14 @@
-import {PromisingLoader} from "./utils/loader.js";
-import {meshWidthX, meshDepthY} from "./utils/utils.js";
+import {PromisingLoader} from "./utils/loader";
+import {meshDepthY, meshWidthX} from "./utils/utils";
+import {MeshLambertMaterial} from "three";
 
 export class Module {
+    public readonly mesh: any;
+    private id: any;
+    private readonly type: any;
+    private readonly width: any;
+    private readonly rotateFun: any;
+    private readonly depth: any;
     constructor(mesh, type, width, depth, rotateFun) {
         this.mesh = mesh;
         this.id = mesh.uuid;
@@ -15,12 +22,15 @@ export class Module {
     }
     clone() {
         const cloned = new Module(this.mesh.clone(), this.type, this.width, this.depth, this.rotateFun);
-        cloned.mesh.material = new THREE.MeshLambertMaterial();
+        cloned.mesh.material = new MeshLambertMaterial();
         return cloned;
     }
 }
 
 export class ModulesLibrary {
+    private loader: PromisingLoader;
+    private readonly scale: number;
+    private prototypes: Promise<any[]>;
     constructor() {
         this.loader = new PromisingLoader();
         this.scale = 3;

@@ -1,30 +1,36 @@
-import {meshWidthX, flatten} from "./utils/utils.js";
-import {ModuleType, ModuleTypesAll} from './modules.js'
-import {Observable} from "./utils/observable.js";
+import {flatten, meshWidthX} from "./utils/utils";
+import {ModulesLibrary, ModuleType, ModuleTypesAll} from './modules'
+import {Observable} from "./utils/observable";
+import {DoubleSide, Mesh, MeshLambertMaterial, PlaneBufferGeometry, Scene, Vector3} from "three";
 
 export class Floor {
+    public readonly mesh: Mesh;
     constructor(width, depth,  translate = _ => {}, rotate = _ => {}) {
         this.mesh = Floor.createFloor(width, depth);
         translate(this.mesh);
         rotate(this.mesh);
     }
-    static createFloor(width, depth) {
-        const material = new THREE.MeshLambertMaterial( {
+    static createFloor(width, depth): Mesh {
+        const material = new MeshLambertMaterial( {
             color: 0xbdbdbd,
-            side: THREE.DoubleSide
+            side: DoubleSide
         } );
-        const g = new THREE.Mesh(
-            new THREE.PlaneBufferGeometry( width, depth ), material );
+        const g = new Mesh(
+            new PlaneBufferGeometry( width, depth ), material );
         g.name = "Floor";
         g.receiveShadow = true;
         return g;
     }
-    addTo(scene) {
+    addTo(scene: Scene) {
         scene.add(this.mesh);
     }
 }
 
 export class Wall {
+    public readonly mesh: Mesh;
+    public readonly translateMesh: (_) => any;
+    public readonly rotateMesh: (_) => any;
+    public readonly wallSlots: WallSlot[];
 
     constructor(name, width, height, translate = _ => {}, rotate = _ => {}) {
         this.translateMesh = translate;
@@ -40,11 +46,11 @@ export class Wall {
     name() { return this.mesh.name; }
 
     static createMesh(name, width, height) {
-        const material = new THREE.MeshLambertMaterial( {
+        const material = new MeshLambertMaterial( {
             color: 0xbdbdbd,
-            side: THREE.DoubleSide
+            side: DoubleSide
         } );
-        const mesh = new THREE.Mesh(new THREE.PlaneBufferGeometry(width, height), material );
+        const mesh = new Mesh(new PlaneBufferGeometry(width, height), material );
         mesh.name = "Wall" + name;
         mesh.receiveShadow = true;
         return mesh;
@@ -52,6 +58,8 @@ export class Wall {
 }
 
 class WallSlot {
+    private wall: Wall;
+    private modulesByTypes: Map<ModuleType, any>;
     constructor(wall) {
         this.wall = wall;
         this.modulesByTypes = new Map()
@@ -85,7 +93,11 @@ class WallSlot {
     }
 }
 export class Kitchen extends Observable {
-    constructor(library, scene) {
+    private moduleLibrary: ModulesLibrary;
+    private readonly scene: Scene;
+    private walls: Wall[];
+    private floor: Floor;
+    constructor(library : ModulesLibrary, scene : Scene) {
         super();
         this.moduleLibrary = library;
         this.scene = scene;
@@ -100,7 +112,7 @@ export class Kitchen extends Observable {
     }
     setFloor(floor) {
         this.floor = floor;
-        this.floor.addTo(scene);
+        this.floor.addTo(this.scene);
     }
 
     fillWallWithModules(wall) {
@@ -143,4 +155,34 @@ export class Kitchen extends Observable {
         return this.moduleLibrary.ofType(ModuleType.STANDING).then(m => m.width);
     }
 
+}
+
+export function wallsFactories(width, depth, height) {
+
+    const axisY = new Vector3(0, 1, 0);
+
+    const wallA = () => new Wall("A", width, height);
+
+    const wallB = () => new Wall("B", depth, height,
+        m => {
+            m.translateX(width/2);
+            m.translateZ(depth/2);
+        },
+        m => m.rotateOnWorldAxis(axisY, - Math.PI / 2)
+    );
+
+    const wallC = () => new Wall("C", width, height,
+        m => m.translateZ(depth),
+        m => m.rotateZ(Math.PI)
+    );
+
+    const wallD = () => new Wall("D", depth, height,
+        m => {
+            m.translateX(-width/2);
+            m.translateZ(depth/2);
+        },
+        m => m.rotateOnWorldAxis(axisY, Math.PI / 2)
+    );
+
+    return new Map([["A", wallA], ["B", wallB], ["C", wallC], ["D", wallD]]);
 }
