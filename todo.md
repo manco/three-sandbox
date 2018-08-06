@@ -1,6 +1,4 @@
 1. move codebase to typescript
-2. how to deploy on heroku dist/bundle.js?
-  - maybe have static/* with bundle.js and index.html and branch 'dist' only for them
 3. think of IoC regarding building scene
 8. unit tests. It's time for unit tests
 9. load models from somewhere else

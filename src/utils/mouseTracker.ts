@@ -9,15 +9,14 @@ export class MouseTracker {
     }
 
     registerMouseMoveListener() {
-        const that = this;
-        function onMouseMove(event) {
-            const rect = that.canvas.getBoundingClientRect();
+        const onMouseMove = (event) => {
+            const rect = this.canvas.getBoundingClientRect();
             const relX = event.clientX - rect.left;
             const relY = event.clientY - rect.top;
 
-            that.xy.x = relX / that.canvas.clientWidth *  2 - 1;
-            that.xy.y = relY / that.canvas.clientHeight * -2 + 1;
-        }
+            this.xy.x = relX / this.canvas.clientWidth *  2 - 1;
+            this.xy.y = relY / this.canvas.clientHeight * -2 + 1;
+        };
         this.canvas.addEventListener('mousemove', onMouseMove, false);
     }
 }
