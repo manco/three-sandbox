@@ -1,9 +1,15 @@
 export class Observable {
-    public subscribe: (observer) => number;
-    public notify: (msg) => void;
-    constructor() {
-        const observers = [];
-        this.subscribe = observer => observers.push(observer);
-        this.notify = msg => observers.forEach(o => o(msg))
+    private readonly observers: Observer[] = [];
+    subscribe(observer: Observer): void {
+        this.observers.push(observer);
     }
+    notify(msg:Message):void {
+        this.observers.forEach(o => o(msg));
+    }
+}
+export interface Observer {
+    (msg: Message):void
+}
+export class Message {
+    constructor(readonly type:string, readonly obj?:any){}
 }

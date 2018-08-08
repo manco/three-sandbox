@@ -1,21 +1,26 @@
-import {BasicShadowMap, WebGLRenderer} from "three";
+import {BasicShadowMap, Scene, WebGLRenderer} from "three";
+import {Camera} from "./camera";
 
 export class Renderer {
-    public canvas: () => HTMLCanvasElement;
-    public render: () => void;
-    constructor(scene, camera) {
-        const renderer = new WebGLRenderer({ antialias: true });
-        function resize() {
-            renderer.setSize( window.innerWidth, window.innerHeight );
-        }
-        renderer.shadowMap.enabled = true;
-        renderer.shadowMap.type = BasicShadowMap;
-        renderer.setPixelRatio( window.devicePixelRatio );
+
+    private readonly renderer: WebGLRenderer = new WebGLRenderer({
+        antialias: true,
+        devicePixelRatio: window.devicePixelRatio
+    });
+
+    constructor(private readonly scene:Scene, private readonly camera:Camera) {
+        this.renderer.shadowMap.enabled = true;
+        this.renderer.shadowMap.type = BasicShadowMap;
+
+        const resize = ():void => {
+            this.renderer.setSize( window.innerWidth, window.innerHeight );
+        };
         resize();
 
         window.addEventListener( 'resize', resize, false );
 
-        this.canvas = () => renderer.domElement;
-        this.render = () => renderer.render(scene, camera.threeJsCamera);
     }
+
+    render(): void { return this.renderer.render(this.scene, this.camera.threeJsCamera) }
+    canvas(): HTMLCanvasElement { return this.renderer.domElement; }
 }

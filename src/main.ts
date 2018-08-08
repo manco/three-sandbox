@@ -7,6 +7,7 @@ import {ModuleTypesAll} from "./modules";
 import {SceneFactory} from "./scene";
 import {ControlsInitialzer} from "./controls";
 import {ModuleSelector} from './module-selector';
+import {Mesh} from "three";
 
 const scene = SceneFactory.create();
 
@@ -18,16 +19,12 @@ ControlsInitialzer.initControls(camera, renderer);
 
 const modulesLibrary = new ModulesLibrary();
 const kitchen : Kitchen = new Kitchen(modulesLibrary, scene);
-//window.kitchen = kitchen;
 
 const mouseTracker = new MouseTracker(renderer.canvas());
 
 const moduleSelector : ModuleSelector = new ModuleSelector(camera, kitchen, mouseTracker);
 
-init();
-animate();
-
-function init() {
+const init = ():void => {
 
     const guiPanel = document.getElementById("gui-panel");
     ModuleTypesAll.forEach(t => {
@@ -35,34 +32,34 @@ function init() {
     });
     document.getElementById("canvasContainer").appendChild( renderer.canvas() );
 
-    function loadKitchen() {
+    const loadKitchen = ():void => {
 
-        const [ width, depth, height ] = [
+        const [ width, depth, height ]: [number, number, number] = [
             (document.getElementById("kitchen-width") as HTMLInputElement).valueAsNumber,
             (document.getElementById("kitchen-depth") as HTMLInputElement).valueAsNumber,
             (document.getElementById("kitchen-height") as HTMLInputElement).valueAsNumber
         ];
 
         const chosenWallNames = [].slice.call(document.getElementsByClassName("gui-checkbox"))
-            .filter(c => c.checked)
-            .map(w => w.value);
+            .filter((c:HTMLInputElement) => c.checked)
+            .map((w:HTMLInputElement) => w.value);
 
         kitchen.removeAll();
 
         const floor = new Floor(width, depth,
-            m => m.translateZ(depth /2),
-            m => m.rotateX(- Math.PI / 2 )
+            (m:Mesh):void => { m.translateZ(depth /2) },
+            (m:Mesh):void => { m.rotateX(- Math.PI / 2 ) }
         );
         kitchen.setFloor(floor);
 
         const factories = wallsFactories(width, depth, height);
 
-        chosenWallNames.forEach(wallName => {
+        chosenWallNames.forEach((wallName:string) => {
             const wall = factories.get(wallName)();
             kitchen.addWall(wall);
             kitchen.fillWallWithModules(wall);
         })
-    }
+    };
     document.getElementById("drawKitchenButton").addEventListener('click', loadKitchen);
     renderer.canvas().addEventListener('dblclick', () => camera.centerCamera());
 
@@ -72,12 +69,10 @@ function init() {
         { url: 'models/szafka_gora.obj', type: "HANGING" }
     ]);
 
-    //window.scene = scene; //for three.js inspector
-
     mouseTracker.registerMouseMoveListener();
     renderer.canvas().addEventListener('click', () => moduleSelector.selectModule(), false);
 
-    kitchen.subscribe(msg => {
+    kitchen.subscribe((msg) => {
         if (msg.type === "ADD") {
             const objId = `${msg.obj.id}`;
             const li = document.createElement("li");
@@ -88,11 +83,11 @@ function init() {
         }
         if (msg.type === "REMOVEALL") {
             [].slice.call(document.querySelectorAll('[id^=\"modulesList-\"]'))
-                .forEach(ml => ml.innerHTML = '');
+                .forEach((ml:Element) => ml.innerHTML = '');
         }
     });
 
-    moduleSelector.subscribe(msg => {
+    moduleSelector.subscribe((msg) => {
         const objElement = document.getElementById(msg.obj.id);
         if (objElement != null) {
             if (msg.type === "DESELECTED") {
@@ -103,10 +98,13 @@ function init() {
             }
         }
     });
-}
+};
 
-function animate() {
+const animate = ():void => {
     requestAnimationFrame( animate );
     camera.lookAtScene();
     renderer.render();
-}
+};
+
+init();
+animate();

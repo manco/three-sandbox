@@ -1,33 +1,31 @@
-import {OrthographicCamera} from "three";
+import {OrthographicCamera, Scene} from "three";
 
-const frustumSize = 500;
 export class Camera {
-    public readonly centerCamera: () => void;
-    public readonly lookAtScene: () => void;
-    public readonly threeJsCamera: OrthographicCamera;
-    constructor(scene) {
-        const cam = new OrthographicCamera(0,0,0,0);
-        scene.add(cam);
+    private static frustumSize: number = 500;
+    readonly threeJsCamera: OrthographicCamera = new OrthographicCamera(0,0,0,0);
+    constructor(private readonly scene:Scene) {
+        scene.add(this.threeJsCamera);
 
-        function setFrustum() {
+        const setFrustum = ():void => {
             const aspect = window.innerWidth / window.innerHeight;
-            cam.left = -frustumSize * aspect / 2;
-            cam.right = frustumSize * aspect / 2;
-            cam.top = frustumSize / 2;
-            cam.bottom = -frustumSize / 2;
-            cam.near = -1000;
-            cam.updateProjectionMatrix();
-        }
+            this.threeJsCamera.left = -Camera.frustumSize * aspect / 2;
+            this.threeJsCamera.right = Camera.frustumSize * aspect / 2;
+            this.threeJsCamera.top = Camera.frustumSize / 2;
+            this.threeJsCamera.bottom = -Camera.frustumSize / 2;
+            this.threeJsCamera.near = -1000;
+            this.threeJsCamera.updateProjectionMatrix();
+        };
         setFrustum();
 
-        function centerCamera() {
-            cam.position.set(90, 150, 250);
-        }
-        centerCamera();
-
-        this.centerCamera = centerCamera;
-        this.lookAtScene = () => cam.lookAt(scene.position);
+        this.centerCamera();
         window.addEventListener( 'resize', setFrustum, false );
-        this.threeJsCamera = cam;
+    }
+
+    centerCamera(): void {
+        this.threeJsCamera.position.set(90, 150, 250);
+    }
+
+    lookAtScene(): void {
+        this.threeJsCamera.lookAt(this.scene.position);
     }
 }

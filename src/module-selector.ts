@@ -1,36 +1,34 @@
 import {MeshSelector} from "./utils/mesh-selector";
-import {Observable} from "./utils/observable";
+import {Message, Observable} from "./utils/observable";
 import {Kitchen} from "./kitchen"
 import {Module} from "./modules"
 import {Camera} from "./camera";
 import {MouseTracker} from "./utils/mouseTracker";
+import {Mesh} from "three";
 
 export class ModuleSelector extends Observable {
-    private meshSelector: MeshSelector;
-    private kitchen: Kitchen;
-    private selected: Module;
-    constructor(camera : Camera, kitchen : Kitchen, mouseTracker : MouseTracker) {
+    private readonly meshSelector: MeshSelector;
+    private selected: Module = null;
+    constructor(camera : Camera, private readonly kitchen : Kitchen, mouseTracker : MouseTracker) {
         super();
         this.meshSelector = new MeshSelector(camera.threeJsCamera, mouseTracker);
-        this.kitchen = kitchen;
-        this.selected = null;
     }
-    selectModule() {
+    selectModule(): void {
         this._selectModule((meshes) => this.meshSelector.selectMeshByRaycast(meshes));
     }
-    selectModuleById(id) {
+    selectModuleById(id:string): void {
         this._selectModule((meshes) => this.meshSelector.selectMeshById(id, meshes));
     }
 
-    private _selectModule(selectMeshFun) {
-        const allModules: Module[] = this.kitchen.allModules();
+    private _selectModule(selectMeshFun: (_:Mesh[]) => Mesh): void {
+        const allModules = this.kitchen.allModules();
         if (this.selected != null) {
-            this.notify({ type: "DESELECTED", obj: this.selected });
+            this.notify(new Message("DESELECTED", this.selected));
         }
-        const meshSelected = selectMeshFun(allModules.map(m => m.mesh));
-        this.selected = allModules.find(m => m.mesh === meshSelected);
+        const meshSelected = selectMeshFun(allModules.map((m:Module) => m.mesh));
+        this.selected = allModules.find((m:Module) => m.mesh === meshSelected);
         if (this.selected != null) {
-            this.notify({ type: "SELECTED", obj: this.selected });
+            this.notify(new Message("SELECTED", this.selected));
         }
     }
 }

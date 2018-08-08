@@ -1,26 +1,29 @@
 import {PromisingLoader} from "./utils/loader";
-import {meshDepthY, meshWidthX} from "./utils/utils";
-import {MeshLambertMaterial} from "three";
+import {Utils, MutateMeshFun} from "./utils/utils";
+import {Mesh, MeshLambertMaterial} from "three";
+
+export class ModuleDefinition {
+    constructor(
+        readonly url:string,
+        readonly type:string
+    ) {}
+}
 
 export class Module {
-    public readonly mesh: any;
-    private id: any;
-    private readonly type: any;
-    private readonly width: any;
-    private readonly rotateFun: any;
-    private readonly depth: any;
-    constructor(mesh, type, width, depth, rotateFun) {
-        this.mesh = mesh;
+    private readonly id: string;
+    constructor(
+        readonly mesh:Mesh,
+        readonly type:string,
+        readonly width:number,
+        readonly depth:number,
+        private readonly rotateFun:MutateMeshFun
+    ) {
         this.id = mesh.uuid;
-        this.type = type;
-        this.width = width;
-        this.depth = depth;
-        this.rotateFun = rotateFun;
     }
-    initRotation() {
+    initRotation():void {
         this.rotateFun(this.mesh);
     }
-    clone() {
+    clone():Module {
         const cloned = new Module(this.mesh.clone(), this.type, this.width, this.depth, this.rotateFun);
         cloned.mesh.material = new MeshLambertMaterial();
         return cloned;
@@ -28,28 +31,24 @@ export class Module {
 }
 
 export class ModulesLibrary {
-    private loader: PromisingLoader;
-    private readonly scale: number;
-    private prototypes: Promise<any[]>;
-    constructor() {
-        this.loader = new PromisingLoader();
-        this.scale = 3;
-        this.prototypes = null;
-    }
-    loadPrototypes(definitions) {
+    private loader: PromisingLoader = new PromisingLoader();
+    private readonly scale: number = 3;
+    private prototypes: Promise<Module[]> = null;
+
+    loadPrototypes(definitions: ModuleDefinition[]):void {
         if (this.prototypes == null) {
             this.prototypes = Promise.all(
                 definitions.map(
-                    d =>
+                    (d:ModuleDefinition) =>
                         this.loader.loadSingleMesh(d.url)
-                            .then(m => {
+                            .then((m:Mesh) => {
                                 this.initMesh(m);
                                 return new Module(
                                     m,
                                     d.type,
-                                    this.scale * meshWidthX(m),
-                                    this.scale * meshDepthY(m),
-                                    mm => mm.rotateX(-Math.PI / 2)
+                                    this.scale * Utils.meshWidthX(m),
+                                    this.scale * Utils.meshDepthY(m),
+                                    (mm:Mesh):void => { mm.rotateX(-Math.PI / 2); }
                                 );
                             })
                 )
@@ -59,17 +58,17 @@ export class ModulesLibrary {
         }
     }
 
-    createModule(type) {
+    createModule(type:string):Promise<Module> {
         return this.ofType(type)
-            .then(m => m.clone());
+            .then((m:Module) => m.clone());
     }
 
-    ofType(type) {
+    ofType(type:string):Promise<Module> {
         return this.prototypes
-            .then(modules => modules.find(m => type === m.type));
+            .then((modules:Module[]) => modules.find((m:Module) => type === m.type));
     }
 
-    initMesh(m) {
+    initMesh(m:Mesh): void {
         m.castShadow = true;
         m.receiveShadow = true;
         m.scale.multiplyScalar(this.scale);
@@ -78,9 +77,9 @@ export class ModulesLibrary {
 }
 
 export class ModuleType {
-    static get STANDING() { return "STANDING" };
-    static get TABLETOP() { return "TABLETOP" };
-    static get HANGING() { return "HANGING" };
+    static get STANDING(): string { return "STANDING" };
+    static get TABLETOP(): string { return "TABLETOP" };
+    static get HANGING(): string { return "HANGING" };
 }
 
 export const ModuleTypesAll = [ModuleType.STANDING, ModuleType.TABLETOP, ModuleType.HANGING];

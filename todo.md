@@ -1,7 +1,12 @@
-1. move codebase to typescript
 3. think of IoC regarding building scene
 8. unit tests. It's time for unit tests
 9. load models from somewhere else
+
+TS:
+ TS#1: enum zamiast event type i ModuleType
+ TS#2: przepisac OrbitControls i Loader na ts
+
+10. zoptymalizowac rozmiar bundle'a!
 
 optymalizacja:
    + nie wyliczac bounding box dla kazdego modelu, bazowac na wymiarach kuchni
@@ -19,4 +24,6 @@ x czyli: kuchnia jest observable, w main.js (albo view.js?) sa rejestrowane funk
 x grupowanie elementów po typie
 - operacje na poziomie grupy (zmiana koloru)
 x zaznaczony raycastem element zaznacza sie tez na liscie
-- zaznaczony element listy zaznacza moduł (i mesh)
+x zaznaczony element listy zaznacza moduł (i mesh)
+
+- obracac kuchnie wg srodka a nie czegostam

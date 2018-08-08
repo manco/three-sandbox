@@ -1,16 +1,16 @@
-import {flatten, meshWidthX} from "./utils/utils";
-import {ModulesLibrary, ModuleType, ModuleTypesAll} from './modules'
-import {Observable} from "./utils/observable";
+import {Module, ModulesLibrary, ModuleType, ModuleTypesAll} from './modules'
+import {Message, Observable} from "./utils/observable";
 import {DoubleSide, Mesh, MeshLambertMaterial, PlaneBufferGeometry, Scene, Vector3} from "three";
+import {MutateMeshFun, Utils} from "./utils/utils";
 
 export class Floor {
-    public readonly mesh: Mesh;
-    constructor(width, depth,  translate = _ => {}, rotate = _ => {}) {
+    readonly mesh: Mesh;
+    constructor(width:number, depth:number, translate:MutateMeshFun = _ => {}, rotate:MutateMeshFun = _ => {}) {
         this.mesh = Floor.createFloor(width, depth);
         translate(this.mesh);
         rotate(this.mesh);
     }
-    static createFloor(width, depth): Mesh {
+    static createFloor(width:number, depth:number): Mesh {
         const material = new MeshLambertMaterial( {
             color: 0xbdbdbd,
             side: DoubleSide
@@ -21,31 +21,26 @@ export class Floor {
         g.receiveShadow = true;
         return g;
     }
-    addTo(scene: Scene) {
+    addTo(scene: Scene): void {
         scene.add(this.mesh);
     }
 }
 
 export class Wall {
-    public readonly mesh: Mesh;
-    public readonly translateMesh: (_) => any;
-    public readonly rotateMesh: (_) => any;
-    public readonly wallSlots: WallSlot[];
+    readonly mesh: Mesh;
+    readonly wallSlots: WallSlot[] = Array.from(new Array(50), () => new WallSlot(this));
 
-    constructor(name, width, height, translate = _ => {}, rotate = _ => {}) {
-        this.translateMesh = translate;
-        this.rotateMesh = rotate;
+    constructor(name:string, width:number, height:number, readonly translateMesh:(_:Mesh) => void = (_:Mesh):void => {}, readonly rotateMesh:(_:Mesh) => void = (_:Mesh):void => {}) {
         this.mesh = Wall.createMesh(name, width, height);
         this.mesh.translateY(height / 2);
         this.translateMesh(this.mesh);
         this.rotateMesh(this.mesh);
         this.mesh.geometry.computeBoundingBox();
-        this.wallSlots = Array.from(new Array(50), () => new WallSlot(this));
     }
 
-    name() { return this.mesh.name; }
+    name(): string { return this.mesh.name; }
 
-    static createMesh(name, width, height) {
+    static createMesh(name:string, width:number, height:number): Mesh {
         const material = new MeshLambertMaterial( {
             color: 0xbdbdbd,
             side: DoubleSide
@@ -58,13 +53,10 @@ export class Wall {
 }
 
 class WallSlot {
-    private wall: Wall;
-    private modulesByTypes: Map<ModuleType, any>;
-    constructor(wall) {
-        this.wall = wall;
-        this.modulesByTypes = new Map()
-    }
-    put(module, index, scene) {
+    private modulesByTypes: Map<string, Module> = new Map();
+    constructor(private readonly wall:Wall) {}
+
+    put(module:Module, index:number, scene:Scene): void {
         if (this.modulesByTypes.has(module.type)) {
             throw "module already set in this slot"
         }
@@ -79,110 +71,103 @@ class WallSlot {
         scene.add(module.mesh);
     }
 
-    allModules() {
+    allModules(): Module[] {
         return Array.from(this.modulesByTypes.values());
     }
 
-    remove(moduleType, scene) {
+    remove(moduleType:string, scene:Scene): void {
         const module = this.modulesByTypes.get(moduleType);
         scene.remove(module.mesh);
         this.modulesByTypes.delete(moduleType);
     }
-    removeAll(scene) {
-        Array.from(this.modulesByTypes.keys()).forEach(t => this.remove(t, scene));
+    removeAll(scene:Scene): void {
+        Array.from(this.modulesByTypes.keys()).forEach((t:string) => this.remove(t, scene));
     }
 }
 export class Kitchen extends Observable {
-    private moduleLibrary: ModulesLibrary;
-    private readonly scene: Scene;
-    private walls: Wall[];
-    private floor: Floor;
-    constructor(library : ModulesLibrary, scene : Scene) {
+    private walls: Wall[] = [];
+    private floor: Floor = null;
+    constructor(private readonly moduleLibrary : ModulesLibrary, private readonly scene : Scene) {
         super();
-        this.moduleLibrary = library;
-        this.scene = scene;
-
-        this.walls = [];
-        this.floor = null;
     }
 
-    addWall(wall) {
+    addWall(wall:Wall): void {
         this.walls.push(wall);
         this.scene.add(wall.mesh);
     }
-    setFloor(floor) {
+    setFloor(floor:Floor): void {
         this.floor = floor;
         this.floor.addTo(this.scene);
     }
 
-    fillWallWithModules(wall) {
-        this.slotWidthF().then(slotWidth => {
-            const wallWidth = meshWidthX(wall.mesh);
+    fillWallWithModules(wall:Wall): void {
+        this.slotWidthF().then((slotWidth :number)=> {
+            const wallWidth = Utils.meshWidthX(wall.mesh);
             const items = Math.floor(wallWidth / slotWidth);
-            ModuleTypesAll.forEach(type => this.addModuleToWallSlots(wall, items, type))
+            ModuleTypesAll.forEach((type:string) => this.addModuleToWallSlots(wall, items, type))
         })
     }
 
-    addModuleToWallSlots(wall, count, moduleType) {
+    addModuleToWallSlots(wall:Wall, count:number, moduleType:string): void {
         for (let i = 0; i < count; i++) {
             this.moduleLibrary
                 .createModule(moduleType)
-                .then(m => {
+                .then((m:Module) => {
                     wall.wallSlots[i].put(m, i, this.scene);
                     this.notify({ type:"ADD", obj: m});
                 });
         }
     }
 
-    allModules() {
-        return flatten(flatten(this.walls.map(w => w.wallSlots)).map(s => s.allModules()));
+    allModules(): Module[] {
+        return Utils.flatten(Utils.flatten(this.walls.map((w:Wall) => w.wallSlots)).map((s:WallSlot) => s.allModules()));
     }
 
-    removeAll() {
-        this.walls.forEach(wall => {
-            wall.wallSlots.forEach(slot => slot.removeAll(this.scene));
+    removeAll(): void {
+        this.walls.forEach((wall:Wall) => {
+            wall.wallSlots.forEach((slot:WallSlot) => slot.removeAll(this.scene));
             this.scene.remove(wall.mesh);
         });
         this.walls = [];
-        this.notify({type:"REMOVEALL"});
+        this.notify(new Message("REMOVEALL"));
         if (this.floor != null) {
             this.scene.remove(this.floor.mesh);
             this.floor = null;
         }
     }
 
-    slotWidthF() {
-        return this.moduleLibrary.ofType(ModuleType.STANDING).then(m => m.width);
+    slotWidthF(): Promise<number> {
+        return this.moduleLibrary.ofType(ModuleType.STANDING).then((m:Module) => m.width);
     }
 
 }
 
-export function wallsFactories(width, depth, height) {
+export const wallsFactories = (width:number, depth:number, height:number):Map<string, () => Wall> => {
 
     const axisY = new Vector3(0, 1, 0);
 
-    const wallA = () => new Wall("A", width, height);
+    const wallA = ():Wall => new Wall("A", width, height);
 
-    const wallB = () => new Wall("B", depth, height,
-        m => {
+    const wallB = ():Wall => new Wall("B", depth, height,
+        (m:Mesh):void => {
             m.translateX(width/2);
             m.translateZ(depth/2);
         },
-        m => m.rotateOnWorldAxis(axisY, - Math.PI / 2)
+        (m:Mesh):void => { m.rotateOnWorldAxis(axisY, - Math.PI / 2) }
     );
 
-    const wallC = () => new Wall("C", width, height,
-        m => m.translateZ(depth),
-        m => m.rotateZ(Math.PI)
+    const wallC = ():Wall => new Wall("C", width, height,
+        (m:Mesh):void => { m.translateZ(depth) },
+        (m:Mesh):void => { m.rotateZ(Math.PI) }
     );
 
-    const wallD = () => new Wall("D", depth, height,
-        m => {
+    const wallD = ():Wall => new Wall("D", depth, height,
+        (m:Mesh):void => {
             m.translateX(-width/2);
             m.translateZ(depth/2);
         },
-        m => m.rotateOnWorldAxis(axisY, Math.PI / 2)
+        (m:Mesh):void => { m.rotateOnWorldAxis(axisY, Math.PI / 2) }
     );
 
     return new Map([["A", wallA], ["B", wallB], ["C", wallC], ["D", wallD]]);
-}
+};
