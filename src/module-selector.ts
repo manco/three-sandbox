@@ -23,12 +23,16 @@ export class ModuleSelector extends Observable {
     private _selectModule(selectMeshFun: (_:Mesh[]) => Mesh): void {
         const allModules = this.kitchen.allModules();
         if (this.selected != null) {
-            this.notify(new Message("DESELECTED", this.selected));
+            this._notifyThat("DESELECTED");
         }
         const meshSelected = selectMeshFun(allModules.map((m:Module) => m.mesh));
         this.selected = allModules.find((m:Module) => m.mesh === meshSelected);
         if (this.selected != null) {
-            this.notify(new Message("SELECTED", this.selected));
+            this._notifyThat("SELECTED");
         }
+    }
+
+    private _notifyThat(event: string) {
+        this.notify(new Message(event, this.selected));
     }
 }
