@@ -19,7 +19,16 @@ export class Floor {
             new PlaneBufferGeometry( width, depth ), material );
         g.name = "Floor";
         g.receiveShadow = true;
+        g.geometry.computeBoundingBox();
         return g;
+    }
+
+    getCenter(): Vector3 {
+        return this.mesh.geometry.boundingBox.min.add(
+            (
+                this.mesh.geometry.boundingBox.max.sub(this.mesh.geometry.boundingBox.min)
+            ).divideScalar(2)
+        );
     }
     addTo(scene: Scene): void {
         scene.add(this.mesh);
@@ -40,7 +49,7 @@ export class Wall {
 
     name(): string { return this.mesh.name; }
 
-    static createMesh(name:string, width:number, height:number): Mesh {
+    private static createMesh(name:string, width:number, height:number): Mesh {
         const material = new MeshLambertMaterial( {
             color: 0xbdbdbd,
             side: DoubleSide
