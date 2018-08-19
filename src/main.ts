@@ -1,28 +1,24 @@
-import {ModulesLibrary} from './modules'
-import {Floor, Kitchen, wallsFactories} from './kitchen'
+import {ModulesLibrary, ModuleTypesAll} from './modules'
+import {Kitchen, wallsFactories} from './kitchen'
 import {MouseTracker} from "./utils/mouseTracker";
 import {Renderer} from "./renderer";
 import {Camera} from "./camera";
-import {ModuleTypesAll} from "./modules";
 import {SceneFactory} from "./scene";
-import {ControlsInitialzer} from "./controls";
+import {ControlsInitializer} from "./controls";
 import {ModuleSelector} from './module-selector';
-import {Mesh} from "three";
+import {OrbitControls} from "three";
 
 const scene = SceneFactory.create();
 
 const camera = new Camera(scene);
+// @ts-ignore
+window.camera = camera;
 
 const renderer = new Renderer(scene, camera);
 
-ControlsInitialzer.initControls(camera, renderer);
-
 const modulesLibrary = new ModulesLibrary();
-const kitchen : Kitchen = new Kitchen(modulesLibrary, scene);
 
 const mouseTracker = new MouseTracker(renderer.canvas());
-
-const moduleSelector : ModuleSelector = new ModuleSelector(camera, kitchen, mouseTracker);
 
 const init = ():void => {
 
@@ -41,16 +37,23 @@ const init = ():void => {
         ];
 
         const chosenWallNames = [].slice.call(document.getElementsByClassName("gui-checkbox"))
-            .filter((c:HTMLInputElement) => c.checked)
-            .map((w:HTMLInputElement) => w.value);
+            .filter(c => c.checked)
+            .map(w => w.value);
 
-        kitchen.removeAll();
 
-        const floor = new Floor(width, depth,
-            (m:Mesh):void => { m.translateZ(depth /2) },
-            (m:Mesh):void => { m.rotateX(- Math.PI / 2 ) }
-        );
-        kitchen.setFloor(floor);
+        // @ts-ignore
+        if (window.kitchen !== undefined) {
+            // @ts-ignore
+            window.kitchen.removeAll();
+        }
+
+        const kitchen : Kitchen = new Kitchen(modulesLibrary, scene, width, height, depth);
+        // @ts-ignore
+        window.kitchen = kitchen;
+
+        const controls: OrbitControls = ControlsInitializer.initControls(camera, renderer, kitchen.center);
+        // @ts-ignore
+        window.controls = controls;
 
         const factories = wallsFactories(width, depth, height);
 
@@ -58,7 +61,38 @@ const init = ():void => {
             const wall = factories.get(wallName)();
             kitchen.addWall(wall);
             kitchen.fillWallWithModules(wall);
-        })
+        });
+
+        const moduleSelector : ModuleSelector = new ModuleSelector(camera, kitchen, mouseTracker);
+
+        renderer.canvas().addEventListener('click', () => moduleSelector.selectModule(), false);
+
+        kitchen.subscribe(msg => {
+            if (msg.type === "ADD") {
+                const objId = `${msg.obj.id}`;
+                const li = document.createElement("li");
+                li.id = objId;
+                li.innerHTML = `${msg.obj.mesh.name}`;
+                li.addEventListener('click', () => moduleSelector.selectModuleById(objId));
+                document.getElementById('modulesList-' + msg.obj.type).appendChild(li);
+            }
+            if (msg.type === "REMOVEALL") {
+                [].slice.call(document.querySelectorAll('[id^=\"modulesList-\"]'))
+                    .forEach((ml:Element) => ml.innerHTML = '');
+            }
+        });
+
+        moduleSelector.subscribe(msg => {
+            const objElement = document.getElementById(msg.obj.id);
+            if (objElement != null) {
+                if (msg.type === "DESELECTED") {
+                    objElement.className = "";
+                }
+                if (msg.type === "SELECTED") {
+                    objElement.className = "selectedModule";
+                }
+            }
+        });
     };
     document.getElementById("drawKitchenButton").addEventListener('click', loadKitchen);
     renderer.canvas().addEventListener('dblclick', () => camera.centerCamera());
@@ -70,41 +104,13 @@ const init = ():void => {
     ]);
 
     mouseTracker.registerMouseMoveListener();
-    renderer.canvas().addEventListener('click', () => moduleSelector.selectModule(), false);
-
-    kitchen.subscribe((msg) => {
-        if (msg.type === "ADD") {
-            const objId = `${msg.obj.id}`;
-            const li = document.createElement("li");
-            li.id = objId;
-            li.innerHTML = `${msg.obj.mesh.name}`;
-            li.addEventListener('click', () => moduleSelector.selectModuleById(objId));
-            document.getElementById('modulesList-' + msg.obj.type).appendChild(li);
-        }
-        if (msg.type === "REMOVEALL") {
-            [].slice.call(document.querySelectorAll('[id^=\"modulesList-\"]'))
-                .forEach((ml:Element) => ml.innerHTML = '');
-        }
-    });
-
-    moduleSelector.subscribe((msg) => {
-        const objElement = document.getElementById(msg.obj.id);
-        if (objElement != null) {
-            if (msg.type === "DESELECTED") {
-                objElement.className = "";
-            }
-            if (msg.type === "SELECTED") {
-                objElement.className = "selectedModule";
-            }
-        }
-    });
 };
 
 const animate = ():void => {
     requestAnimationFrame( animate );
-    camera.lookAtScene();
     renderer.render();
 };
 
 init();
 animate();
+

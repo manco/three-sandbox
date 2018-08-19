@@ -3,14 +3,13 @@ import {Message, Observable} from "./utils/observable";
 import {DoubleSide, Mesh, MeshLambertMaterial, PlaneBufferGeometry, Scene, Vector3} from "three";
 import {MutateMeshFun, Utils} from "./utils/utils";
 
-export class Floor {
-    readonly mesh: Mesh;
-    constructor(width:number, depth:number, translate:MutateMeshFun = _ => {}, rotate:MutateMeshFun = _ => {}) {
+class Floor {
+    private readonly mesh: Mesh;
+    constructor(width:number, depth:number, rotate:MutateMeshFun) {
         this.mesh = Floor.createFloor(width, depth);
-        translate(this.mesh);
         rotate(this.mesh);
     }
-    static createFloor(width:number, depth:number): Mesh {
+    private static createFloor(width:number, depth:number): Mesh {
         const material = new MeshLambertMaterial( {
             color: 0xbdbdbd,
             side: DoubleSide
@@ -19,19 +18,14 @@ export class Floor {
             new PlaneBufferGeometry( width, depth ), material );
         g.name = "Floor";
         g.receiveShadow = true;
-        g.geometry.computeBoundingBox();
         return g;
     }
 
-    getCenter(): Vector3 {
-        return this.mesh.geometry.boundingBox.min.add(
-            (
-                this.mesh.geometry.boundingBox.max.sub(this.mesh.geometry.boundingBox.min)
-            ).divideScalar(2)
-        );
-    }
     addTo(scene: Scene): void {
         scene.add(this.mesh);
+    }
+    removeFrom(scene: Scene): void {
+        scene.remove(this.mesh);
     }
 }
 
@@ -95,18 +89,25 @@ class WallSlot {
 }
 export class Kitchen extends Observable {
     private walls: Wall[] = [];
-    private floor: Floor = null;
-    constructor(private readonly moduleLibrary : ModulesLibrary, private readonly scene : Scene) {
+    private readonly floor: Floor;
+    readonly center = new Vector3(0, 0, 0);
+    constructor(
+        private readonly moduleLibrary : ModulesLibrary,
+        private readonly scene : Scene,
+        readonly width: number,
+        readonly height: number,
+        readonly depth: number
+    ) {
         super();
+        this.floor = new Floor(width, depth,
+            (m:Mesh):void => { m.rotateX(- Math.PI / 2 ) }
+        );
+        this.floor.addTo(this.scene);
     }
 
     addWall(wall:Wall): void {
         this.walls.push(wall);
         this.scene.add(wall.mesh);
-    }
-    setFloor(floor:Floor): void {
-        this.floor = floor;
-        this.floor.addTo(this.scene);
     }
 
     fillWallWithModules(wall:Wall): void {
@@ -139,10 +140,7 @@ export class Kitchen extends Observable {
         });
         this.walls = [];
         this.notify(new Message("REMOVEALL"));
-        if (this.floor != null) {
-            this.scene.remove(this.floor.mesh);
-            this.floor = null;
-        }
+        this.floor.removeFrom(this.scene);
     }
 
     slotWidthF(): Promise<number> {
@@ -155,27 +153,27 @@ export const wallsFactories = (width:number, depth:number, height:number):Map<st
 
     const axisY = new Vector3(0, 1, 0);
 
-    const wallA = ():Wall => new Wall("A", width, height);
+    const wallA = ():Wall => new Wall("A", width, height,
+        (m:Mesh) => { m.translateZ(-depth/2) }
+        );
 
     const wallB = ():Wall => new Wall("B", depth, height,
-        (m:Mesh):void => {
+        (m:Mesh) => {
             m.translateX(width/2);
-            m.translateZ(depth/2);
         },
-        (m:Mesh):void => { m.rotateOnWorldAxis(axisY, - Math.PI / 2) }
+        (m:Mesh) => { m.rotateOnWorldAxis(axisY, - Math.PI / 2) }
     );
 
     const wallC = ():Wall => new Wall("C", width, height,
-        (m:Mesh):void => { m.translateZ(depth) },
-        (m:Mesh):void => { m.rotateZ(Math.PI) }
+        (m:Mesh) => { m.translateZ(depth/2) },
+        (m:Mesh) => { m.rotateZ(Math.PI) }
     );
 
     const wallD = ():Wall => new Wall("D", depth, height,
-        (m:Mesh):void => {
+        (m:Mesh) => {
             m.translateX(-width/2);
-            m.translateZ(depth/2);
         },
-        (m:Mesh):void => { m.rotateOnWorldAxis(axisY, Math.PI / 2) }
+        (m:Mesh) => { m.rotateOnWorldAxis(axisY, Math.PI / 2) }
     );
 
     return new Map([["A", wallA], ["B", wallB], ["C", wallC], ["D", wallD]]);
