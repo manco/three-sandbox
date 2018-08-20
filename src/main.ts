@@ -1,4 +1,4 @@
-import {ModulesLibrary, ModuleTypesAll} from './modules'
+import {ModulesLibrary, ModuleType, ModuleTypesAll, ModuleTypesLabels} from './modules'
 import {Kitchen, wallsFactories} from './kitchen'
 import {MouseTracker} from "./utils/mouseTracker";
 import {Renderer} from "./renderer";
@@ -24,7 +24,7 @@ const init = ():void => {
 
     const guiPanel = document.getElementById("gui-panel");
     ModuleTypesAll.forEach(t => {
-        guiPanel.innerHTML += `<label>${t}</label><ul id="modulesList-${t}"></ul>`
+        guiPanel.innerHTML += `<label>${ModuleTypesLabels.get(t)}</label><ul id="modulesList-${t}"></ul>`
     });
     document.getElementById("canvasContainer").appendChild( renderer.canvas() );
 
@@ -98,9 +98,9 @@ const init = ():void => {
     renderer.canvas().addEventListener('dblclick', () => camera.centerCamera());
 
     modulesLibrary.loadPrototypes([
-        { url: 'models/szafka_dol.obj', type: "STANDING" },
-        { url: 'models/blat.obj', type: "TABLETOP" },
-        { url: 'models/szafka_gora.obj', type: "HANGING" }
+        { url: 'models/szafka_dol.obj', type: ModuleType.STANDING },
+        { url: 'models/blat.obj', type: ModuleType.TABLETOP },
+        { url: 'models/szafka_gora.obj', type: ModuleType.HANGING }
     ]);
 
     mouseTracker.registerMouseMoveListener();

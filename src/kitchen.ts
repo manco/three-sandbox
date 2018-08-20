@@ -56,7 +56,7 @@ export class Wall {
 }
 
 class WallSlot {
-    private modulesByTypes: Map<string, Module> = new Map();
+    private modulesByTypes: Map<ModuleType, Module> = new Map();
     constructor(private readonly wall:Wall) {}
 
     put(module:Module, index:number, scene:Scene): void {
@@ -78,13 +78,13 @@ class WallSlot {
         return Array.from(this.modulesByTypes.values());
     }
 
-    remove(moduleType:string, scene:Scene): void {
+    remove(moduleType:ModuleType, scene:Scene): void {
         const module = this.modulesByTypes.get(moduleType);
         scene.remove(module.mesh);
         this.modulesByTypes.delete(moduleType);
     }
     removeAll(scene:Scene): void {
-        Array.from(this.modulesByTypes.keys()).forEach((t:string) => this.remove(t, scene));
+        Array.from(this.modulesByTypes.keys()).forEach((t) => this.remove(t, scene));
     }
 }
 export class Kitchen extends Observable {
@@ -114,11 +114,11 @@ export class Kitchen extends Observable {
         this.slotWidthF().then((slotWidth :number)=> {
             const wallWidth = Utils.meshWidthX(wall.mesh);
             const items = Math.floor(wallWidth / slotWidth);
-            ModuleTypesAll.forEach((type:string) => this.addModuleToWallSlots(wall, items, type))
+            ModuleTypesAll.forEach((type) => this.addModuleToWallSlots(wall, items, type))
         })
     }
 
-    addModuleToWallSlots(wall:Wall, count:number, moduleType:string): void {
+    addModuleToWallSlots(wall:Wall, count:number, moduleType:ModuleType): void {
         for (let i = 0; i < count; i++) {
             this.moduleLibrary
                 .createModule(moduleType)

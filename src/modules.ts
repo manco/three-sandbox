@@ -5,7 +5,7 @@ import {Mesh, MeshLambertMaterial} from "three";
 export class ModuleDefinition {
     constructor(
         readonly url:string,
-        readonly type:string
+        readonly type:ModuleType
     ) {}
 }
 
@@ -13,7 +13,7 @@ export class Module {
     private readonly id: string;
     constructor(
         readonly mesh:Mesh,
-        readonly type:string,
+        readonly type:ModuleType,
         readonly width:number,
         readonly depth:number,
         private readonly rotateFun:MutateMeshFun
@@ -58,12 +58,12 @@ export class ModulesLibrary {
         }
     }
 
-    createModule(type:string):Promise<Module> {
+    createModule(type:ModuleType):Promise<Module> {
         return this.ofType(type)
             .then((m:Module) => m.clone());
     }
 
-    ofType(type:string):Promise<Module> {
+    ofType(type:ModuleType):Promise<Module> {
         return this.prototypes
             .then((modules:Module[]) => modules.find((m:Module) => type === m.type));
     }
@@ -76,10 +76,14 @@ export class ModulesLibrary {
     }
 }
 
-export class ModuleType {
-    static get STANDING(): string { return "STANDING" };
-    static get TABLETOP(): string { return "TABLETOP" };
-    static get HANGING(): string { return "HANGING" };
+export enum ModuleType {
+    STANDING, TABLETOP, HANGING
 }
 
 export const ModuleTypesAll = [ModuleType.STANDING, ModuleType.TABLETOP, ModuleType.HANGING];
+export const ModuleTypesLabels = new Map<ModuleType, String>([
+    [ModuleType.STANDING, "SZAFKI STOJĄCE"],
+    [ModuleType.TABLETOP, "BLAT KUCHENNY"],
+    [ModuleType.HANGING, "SZAFKI WISZĄCE"]
+    ]
+);
