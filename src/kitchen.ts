@@ -1,6 +1,6 @@
 import {Module, ModulesLibrary, ModuleType, ModuleTypesAll} from './modules'
 import {Message, Observable} from "./utils/observable";
-import {DoubleSide, Mesh, MeshLambertMaterial, PlaneBufferGeometry, Scene, Vector3} from "three";
+import {DoubleSide, ExtrudeBufferGeometry, Mesh, MeshLambertMaterial, PlaneBufferGeometry, Scene, Shape, Vector3} from "three";
 import {MutateMeshFun, Utils} from "./utils/utils";
 
 class Floor {
@@ -35,7 +35,6 @@ export class Wall {
 
     constructor(name:string, width:number, height:number, readonly translateMesh:(_:Mesh) => void = (_:Mesh):void => {}, readonly rotateMesh:(_:Mesh) => void = (_:Mesh):void => {}) {
         this.mesh = Wall.createMesh(name, width, height);
-        this.mesh.translateY(height / 2);
         this.translateMesh(this.mesh);
         this.rotateMesh(this.mesh);
         this.mesh.geometry.computeBoundingBox();
@@ -48,7 +47,15 @@ export class Wall {
             color: 0xbdbdbd,
             side: DoubleSide
         } );
-        const mesh = new Mesh(new PlaneBufferGeometry(width, height), material );
+        const rect = new Shape();
+        const minx = -width/2;
+        const maxx = width/2;
+        rect.moveTo( minx, 0 );
+        rect.lineTo( minx, height );
+        rect.lineTo( maxx, height );
+        rect.lineTo( maxx, 0 );
+        rect.lineTo( minx, 0 );
+        const mesh = new Mesh(new ExtrudeBufferGeometry([rect], { depth: 8 }), material );
         mesh.name = "Wall" + name;
         mesh.receiveShadow = true;
         return mesh;
@@ -166,7 +173,7 @@ export const wallsFactories = (width:number, depth:number, height:number):Map<st
 
     const wallC = ():Wall => new Wall("C", width, height,
         (m:Mesh) => { m.translateZ(depth/2) },
-        (m:Mesh) => { m.rotateZ(Math.PI) }
+        (m:Mesh) => { m.rotateOnWorldAxis(axisY, Math.PI) }
     );
 
     const wallD = ():Wall => new Wall("D", depth, height,

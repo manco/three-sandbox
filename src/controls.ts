@@ -10,7 +10,6 @@ export class ControlsInitializer {
         controls.maxPolarAngle = Math.PI /2;
         controls.enablePan = false;
         controls.target = target;
-        console.log(`target param = ${target.toArray()}, set to ${controls.target.toArray()}`);
         controls.update();
         camera.subscribe((msg:Message) => {
             if (msg.type == "CENTERED") {

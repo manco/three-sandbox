@@ -12,6 +12,7 @@ export class Camera extends Observable {
         window.addEventListener( 'resize', () => this.setFrustum(), false );
     }
 
+    //TODO center based on kitchen height?
     centerCamera(): void {
         this.threeJsCamera.position.set(90, 150, 250);
         this.notify(new Message("CENTERED"));
