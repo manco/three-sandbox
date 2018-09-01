@@ -13,7 +13,7 @@ export class Renderer {
         this.renderer.shadowMap.type = BasicShadowMap;
 
         const resize = ():void => {
-            this.renderer.setSize( window.innerWidth, window.innerHeight );
+            this.renderer.setSize( window.innerWidth * 0.9, window.innerHeight * 0.9 );
         };
         resize();
 

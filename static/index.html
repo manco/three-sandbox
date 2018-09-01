@@ -6,13 +6,13 @@
 </head>
 <style>
     #gui-panel {
-        position : absolute;
         top : 10px;
         left : 10px;
+        overflow: auto;
+        max-height: 100vh;
     }
     input { width: 50px; }
-    body { margin: 0; }
-    canvas { width: 100%; height: 100% }
+    body { margin: 0; display: flex; }
     .selectedModule { background-color: green }
 </style>
 <body>
@@ -43,7 +43,10 @@
         <br/>
 
     </div>
-    <div id="canvasContainer"></div>
+    <div id="2ndcol">
+        <div id="canvasContainer"></div>
+        <div id="controls">tu będą kontrolki</div>
+    </div>
     <script src="dist/bundle.js"></script>
 </body>
 </html>

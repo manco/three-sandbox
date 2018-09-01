@@ -6,7 +6,7 @@ import {Camera} from "./camera";
 import {SceneFactory} from "./scene";
 import {ControlsInitializer} from "./controls";
 import {ModuleSelector} from './module-selector';
-import {OrbitControls} from "three";
+import {OrbitControls, Vector3} from "three";
 
 const scene = SceneFactory.create();
 
@@ -51,7 +51,11 @@ const init = ():void => {
         // @ts-ignore
         window.kitchen = kitchen;
 
-        const controls: OrbitControls = ControlsInitializer.initControls(camera, renderer, kitchen.center);
+        const controls: OrbitControls = ControlsInitializer.initControls(
+            camera,
+            renderer,
+            kitchen.center.clone().add(new Vector3(0, kitchen.height / 2, 0))
+        );
         // @ts-ignore
         window.controls = controls;
 

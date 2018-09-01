@@ -2,7 +2,7 @@ import {OrthographicCamera, Scene} from "three";
 import {Message, Observable} from "./utils/observable";
 
 export class Camera extends Observable {
-    private static readonly frustumSize: number = 500;
+    private static readonly frustumSize: number = 350;
     readonly threeJsCamera: OrthographicCamera = new OrthographicCamera(0,0,0,0);
     constructor(private readonly scene:Scene) {
         super();
@@ -12,18 +12,17 @@ export class Camera extends Observable {
         window.addEventListener( 'resize', () => this.setFrustum(), false );
     }
 
-    //TODO center based on kitchen height?
     centerCamera(): void {
-        this.threeJsCamera.position.set(90, 150, 250);
+        this.threeJsCamera.position.set(90, 450, 350);
         this.notify(new Message("CENTERED"));
     }
 
     private setFrustum():void {
         const aspect = window.innerWidth / window.innerHeight;
-        this.threeJsCamera.left = -Camera.frustumSize * aspect / 2;
-        this.threeJsCamera.right = Camera.frustumSize * aspect / 2;
-        this.threeJsCamera.top = Camera.frustumSize / 2;
-        this.threeJsCamera.bottom = -Camera.frustumSize / 2;
+        this.threeJsCamera.left = -Camera.frustumSize * aspect;
+        this.threeJsCamera.right = Camera.frustumSize * aspect;
+        this.threeJsCamera.top = Camera.frustumSize;
+        this.threeJsCamera.bottom = -Camera.frustumSize;
         this.threeJsCamera.near = -1000;
         this.threeJsCamera.updateProjectionMatrix();
     };
