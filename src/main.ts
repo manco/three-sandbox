@@ -14,10 +14,25 @@ const camera = new Camera(scene);
 // @ts-ignore
 window.camera = camera;
 
-const renderer = new Renderer(scene, camera);
 
 const modulesLibrary = new ModulesLibrary();
 
+const initRenderer = () => {
+    const canvasContainer = document.getElementById("canvasContainer");
+
+    const r = new Renderer(
+        scene,
+        camera,
+        canvasContainer.offsetWidth,
+        canvasContainer.offsetHeight
+    );
+
+    canvasContainer.appendChild( r.canvas() );
+
+    return r;
+};
+
+const renderer = initRenderer();
 const mouseTracker = new MouseTracker(renderer.canvas());
 
 const init = ():void => {
@@ -36,7 +51,6 @@ const init = ():void => {
     ModuleTypesAll.forEach(t => {
         guiPanel.innerHTML += `<label>${ModuleTypesLabels.get(t)}</label><ul id="modulesList-${t}"></ul>`
     });
-    document.getElementById("canvasContainer").appendChild( renderer.canvas() );
 
     const loadKitchen = ():void => {
 
@@ -77,7 +91,7 @@ const init = ():void => {
             kitchen.fillWallWithModules(wall);
         });
 
-        const moduleSelector : ModuleSelector = new ModuleSelector(camera, kitchen, mouseTracker);
+        const moduleSelector = new ModuleSelector(camera, kitchen, mouseTracker);
 
         renderer.canvas().addEventListener('click', () => moduleSelector.selectModule(), false);
 

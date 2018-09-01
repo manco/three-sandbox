@@ -8,12 +8,12 @@ export class Renderer {
         devicePixelRatio: window.devicePixelRatio
     });
 
-    constructor(private readonly scene:Scene, private readonly camera:Camera) {
+    constructor(private readonly scene:Scene, private readonly camera:Camera, canvasWidth:number, canvasHeight:number) {
         this.renderer.shadowMap.enabled = true;
         this.renderer.shadowMap.type = BasicShadowMap;
 
         const resize = ():void => {
-            this.renderer.setSize( window.innerWidth * 0.9, window.innerHeight * 0.9 );
+            this.renderer.setSize(canvasWidth, canvasHeight);
         };
         resize();
 
