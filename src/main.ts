@@ -23,6 +23,16 @@ const mouseTracker = new MouseTracker(renderer.canvas());
 const init = ():void => {
 
     const guiPanel = document.getElementById("gui-panel");
+    const controlsPanel = document.getElementById("controls");
+    const buttonZoomIn = controlsPanel.querySelector('button[id=\"zoomin\"]');
+    const buttonZoomOut = controlsPanel.querySelector('button[id=\"zoomout\"]');
+    const buttonCenter = controlsPanel.querySelector('button[id=\"center\"]');
+
+    buttonZoomIn.addEventListener('click', () => camera.zoomIn());
+    buttonZoomOut.addEventListener('click', () => camera.zoomOut());
+
+    buttonCenter.addEventListener('click', () => camera.centerCamera());
+
     ModuleTypesAll.forEach(t => {
         guiPanel.innerHTML += `<label>${ModuleTypesLabels.get(t)}</label><ul id="modulesList-${t}"></ul>`
     });
@@ -99,7 +109,10 @@ const init = ():void => {
         });
     };
     document.getElementById("drawKitchenButton").addEventListener('click', loadKitchen);
+
+    //** TODO DELETE when https://github.com/manco/three-sandbox/issues/14 closed
     renderer.canvas().addEventListener('dblclick', () => camera.centerCamera());
+    //**
 
     modulesLibrary.loadPrototypes([
         { url: 'models/szafka_dol.obj', type: ModuleType.STANDING },

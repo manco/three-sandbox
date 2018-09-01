@@ -14,7 +14,23 @@ export class Camera extends Observable {
 
     centerCamera(): void {
         this.threeJsCamera.position.set(90, 450, 350);
+        this.threeJsCamera.zoom = 1;
+        this.threeJsCamera.updateProjectionMatrix();
         this.notify(new Message("CENTERED"));
+    }
+
+    zoomIn(): void {
+        this.zoomChange(0.1);
+    }
+
+    zoomOut(): void {
+        this.zoomChange(-0.1);
+    }
+
+    private zoomChange(delta: number) {
+        const newZoom = this.threeJsCamera.zoom + delta;
+        this.threeJsCamera.zoom = Math.min(10, Math.max(0, newZoom));
+        this.threeJsCamera.updateProjectionMatrix();
     }
 
     private setFrustum():void {
