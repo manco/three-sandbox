@@ -1,4 +1,4 @@
-import {ModulesLibrary, ModuleType, ModuleTypesAll, ModuleTypesLabels} from './modules'
+import {ModulesLibrary, ModuleType} from './modules'
 import {Kitchen, wallsFactories} from './kitchen'
 import {MouseTracker} from "./utils/mouseTracker";
 import {Renderer} from "./renderer";
@@ -7,6 +7,7 @@ import {SceneFactory} from "./scene";
 import {ControlsInitializer} from "./controls";
 import {ModuleSelector} from './module-selector';
 import {OrbitControls, Vector3} from "three";
+import {View} from "./view";
 
 const scene = SceneFactory.create();
 
@@ -37,20 +38,11 @@ const mouseTracker = new MouseTracker(renderer.canvas());
 
 const init = ():void => {
 
-    const guiPanel = document.getElementById("gui-panel");
-    const controlsPanel = document.getElementById("controls");
-    const buttonZoomIn = controlsPanel.querySelector('button[id=\"zoomin\"]');
-    const buttonZoomOut = controlsPanel.querySelector('button[id=\"zoomout\"]');
-    const buttonCenter = controlsPanel.querySelector('button[id=\"center\"]');
+    const view = new View();
 
-    buttonZoomIn.addEventListener('click', () => camera.zoomIn());
-    buttonZoomOut.addEventListener('click', () => camera.zoomOut());
-
-    buttonCenter.addEventListener('click', () => camera.centerCamera());
-
-    ModuleTypesAll.forEach(t => {
-        guiPanel.innerHTML += `<label>${ModuleTypesLabels.get(t)}</label><ul id="modulesList-${t}"></ul>`
-    });
+    view.buttonZoomIn.addEventListener('click', () => camera.zoomIn());
+    view.buttonZoomOut.addEventListener('click', () => camera.zoomOut());
+    view.buttonCenter.addEventListener('click', () => camera.centerCamera());
 
     const loadKitchen = ():void => {
 
