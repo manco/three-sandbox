@@ -79,11 +79,23 @@ export class ModulesLibrary {
 export enum ModuleType {
     STANDING, TABLETOP, HANGING
 }
-
 export const ModuleTypesAll = [ModuleType.STANDING, ModuleType.TABLETOP, ModuleType.HANGING];
 export const ModuleTypesLabels = new Map<ModuleType, String>([
     [ModuleType.STANDING, "SZAFKI STOJĄCE"],
     [ModuleType.TABLETOP, "BLAT KUCHENNY"],
     [ModuleType.HANGING, "SZAFKI WISZĄCE"]
+    ]
+);
+
+export enum ModuleSubtype {
+    SHELVES, DRAWERS, SINK, OVEN, WASHER, FRIDGE
+}
+export const ModuleSubtypesLabels = new Map<ModuleSubtype, String>([
+        [ModuleSubtype.SHELVES, "półki"],
+        [ModuleSubtype.DRAWERS, "szuflady"],
+        [ModuleSubtype.SINK, "zlewozmywak"],
+        [ModuleSubtype.OVEN, "piekarnik"],
+        [ModuleSubtype.WASHER, "pralka"],
+        [ModuleSubtype.FRIDGE, "lodówka"]
     ]
 );
