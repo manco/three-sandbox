@@ -19,6 +19,19 @@ export class Camera extends Observable {
         this.notify(new Message("CENTERED"));
     }
 
+    rotateLeft() :void {
+
+    }
+    rotateRight() :void {
+
+    }
+    rotateUp() :void {
+
+    }
+    rotateDown() :void {
+
+    }
+
     zoomIn(): void {
         this.zoomChange(0.1);
     }

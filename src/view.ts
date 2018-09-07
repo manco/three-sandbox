@@ -21,6 +21,12 @@ export class View {
     public readonly controlsPanel;
     public readonly buttonZoomIn;
     public readonly buttonZoomOut;
+
+    public readonly buttonRotateLeft;
+    public readonly buttonRotateRight;
+    public readonly buttonRotateUp;
+    public readonly buttonRotateDown;
+
     public readonly buttonCenter;
 
     constructor() {
@@ -29,6 +35,11 @@ export class View {
         this.buttonZoomIn = this.controlsPanel.querySelector('button[id=\"zoomin\"]');
         this.buttonZoomOut = this.controlsPanel.querySelector('button[id=\"zoomout\"]');
         this.buttonCenter = this.controlsPanel.querySelector('button[id=\"center\"]');
+
+        this.buttonRotateLeft = document.querySelector('button[id=\"rotateleft\"');
+        this.buttonRotateRight = document.querySelector('button[id=\"rotateright\"');
+        this.buttonRotateUp = document.querySelector('button[id=\"rotateup\"');
+        this.buttonRotateDown = document.querySelector('button[id=\"rotatedown\"');
 
         ModuleTypesAll.forEach(t => {
             this.guiPanel.innerHTML += `<label>${View.ModuleTypesLabels.get(t)}</label><ul id="modulesList-${t}"></ul>`

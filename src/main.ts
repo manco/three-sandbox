@@ -42,6 +42,12 @@ const init = ():void => {
 
     view.buttonZoomIn.addEventListener('click', () => camera.zoomIn());
     view.buttonZoomOut.addEventListener('click', () => camera.zoomOut());
+
+    view.buttonRotateLeft.addEventListener('click', () => camera.rotateLeft());
+    view.buttonRotateRight.addEventListener('click', () => camera.rotateRight());
+    view.buttonRotateUp.addEventListener('click', () => camera.rotateUp());
+    view.buttonRotateDown.addEventListener('click', () => camera.rotateDown());
+
     view.buttonCenter.addEventListener('click', () => camera.centerCamera());
 
     const loadKitchen = ():void => {
