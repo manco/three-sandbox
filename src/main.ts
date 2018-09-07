@@ -4,10 +4,10 @@ import {MouseTracker} from "./utils/mouseTracker";
 import {Renderer} from "./renderer";
 import {Camera} from "./camera";
 import {SceneFactory} from "./scene";
-import {ControlsInitializer} from "./controls";
 import {ModuleSelector} from './module-selector';
-import {OrbitControls, Vector3} from "three";
+import {Vector3} from "three";
 import {View} from "./view";
+import {Controls} from "./controls";
 
 const scene = SceneFactory.create();
 
@@ -73,13 +73,12 @@ const init = ():void => {
         // @ts-ignore
         window.kitchen = kitchen;
 
-        const controls: OrbitControls = ControlsInitializer.initControls(
+        // @ts-ignore
+        window.controls = new Controls(
             camera,
             renderer,
             kitchen.center.clone().add(new Vector3(0, kitchen.height / 2, 0))
         );
-        // @ts-ignore
-        window.controls = controls;
 
         const factories = wallsFactories(width, depth, height);
 
