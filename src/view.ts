@@ -8,8 +8,10 @@ export class View {
     public static readonly ModuleSubtypesLabels = new Map<ModuleSubtype, string>([
         [ModuleSubtype.SHELVES, "półki"],
         [ModuleSubtype.DRAWERS, "szuflady"],
+        [ModuleSubtype.TABLETOP, "blat"],
         [ModuleSubtype.SINK, "zlewozmywak"],
         [ModuleSubtype.OVEN, "piekarnik"],
+        [ModuleSubtype.OVEN_TABLETOP, "palniki"],
         [ModuleSubtype.WASHER, "pralka"],
         [ModuleSubtype.FRIDGE, "lodówka"]
     ]);
