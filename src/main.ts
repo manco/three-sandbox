@@ -1,4 +1,4 @@
-import {ModulesLibrary, ModuleType} from './modules'
+import {ModulesLibrary, ModuleSubtype, ModuleSubtypesOfTypes, ModuleType} from './modules'
 import {Kitchen, wallsFactories} from './kitchen'
 import {MouseTracker} from "./utils/mouseTracker";
 import {Camera} from "./camera";
@@ -76,6 +76,20 @@ const init = ():void => {
                 const li = document.createElement("li");
                 li.id = objId;
                 li.innerHTML = `${msg.obj.mesh.name}`;
+
+                const select = document.createElement("select") as HTMLSelectElement;
+
+                ModuleSubtypesOfTypes.get(msg.obj.type)
+                    .map((stype:ModuleSubtype) => {
+                        const option = document.createElement("option") as HTMLOptionElement;
+                        option.value = `${stype}`;
+                        option.text = View.ModuleSubtypesLabels.get(stype);
+                        return option;
+                    })
+                    .forEach(o => select.add(o));
+
+                li.appendChild(select);
+
                 li.addEventListener('click', () => moduleSelector.selectModuleById(objId));
                 view.getModulesList(msg.obj.type).appendChild(li);
             }

@@ -14,6 +14,7 @@ export class Module {
     constructor(
         readonly mesh:Mesh,
         readonly type:ModuleType,
+        readonly subtype: ModuleSubtype,
         readonly width:number,
         readonly depth:number,
         private readonly rotateFun:MutateMeshFun
@@ -24,7 +25,7 @@ export class Module {
         this.rotateFun(this.mesh);
     }
     clone():Module {
-        const cloned = new Module(this.mesh.clone(), this.type, this.width, this.depth, this.rotateFun);
+        const cloned = new Module(this.mesh.clone(), this.type, this.subtype, this.width, this.depth, this.rotateFun);
         cloned.mesh.material = new MeshLambertMaterial();
         return cloned;
     }
@@ -46,6 +47,7 @@ export class ModulesLibrary {
                                 return new Module(
                                     m,
                                     d.type,
+                                    ModuleSubtypesOfTypes.get(d.type)[0],
                                     this.scale * Utils.meshWidthX(m),
                                     this.scale * Utils.meshDepthY(m),
                                     (mm:Mesh):void => { mm.rotateX(-Math.PI / 2); }
@@ -79,7 +81,14 @@ export class ModulesLibrary {
 export enum ModuleType {
     STANDING, TABLETOP, HANGING
 }
-export const ModuleTypesAll = [ModuleType.STANDING, ModuleType.TABLETOP, ModuleType.HANGING];
+
 export enum ModuleSubtype {
     SHELVES, DRAWERS, SINK, OVEN, WASHER, FRIDGE
 }
+export const ModuleSubtypesOfTypes: Map<ModuleType, ModuleSubtype[]> = new Map([
+    [ModuleType.STANDING, [ModuleSubtype.DRAWERS, ModuleSubtype.FRIDGE, ModuleSubtype.WASHER, ModuleSubtype.OVEN]],
+    [ModuleType.TABLETOP, [null]],
+    [ModuleType.HANGING, [ModuleSubtype.SHELVES]]
+]);
+
+export const ModuleTypesAll = Array.from(ModuleSubtypesOfTypes.keys());
