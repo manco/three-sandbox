@@ -40,16 +40,6 @@ const init = ():void => {
 
     const view = new View();
 
-    view.buttonZoomIn.addEventListener('click', () => camera.zoomIn());
-    view.buttonZoomOut.addEventListener('click', () => camera.zoomOut());
-
-    view.buttonRotateLeft.addEventListener('click', () => camera.rotateLeft());
-    view.buttonRotateRight.addEventListener('click', () => camera.rotateRight());
-    view.buttonRotateUp.addEventListener('click', () => camera.rotateUp());
-    view.buttonRotateDown.addEventListener('click', () => camera.rotateDown());
-
-    view.buttonCenter.addEventListener('click', () => camera.centerCamera());
-
     const loadKitchen = ():void => {
 
         const [ width, depth, height ]: [number, number, number] = [
@@ -73,12 +63,23 @@ const init = ():void => {
         // @ts-ignore
         window.kitchen = kitchen;
 
-        // @ts-ignore
-        window.controls = new Controls(
+        const controls = new Controls(
             camera,
             renderer,
             kitchen.center.clone().add(new Vector3(0, kitchen.height / 2, 0))
         );
+        // @ts-ignore
+        window.controls = controls;
+
+        view.buttonZoomIn.addEventListener('click', () => camera.zoomIn());
+        view.buttonZoomOut.addEventListener('click', () => camera.zoomOut());
+
+        view.buttonRotateLeft.addEventListener('click', () => controls.rotateLeft());
+        view.buttonRotateRight.addEventListener('click', () => controls.rotateRight());
+        view.buttonRotateUp.addEventListener('click', () => controls.rotateUp());
+        view.buttonRotateDown.addEventListener('click', () => controls.rotateDown());
+
+        view.buttonCenter.addEventListener('click', () => camera.centerCamera());
 
         const factories = wallsFactories(width, depth, height);
 

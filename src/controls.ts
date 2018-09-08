@@ -1,10 +1,12 @@
 import 'three/OrbitControls';
 import {Camera} from "./camera";
 import {Renderer} from "./renderer";
-import {OrbitControls, Vector3} from "three";
 import {Message} from "./utils/observable";
+import {OrbitControls, Vector3} from "three";
 
 export class Controls {
+    private static RotateStep = Math.PI * 0.05;
+
     private readonly orbitControls: OrbitControls;
     constructor(camera: Camera, renderer:Renderer, target: Vector3) {
         this.orbitControls = new OrbitControls( camera.threeJsCamera, renderer.canvas() );
@@ -17,5 +19,31 @@ export class Controls {
                 this.orbitControls.update();
             }
         });
+    }
+
+    rotateLeft() :void {
+        this.rotateHorizontally(Controls.RotateStep);
+    }
+
+    rotateRight() :void {
+        this.rotateHorizontally(-Controls.RotateStep);
+    }
+
+    private rotateHorizontally(angle: number) {
+        this.orbitControls.rotateLeft(angle);
+        this.orbitControls.update();
+    }
+
+    rotateUp() :void {
+        this.rotateVertically(Controls.RotateStep);
+    }
+
+    rotateDown() :void {
+        this.rotateVertically(-Controls.RotateStep);
+    }
+
+    private rotateVertically(angle: number) {
+        this.orbitControls.rotateUp(angle);
+        this.orbitControls.update();
     }
 }
