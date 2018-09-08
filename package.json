@@ -12,6 +12,7 @@
     "build": "webpack"
   },
   "engines": {
+    "npm": "6.4.1",
     "yarn": "1.9.4"
   },
   "devDependencies": {
