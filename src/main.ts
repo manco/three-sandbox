@@ -1,7 +1,6 @@
 import {ModulesLibrary, ModuleType} from './modules'
 import {Kitchen, wallsFactories} from './kitchen'
 import {MouseTracker} from "./utils/mouseTracker";
-import {Renderer} from "./renderer";
 import {Camera} from "./camera";
 import {SceneFactory} from "./scene";
 import {ModuleSelector} from './module-selector';
@@ -15,30 +14,13 @@ const camera = new Camera(scene);
 // @ts-ignore
 window.camera = camera;
 
-
 const modulesLibrary = new ModulesLibrary();
 
-const initRenderer = () => {
-    const canvasContainer = document.getElementById("canvasContainer");
+const view = new View(scene, camera);
 
-    const r = new Renderer(
-        scene,
-        camera,
-        canvasContainer.offsetWidth,
-        canvasContainer.offsetHeight
-    );
-
-    canvasContainer.appendChild( r.canvas() );
-
-    return r;
-};
-
-const renderer = initRenderer();
-const mouseTracker = new MouseTracker(renderer.canvas());
+const mouseTracker = new MouseTracker(view.canvas);
 
 const init = ():void => {
-
-    const view = new View();
 
     const loadKitchen = ():void => {
 
@@ -48,24 +30,19 @@ const init = ():void => {
             (document.getElementById("kitchen-height") as HTMLInputElement).valueAsNumber
         ];
 
-        const chosenWallNames = [].slice.call(document.getElementsByClassName("gui-checkbox"))
-            .filter(c => c.checked)
-            .map(w => w.value);
-
-
         // @ts-ignore
         if (window.kitchen !== undefined) {
             // @ts-ignore
             window.kitchen.removeAll();
         }
 
-        const kitchen : Kitchen = new Kitchen(modulesLibrary, scene, width, height, depth);
+        const kitchen = new Kitchen(modulesLibrary, scene, width, height, depth);
         // @ts-ignore
         window.kitchen = kitchen;
 
         const controls = new Controls(
             camera,
-            renderer,
+            view.canvas,
             kitchen.center.clone().add(new Vector3(0, kitchen.height / 2, 0))
         );
         // @ts-ignore
@@ -83,7 +60,7 @@ const init = ():void => {
 
         const factories = wallsFactories(width, depth, height);
 
-        chosenWallNames.forEach((wallName:string) => {
+        view.guiCheckboxesValues().forEach((wallName:string) => {
             const wall = factories.get(wallName)();
             kitchen.addWall(wall);
             kitchen.fillWallWithModules(wall);
@@ -91,7 +68,7 @@ const init = ():void => {
 
         const moduleSelector = new ModuleSelector(camera, kitchen, mouseTracker);
 
-        renderer.canvas().addEventListener('click', () => moduleSelector.selectModule(), false);
+        view.canvas.addEventListener('click', () => moduleSelector.selectModule(), false);
 
         kitchen.subscribe(msg => {
             if (msg.type === "ADD") {
@@ -100,11 +77,10 @@ const init = ():void => {
                 li.id = objId;
                 li.innerHTML = `${msg.obj.mesh.name}`;
                 li.addEventListener('click', () => moduleSelector.selectModuleById(objId));
-                document.getElementById('modulesList-' + msg.obj.type).appendChild(li);
+                view.getModulesList(msg.obj.type).appendChild(li);
             }
             if (msg.type === "REMOVEALL") {
-                [].slice.call(document.querySelectorAll('[id^=\"modulesList-\"]'))
-                    .forEach((ml:Element) => ml.innerHTML = '');
+                view.getAllModulesLists().forEach((ml:Element) => ml.innerHTML = '');
             }
         });
 
@@ -123,7 +99,7 @@ const init = ():void => {
     document.getElementById("drawKitchenButton").addEventListener('click', loadKitchen);
 
     //** TODO DELETE when https://github.com/manco/three-sandbox/issues/14 closed
-    renderer.canvas().addEventListener('dblclick', () => camera.centerCamera());
+    view.canvas.addEventListener('dblclick', () => camera.centerCamera());
     //**
 
     modulesLibrary.loadPrototypes([
@@ -137,7 +113,7 @@ const init = ():void => {
 
 const animate = ():void => {
     requestAnimationFrame( animate );
-    renderer.render();
+    view.render();
 };
 
 init();

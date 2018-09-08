@@ -1,4 +1,7 @@
 import {ModuleSubtype, ModuleType, ModuleTypesAll} from "./modules";
+import {Renderer} from "./renderer";
+import {Camera} from "./camera";
+import {Scene} from "three";
 
 export class View {
 
@@ -17,33 +20,66 @@ export class View {
         [ModuleType.HANGING, "SZAFKI WISZĄCE"]
     ]);
 
-    public readonly guiPanel;
-    public readonly controlsPanel;
+    public readonly guiPanel = document.getElementById("gui-panel");
+    public readonly controlsPanel = document.getElementById("controls");
+    public readonly canvas;
+
     public readonly buttonZoomIn;
     public readonly buttonZoomOut;
 
-    public readonly buttonRotateLeft;
-    public readonly buttonRotateRight;
-    public readonly buttonRotateUp;
-    public readonly buttonRotateDown;
+    public readonly buttonRotateLeft = document.querySelector('button[id=\"rotateleft\"');
+    public readonly buttonRotateRight = document.querySelector('button[id=\"rotateright\"');
+    public readonly buttonRotateUp = document.querySelector('button[id=\"rotateup\"');
+    public readonly buttonRotateDown = document.querySelector('button[id=\"rotatedown\"');
 
     public readonly buttonCenter;
 
-    constructor() {
-        this.guiPanel = document.getElementById("gui-panel");
-        this.controlsPanel = document.getElementById("controls");
+    private readonly renderer: Renderer;
+
+    constructor(scene: Scene, camera: Camera) {
+        const canvasContainer = document.getElementById("canvasContainer");
+
+        this.renderer = new Renderer(
+            scene,
+            camera,
+            canvasContainer.offsetWidth,
+            canvasContainer.offsetHeight
+        );
+
+        this.canvas = this.renderer.canvas();
+
+        canvasContainer.appendChild(this.canvas);
+
         this.buttonZoomIn = this.controlsPanel.querySelector('button[id=\"zoomin\"]');
         this.buttonZoomOut = this.controlsPanel.querySelector('button[id=\"zoomout\"]');
         this.buttonCenter = this.controlsPanel.querySelector('button[id=\"center\"]');
-
-        this.buttonRotateLeft = document.querySelector('button[id=\"rotateleft\"');
-        this.buttonRotateRight = document.querySelector('button[id=\"rotateright\"');
-        this.buttonRotateUp = document.querySelector('button[id=\"rotateup\"');
-        this.buttonRotateDown = document.querySelector('button[id=\"rotatedown\"');
 
         ModuleTypesAll.forEach(t => {
             this.guiPanel.innerHTML += `<label>${View.ModuleTypesLabels.get(t)}</label><ul id="modulesList-${t}"></ul>`
         });
     }
+
+    public getModulesList(type: string) {
+        return document.getElementById('modulesList-' + type);
+    }
+
+    public getAllModulesLists() {
+        return View.toArray(document.querySelectorAll('[id^=\"modulesList-\"]'));
+    }
+
+    public guiCheckboxesValues(): string[] {
+        return View.toArray(document.querySelectorAll('[id^=\"checkbox-wall\"'))
+            .filter(c => c.checked)
+            .map(w => w.value);
+    }
+
+    public render() {
+        this.renderer.render();
+    }
+
+    private static toArray<T>(htmlCollection: NodeListOf<Element>) {
+        return [].slice.call(htmlCollection);
+    }
+
 }
 
