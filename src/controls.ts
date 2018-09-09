@@ -1,7 +1,7 @@
-import 'three/OrbitControls';
 import {Camera} from "./camera";
 import {Message} from "./utils/observable";
-import {OrbitControls, Vector3} from "three";
+import {Vector3} from "three";
+import {OrbitControls} from "./utils/OrbitControls";
 
 export class Controls {
     private static RotateStep = Math.PI * 0.05;
@@ -10,7 +10,6 @@ export class Controls {
     constructor(camera: Camera, canvas:HTMLCanvasElement, target: Vector3) {
         this.orbitControls = new OrbitControls( camera.threeJsCamera, canvas );
         this.orbitControls.maxPolarAngle = Math.PI /2;
-        this.orbitControls.enablePan = false;
         this.orbitControls.target = target;
         this.orbitControls.update();
         camera.subscribe((msg:Message) => {
