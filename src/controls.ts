@@ -1,22 +1,28 @@
 import {Camera} from "./camera";
-import {Message} from "./utils/observable";
 import {Vector3} from "three";
 import {OrbitControls} from "./utils/OrbitControls";
 
 export class Controls {
     private static RotateStep = Math.PI * 0.05;
+    private static PanStep = 50;
 
     private readonly orbitControls: OrbitControls;
-    constructor(camera: Camera, canvas:HTMLCanvasElement, target: Vector3) {
+    constructor(camera: Camera, canvas: HTMLCanvasElement, target: Vector3) {
         this.orbitControls = new OrbitControls( camera.threeJsCamera, canvas );
         this.orbitControls.maxPolarAngle = Math.PI /2;
         this.orbitControls.target = target;
         this.orbitControls.update();
-        camera.subscribe((msg:Message) => {
-            if (msg.type == "CENTERED") {
-                this.orbitControls.update();
-            }
-        });
+        this.orbitControls.saveState();
+    }
+
+    panLeft() {
+        this.orbitControls.pan(Controls.PanStep, 0);
+        this.orbitControls.update();
+    }
+
+    panRight() {
+        this.orbitControls.pan(-Controls.PanStep, 0);
+        this.orbitControls.update();
     }
 
     rotateLeft() :void {
@@ -43,5 +49,9 @@ export class Controls {
     private rotateVertically(angle: number) {
         this.orbitControls.rotateUp(angle);
         this.orbitControls.update();
+    }
+
+    reset() {
+        this.orbitControls.reset();
     }
 }

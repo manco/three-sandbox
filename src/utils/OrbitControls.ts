@@ -194,19 +194,10 @@ export class OrbitControls extends EventDispatcher {
 
     };
 
-    getPolarAngle() {
-        return this.spherical.phi;
-    };
-
-    getAzimuthalAngle() {
-        return this.spherical.theta;
-    };
-
     saveState() {
         this.target0.copy( this.target );
         this.position0.copy( this.object.position );
         this.zoom0 = this.object.zoom;
-
     };
 
     reset() {
@@ -235,22 +226,22 @@ export class OrbitControls extends EventDispatcher {
         this.sphericalDelta.phi -= angle;
     };
 
-    panLeft( distance, objectMatrix ) {
+    private panLeft( distance ) {
 
         const v = new Vector3();
 
-		v.setFromMatrixColumn( objectMatrix, 0 ); // get X column of objectMatrix
+		v.setFromMatrixColumn( this.object.matrix, 0 ); // get X column of objectMatrix
 		v.multiplyScalar( - distance );
 		this.panOffset.add( v );
     };
 
-    panUp( distance, objectMatrix ) {
+    private panUp( distance ) {
 
         const v = new Vector3();
 		if ( this.screenSpacePanning === true ) {
-			v.setFromMatrixColumn( objectMatrix, 1 );
+			v.setFromMatrixColumn( this.object.matrix, 1 );
 		} else {
-			v.setFromMatrixColumn( objectMatrix, 0 );
+			v.setFromMatrixColumn( this.object.matrix, 0 );
 			v.crossVectors( this.object.up, v );
 		}
 		v.multiplyScalar( distance );
@@ -274,13 +265,13 @@ export class OrbitControls extends EventDispatcher {
                 const targetDistance = offset.length() * Math.tan( ( asPerspectiveCam.fov / 2 ) * Math.PI / 180.0 );
 
                 // we use only clientHeight here so aspect ratio does not distort speed
-                this.panLeft( 2 * deltaX * targetDistance / element.clientHeight, this.object.matrix );
-                this.panUp( 2 * deltaY * targetDistance / element.clientHeight, this.object.matrix );
+                this.panLeft( 2 * deltaX * targetDistance / element.clientHeight );
+                this.panUp( 2 * deltaY * targetDistance / element.clientHeight );
 
             } else if ( asOrthographicCam.isOrthographicCamera ) {
 
-                this.panLeft( deltaX * ( asOrthographicCam.right - asOrthographicCam.left ) / this.object.zoom / element.clientWidth, this.object.matrix );
-                this.panUp( deltaY * ( asOrthographicCam.top - asOrthographicCam.bottom ) / this.object.zoom / element.clientHeight, this.object.matrix );
+                this.panLeft( deltaX * ( asOrthographicCam.right - asOrthographicCam.left ) / this.object.zoom / element.clientWidth );
+                this.panUp( deltaY * ( asOrthographicCam.top - asOrthographicCam.bottom ) / this.object.zoom / element.clientHeight );
 
             } else {
 

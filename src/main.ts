@@ -51,12 +51,19 @@ const init = ():void => {
         view.buttonZoomIn.addEventListener('click', () => camera.zoomIn());
         view.buttonZoomOut.addEventListener('click', () => camera.zoomOut());
 
+        view.buttonPanLeft.addEventListener('click', () => controls.panLeft());
+        view.buttonPanRight.addEventListener('click', () => controls.panRight());
+
         view.buttonRotateLeft.addEventListener('click', () => controls.rotateLeft());
         view.buttonRotateRight.addEventListener('click', () => controls.rotateRight());
         view.buttonRotateUp.addEventListener('click', () => controls.rotateUp());
         view.buttonRotateDown.addEventListener('click', () => controls.rotateDown());
 
-        view.buttonCenter.addEventListener('click', () => camera.centerCamera());
+        view.buttonCenter.addEventListener('click', () => controls.reset());
+
+        //** TODO DELETE when https://github.com/manco/three-sandbox/issues/14 closed
+        view.canvas.addEventListener('dblclick', () => controls.reset());
+        //**
 
         const factories = wallsFactories(width, depth, height);
 
@@ -111,10 +118,6 @@ const init = ():void => {
         });
     };
     document.getElementById("drawKitchenButton").addEventListener('click', loadKitchen);
-
-    //** TODO DELETE when https://github.com/manco/three-sandbox/issues/14 closed
-    view.canvas.addEventListener('dblclick', () => camera.centerCamera());
-    //**
 
     modulesLibrary.loadPrototypes([
         { url: 'models/szafka_dol.obj', type: ModuleType.STANDING },

@@ -1,5 +1,5 @@
 import {OrthographicCamera, Scene} from "three";
-import {Message, Observable} from "./utils/observable";
+import {Observable} from "./utils/observable";
 
 export class Camera extends Observable {
     private static readonly frustumSize: number = 350;
@@ -8,30 +8,11 @@ export class Camera extends Observable {
         super();
         scene.add(this.threeJsCamera);
         this.setFrustum();
-        this.centerCamera();
+        this.threeJsCamera.position.set(90, 450, 350);
         window.addEventListener( 'resize', () => this.setFrustum(), false );
     }
 
-    centerCamera(): void {
-        this.threeJsCamera.position.set(90, 450, 350);
-        this.threeJsCamera.zoom = 1;
-        this.threeJsCamera.updateProjectionMatrix();
-        this.notify(new Message("CENTERED"));
-    }
-
-    rotateLeft() :void {
-
-    }
-    rotateRight() :void {
-
-    }
-    rotateUp() :void {
-
-    }
-    rotateDown() :void {
-
-    }
-
+    //TODO przeniesc obsluge do controls
     zoomIn(): void {
         this.zoomChange(0.1);
     }

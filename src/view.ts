@@ -26,15 +26,18 @@ export class View {
     public readonly controlsPanel = document.getElementById("controls");
     public readonly canvas;
 
-    public readonly buttonZoomIn;
-    public readonly buttonZoomOut;
+    public readonly buttonZoomIn = this.controlsPanel.querySelector('button[id=\"zoomin\"]');
+    public readonly buttonZoomOut = this.controlsPanel.querySelector('button[id=\"zoomout\"]');
+    public readonly buttonCenter = this.controlsPanel.querySelector('button[id=\"center\"]');
 
-    public readonly buttonRotateLeft = document.querySelector('button[id=\"rotateleft\"');
-    public readonly buttonRotateRight = document.querySelector('button[id=\"rotateright\"');
-    public readonly buttonRotateUp = document.querySelector('button[id=\"rotateup\"');
-    public readonly buttonRotateDown = document.querySelector('button[id=\"rotatedown\"');
+    public readonly buttonPanLeft = this.controlsPanel.querySelector('button[id=\"panleft\"');
+    public readonly buttonPanRight = this.controlsPanel.querySelector('button[id=\"panright\"');
 
-    public readonly buttonCenter;
+    public readonly buttonRotateLeft = this.controlsPanel.querySelector('button[id=\"rotateleft\"');
+    public readonly buttonRotateRight = this.controlsPanel.querySelector('button[id=\"rotateright\"');
+    public readonly buttonRotateUp = this.controlsPanel.querySelector('button[id=\"rotateup\"');
+    public readonly buttonRotateDown = this.controlsPanel.querySelector('button[id=\"rotatedown\"');
+
 
     private readonly renderer: Renderer;
 
@@ -51,10 +54,6 @@ export class View {
         this.canvas = this.renderer.canvas();
 
         canvasContainer.appendChild(this.canvas);
-
-        this.buttonZoomIn = this.controlsPanel.querySelector('button[id=\"zoomin\"]');
-        this.buttonZoomOut = this.controlsPanel.querySelector('button[id=\"zoomout\"]');
-        this.buttonCenter = this.controlsPanel.querySelector('button[id=\"center\"]');
 
         ModuleTypesAll.forEach(t => {
             this.guiPanel.innerHTML += `<label>${View.ModuleTypesLabels.get(t)}</label><ul id="modulesList-${t}"></ul>`
