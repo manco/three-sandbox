@@ -16,12 +16,15 @@ export class Controls {
     }
 
     panLeft() {
-        this.orbitControls.pan(Controls.PanStep, 0);
-        this.orbitControls.update();
+        this.panHorizontally(Controls.PanStep);
     }
 
     panRight() {
-        this.orbitControls.pan(-Controls.PanStep, 0);
+        this.panHorizontally(-Controls.PanStep);
+    }
+
+    private panHorizontally(deltaX: number) {
+        this.orbitControls.pan(deltaX, 0);
         this.orbitControls.update();
     }
 

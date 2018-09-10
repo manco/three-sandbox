@@ -3,7 +3,7 @@
 9. load models from somewhere else
 
 TS:
- TS#2: przepisac OrbitControls i Loader na ts
+ TS#2: przepisac Loader na ts
 
 10. zoptymalizowac rozmiar bundle'a!
 
