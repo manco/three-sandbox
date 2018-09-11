@@ -80,9 +80,9 @@ const init = ():void => {
         kitchen.subscribe(msg => {
             if (msg.type === "ADD") {
                 const objId = `${msg.obj.id}`;
-                const li = document.createElement("li");
+                const li = document.createElement("li") as HTMLLIElement;
                 li.id = objId;
-                li.innerHTML = `${msg.obj.mesh.name}`;
+                //li.innerHTML = `${msg.obj.mesh.name}`; TODO moze bez tego lepiej?
 
                 const select = document.createElement("select") as HTMLSelectElement;
 

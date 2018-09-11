@@ -56,11 +56,18 @@ export class View {
         canvasContainer.appendChild(this.canvas);
 
         ModuleTypesAll.forEach(t => {
-            this.guiPanel.innerHTML += `<label>${View.ModuleTypesLabels.get(t)}</label><ul id="modulesList-${t}"></ul>`
+            const ul = document.createElement("ul") as HTMLUListElement;
+            ul.id = `modulesList-${t}`;
+            const label = document.createElement("label") as HTMLLabelElement;
+            label.setAttribute("for", ul.id);
+            label.innerText = View.ModuleTypesLabels.get(t);
+            this.guiPanel
+                .appendChild(ul)
+                .appendChild(label);
         });
     }
 
-    public getModulesList(type: string) {
+    public getModulesList(type: ModuleType) {
         return document.getElementById('modulesList-' + type);
     }
 
