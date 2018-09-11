@@ -56,14 +56,20 @@ export class View {
         canvasContainer.appendChild(this.canvas);
 
         ModuleTypesAll.forEach(t => {
+
             const ul = document.createElement("ul") as HTMLUListElement;
             ul.id = `modulesList-${t}`;
+
             const label = document.createElement("label") as HTMLLabelElement;
             label.setAttribute("for", ul.id);
             label.innerText = View.ModuleTypesLabels.get(t);
-            this.guiPanel
-                .appendChild(ul)
-                .appendChild(label);
+
+            const buttonChooseColor = document.createElement("button") as HTMLButtonElement;
+            buttonChooseColor.innerText = "kolor";
+            buttonChooseColor.addEventListener("click", () => alert("jeszcze nie działa :)"));
+            this.guiPanel.appendChild(label);
+            this.guiPanel.appendChild(buttonChooseColor);
+            this.guiPanel.appendChild(ul);
         });
     }
 

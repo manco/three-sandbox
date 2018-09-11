@@ -16,5 +16,4 @@ O ROZPOZNANIE: nakładanie tekstur, jak to się robi i czy łatwiej mieć osobn�
 O Przycisk 'zamów' i wysłanie emaila <--- jak to zabezpieczyć?
 
 lista szafek:
-- lepsze nazwy dla elementów
 - operacje na poziomie grupy (zmiana koloru)

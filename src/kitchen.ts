@@ -153,7 +153,6 @@ export class Kitchen extends Observable {
     slotWidthF(): Promise<number> {
         return this.moduleLibrary.ofType(ModuleType.STANDING).then((m:Module) => m.width);
     }
-
 }
 
 export const wallsFactories = (width:number, depth:number, height:number):Map<string, () => Wall> => {
