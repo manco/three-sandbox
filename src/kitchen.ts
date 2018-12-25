@@ -29,6 +29,7 @@ class Floor {
     }
 }
 
+//TODO potrzebne tylko w wallsFactories, zrefaktoryzowac by nie trzeba bylo exportowac
 export class Wall {
     readonly mesh: Mesh;
     readonly wallSlots: WallSlot[] = Array.from(new Array(50), () => new WallSlot(this));

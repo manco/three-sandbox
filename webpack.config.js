@@ -1,6 +1,6 @@
 const path = require('path');
 const webpack = require('webpack');
-
+//TODO jest juz 0.99.0 three
 module.exports = {
     entry: './src/main.ts',
     module: {
@@ -18,10 +18,7 @@ module.exports = {
         publicPath: '/dist/'
     },
     resolve: {
-        extensions: [ '.tsx', '.ts', '.js' ],
-        alias: {
-            'three/OBJLoader': path.join(__dirname, 'node_modules/three/examples/js/loaders/OBJLoader.js')
-        }
+        extensions: [ '.tsx', '.ts', '.js' ]
     },
     plugins:[
         new webpack.ProvidePlugin({

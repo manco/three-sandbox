@@ -1,4 +1,4 @@
-import 'three/OBJLoader';
+import '../../node_modules/three/examples/js/loaders/OBJLoader';
 import {Mesh, Object3D} from "three";
 
 const noop = (xhr) => {};
