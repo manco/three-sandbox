@@ -1,6 +1,5 @@
 const path = require('path');
 const webpack = require('webpack');
-//TODO jest juz 0.99.0 three
 module.exports = {
     entry: './src/main.ts',
     module: {
