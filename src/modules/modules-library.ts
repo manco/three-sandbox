@@ -1,35 +1,10 @@
-import {PromisingLoader} from "./utils/loader";
-import {Utils, MutateMeshFun} from "./utils/utils";
-import {Mesh, MeshLambertMaterial} from "three";
-
-export class ModuleDefinition {
-    constructor(
-        readonly url:string,
-        readonly type:ModuleType
-    ) {}
-}
-
-export class Module {
-    private readonly id: string;
-    constructor(
-        readonly mesh:Mesh,
-        readonly type:ModuleType,
-        readonly subtype: ModuleSubtype,
-        readonly width:number,
-        readonly depth:number,
-        private readonly rotateFun:MutateMeshFun
-    ) {
-        this.id = mesh.uuid;
-    }
-    initRotation():void {
-        this.rotateFun(this.mesh);
-    }
-    clone():Module {
-        const cloned = new Module(this.mesh.clone(), this.type, this.subtype, this.width, this.depth, this.rotateFun);
-        cloned.mesh.material = new MeshLambertMaterial();
-        return cloned;
-    }
-}
+import {PromisingLoader} from "../utils/loader";
+import {Utils} from "../utils/utils";
+import {Mesh} from "three";
+import {Module} from "./module";
+import {ModuleDefinition} from "./module";
+import {ModuleSubtypesOfTypes} from "./types";
+import {ModuleType} from "./types";
 
 export class ModulesLibrary {
     private loader: PromisingLoader = new PromisingLoader();
@@ -37,7 +12,7 @@ export class ModulesLibrary {
     private prototypes: Promise<Module[]> = null;
 
     loadPrototypes(definitions: ModuleDefinition[]):void {
-        if (this.prototypes == null) {
+        if (this.prototypes === null) {
             this.prototypes = Promise.all(
                 definitions.map(
                     (d:ModuleDefinition) =>
@@ -78,17 +53,3 @@ export class ModulesLibrary {
     }
 }
 
-export enum ModuleType {
-    STANDING, TABLETOP, HANGING
-}
-
-export enum ModuleSubtype {
-    SHELVES, DRAWERS, TABLETOP, SINK, OVEN, OVEN_TABLETOP, WASHER, FRIDGE
-}
-export const ModuleSubtypesOfTypes: Map<ModuleType, ModuleSubtype[]> = new Map([
-    [ModuleType.STANDING, [ModuleSubtype.DRAWERS, ModuleSubtype.FRIDGE, ModuleSubtype.WASHER, ModuleSubtype.OVEN]],
-    [ModuleType.TABLETOP, [ModuleSubtype.TABLETOP, ModuleSubtype.SINK, ModuleSubtype.OVEN_TABLETOP]],
-    [ModuleType.HANGING, [ModuleSubtype.SHELVES]]
-]);
-
-export const ModuleTypesAll = Array.from(ModuleSubtypesOfTypes.keys());

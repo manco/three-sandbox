@@ -1,7 +1,7 @@
 import {MeshSelector} from "./utils/mesh-selector";
 import {Message, Observable} from "./utils/observable";
 import {Kitchen} from "./kitchen"
-import {Module} from "./modules"
+import {Module} from "./modules/module"
 import {Camera} from "./camera";
 import {MouseTracker} from "./utils/mouseTracker";
 import {Mesh} from "three";

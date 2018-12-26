@@ -1,4 +1,4 @@
-import {ModulesLibrary, ModuleSubtype, ModuleSubtypesOfTypes, ModuleType} from './modules'
+import {ModulesLibrary} from './modules/modules-library'
 import {Kitchen, wallsFactories} from './kitchen'
 import {MouseTracker} from "./utils/mouseTracker";
 import {Camera} from "./camera";
@@ -7,6 +7,9 @@ import {ModuleSelector} from './module-selector';
 import {Vector3} from "three";
 import {View} from "./view";
 import {Controls} from "./controls";
+import {ModuleSubtypesOfTypes} from "./modules/types";
+import {ModuleSubtype} from "./modules/types";
+import {ModuleType} from "./modules/types";
 
 const scene = SceneFactory.create();
 
@@ -107,7 +110,7 @@ const init = ():void => {
 
         moduleSelector.subscribe(msg => {
             const objElement = document.getElementById(msg.obj.id);
-            if (objElement != null) {
+            if (objElement !== null) {
                 if (msg.type === "DESELECTED") {
                     objElement.className = "";
                 }

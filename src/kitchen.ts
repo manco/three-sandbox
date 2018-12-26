@@ -1,7 +1,10 @@
-import {Module, ModulesLibrary, ModuleType, ModuleTypesAll} from './modules'
+import {ModulesLibrary} from './modules/modules-library'
 import {Message, Observable} from "./utils/observable";
 import {DoubleSide, ExtrudeBufferGeometry, Mesh, MeshLambertMaterial, PlaneBufferGeometry, Scene, Shape, Vector3} from "three";
 import {MutateMeshFun, Utils} from "./utils/utils";
+import {Module} from "./modules/module";
+import {ModuleTypesAll} from "./modules/types";
+import {ModuleType} from "./modules/types";
 
 class Floor {
     private readonly mesh: Mesh;

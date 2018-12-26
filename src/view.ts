@@ -1,7 +1,9 @@
-import {ModuleSubtype, ModuleType, ModuleTypesAll} from "./modules";
+import {ModuleType} from "./modules/types";
 import {Renderer} from "./renderer";
 import {Camera} from "./camera";
 import {Scene} from "three";
+import {ModuleTypesAll} from "./modules/types";
+import {ModuleSubtype} from "./modules/types";
 
 export class View {
 
