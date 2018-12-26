@@ -28,12 +28,12 @@ export class MeshSelector {
     }
 
     private select(meshFun: () => Mesh):Mesh {
-        if (this.selected != null) {
+        if (this.selected !== null) {
             MeshSelector.emissive(this.selected).setHex(this.previousSelectedEmissiveColor);
             this.selected = null;
         }
         const mesh = meshFun();
-        if (mesh != null) {
+        if (mesh !== null) {
             this.previousSelectedEmissiveColor = MeshSelector.emissive(mesh).getHex();
             this.selected = mesh;
             this.marker.mark(mesh);

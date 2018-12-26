@@ -1,11 +1,11 @@
-import {ModuleType} from "./modules/types";
+import {ModuleType} from "../model/modules/types";
 import {Renderer} from "./renderer";
 import {Camera} from "./camera";
 import {Scene} from "three";
-import {ModuleTypesAll} from "./modules/types";
-import {ModuleSubtype} from "./modules/types";
+import {ModuleTypesAll} from "../model/modules/types";
+import {ModuleSubtype} from "../model/modules/types";
 
-export class View {
+export class Page {
 
     public static readonly ModuleSubtypesLabels = new Map<ModuleSubtype, string>([
         [ModuleSubtype.SHELVES, "półki"],
@@ -64,7 +64,7 @@ export class View {
 
             const label = document.createElement("label") as HTMLLabelElement;
             label.setAttribute("for", ul.id);
-            label.innerText = View.ModuleTypesLabels.get(t);
+            label.innerText = Page.ModuleTypesLabels.get(t);
 
             const buttonChooseColor = document.createElement("button") as HTMLButtonElement;
             buttonChooseColor.innerText = "kolor";
@@ -80,11 +80,11 @@ export class View {
     }
 
     public getAllModulesLists() {
-        return View.toArray(document.querySelectorAll('[id^=\"modulesList-\"]'));
+        return Page.toArray(document.querySelectorAll('[id^=\"modulesList-\"]'));
     }
 
     public guiCheckboxesValues(): string[] {
-        return View.toArray(document.querySelectorAll('[id^=\"checkbox-wall\"'))
+        return Page.toArray(document.querySelectorAll('[id^=\"checkbox-wall\"'))
             .filter(c => c.checked)
             .map(w => w.value);
     }

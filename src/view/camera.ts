@@ -1,5 +1,5 @@
 import {OrthographicCamera, Scene} from "three";
-import {Observable} from "./utils/observable";
+import {Observable} from "../utils/observable";
 
 export class Camera extends Observable {
     private static readonly frustumSize: number = 350;

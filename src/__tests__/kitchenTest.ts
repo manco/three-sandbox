@@ -1,4 +1,4 @@
-import {Kitchen} from "../kitchen";
+import {Kitchen} from "../model/kitchen/kitchen";
 import {Scene} from "three";
 
 const dummy = null;

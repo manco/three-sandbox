@@ -1,6 +1,6 @@
 import {Camera} from "./camera";
 import {Vector3} from "three";
-import {OrbitControls} from "./utils/OrbitControls";
+import {OrbitControls} from "../utils/OrbitControls";
 
 export class Controls {
     private static RotateStep = Math.PI * 0.05;

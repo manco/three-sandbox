@@ -1,15 +1,15 @@
-import {ModulesLibrary} from './modules/modules-library'
-import {Kitchen, wallsFactories} from './kitchen'
+import {ModulesLibrary} from './model/modules/modules-library'
+import {Kitchen, wallsFactories} from './model/kitchen/kitchen'
 import {MouseTracker} from "./utils/mouseTracker";
-import {Camera} from "./camera";
-import {SceneFactory} from "./scene";
+import {Camera} from "./view/camera";
+import {SceneFactory} from "./view/scene";
 import {ModuleSelector} from './module-selector';
 import {Vector3} from "three";
-import {View} from "./view";
-import {Controls} from "./controls";
-import {ModuleSubtypesOfTypes} from "./modules/types";
-import {ModuleSubtype} from "./modules/types";
-import {ModuleType} from "./modules/types";
+import {Page} from "./view/page";
+import {Controls} from "./view/controls";
+import {ModuleSubtypesOfTypes} from "./model/modules/types";
+import {ModuleSubtype} from "./model/modules/types";
+import {ModuleType} from "./model/modules/types";
 
 const scene = SceneFactory.create();
 
@@ -19,7 +19,7 @@ window.camera = camera;
 
 const modulesLibrary = new ModulesLibrary();
 
-const view = new View(scene, camera);
+const view = new Page(scene, camera);
 
 const mouseTracker = new MouseTracker(view.canvas);
 
@@ -93,7 +93,7 @@ const init = ():void => {
                     .map((stype:ModuleSubtype) => {
                         const option = document.createElement("option") as HTMLOptionElement;
                         option.value = `${stype}`;
-                        option.text = View.ModuleSubtypesLabels.get(stype);
+                        option.text = Page.ModuleSubtypesLabels.get(stype);
                         return option;
                     })
                     .forEach(o => select.add(o));

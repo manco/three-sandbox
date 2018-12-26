@@ -1,6 +1,6 @@
 import {Mesh} from "three";
 import {MeshLambertMaterial} from "three";
-import {MutateMeshFun} from "../utils/utils";
+import {MutateMeshFun} from "../../utils/utils";
 import {ModuleType} from "./types";
 import {ModuleSubtype} from "./types";
 

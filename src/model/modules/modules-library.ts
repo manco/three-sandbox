@@ -1,5 +1,5 @@
-import {PromisingLoader} from "../utils/loader";
-import {Utils} from "../utils/utils";
+import {PromisingLoader} from "../../utils/loader";
+import {Utils} from "../../utils/utils";
 import {Mesh} from "three";
 import {Module} from "./module";
 import {ModuleDefinition} from "./module";
