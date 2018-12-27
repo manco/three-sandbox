@@ -1,4 +1,4 @@
-import {ModulesLibrary} from '../modules/modules-library'
+import ModulesLibrary from '../modules/modules-library'
 import {Message, Observable} from "../../utils/observable";
 import {DoubleSide, ExtrudeBufferGeometry, Mesh, MeshLambertMaterial, PlaneBufferGeometry, Scene, Shape, Vector3} from "three";
 import {MutateMeshFun, Utils} from "../../utils/utils";
@@ -32,8 +32,7 @@ class Floor {
     }
 }
 
-//TODO potrzebne tylko w wallsFactories, zrefaktoryzowac by nie trzeba bylo exportowac
-export class Wall {
+class Wall {
     readonly mesh: Mesh;
     readonly wallSlots: WallSlot[] = Array.from(new Array(50), () => new WallSlot(this));
 
@@ -100,7 +99,7 @@ class WallSlot {
 }
 export class Kitchen extends Observable {
     private walls: Wall[] = [];
-    private readonly floor: Floor;
+    private floor: Floor;
     readonly center = new Vector3(0, 0, 0);
     constructor(
         private readonly moduleLibrary : ModulesLibrary,
@@ -110,26 +109,32 @@ export class Kitchen extends Observable {
         readonly depth: number
     ) {
         super();
-        this.floor = new Floor(width, depth,
-            (m:Mesh):void => { m.rotateX(- Math.PI / 2 ) }
-        );
-        this.floor.addTo(this.scene);
     }
 
-    addWall(wall:Wall): void {
+    initFloorAndWalls(wallNames: string[]): Promise<void> {
+        this.floor = new Floor(this.width, this.depth, (m:Mesh):void => { m.rotateX(- Math.PI / 2 ) });
+        this.floor.addTo(this.scene);
+        const factories = wallsFactories(this.width, this.depth, this.height);
+        wallNames.forEach(name => this.addWall(factories.get(name)()));
+        return this.fillWallsWithModules();
+    }
+
+    private addWall(wall:Wall): void {
         this.walls.push(wall);
         this.scene.add(wall.mesh);
     }
 
-    fillWallWithModules(wall:Wall): void {
-        this.slotWidthF().then((slotWidth :number)=> {
-            const wallWidth = Utils.meshWidthX(wall.mesh);
-            const items = Math.floor(wallWidth / slotWidth);
-            ModuleTypesAll.forEach((type) => this.addModuleToWallSlots(wall, items, type))
+    private fillWallsWithModules(): Promise<void> {
+        return this.slotWidthF().then((slotWidth :number)=> {
+            this.walls.forEach(wall => {
+                const wallWidth = Utils.meshWidthX(wall.mesh);
+                const items = Math.floor(wallWidth / slotWidth);
+                ModuleTypesAll.forEach((type) => this.addModuleToWallSlots(wall, items, type))
+            });
         })
     }
 
-    addModuleToWallSlots(wall:Wall, count:number, moduleType:ModuleType): void {
+    private addModuleToWallSlots(wall:Wall, count:number, moduleType:ModuleType): void {
         for (let i = 0; i < count; i++) {
             this.moduleLibrary
                 .createModule(moduleType)
@@ -154,12 +159,12 @@ export class Kitchen extends Observable {
         this.floor.removeFrom(this.scene);
     }
 
-    slotWidthF(): Promise<number> {
+    private slotWidthF(): Promise<number> {
         return this.moduleLibrary.ofType(ModuleType.STANDING).then((m:Module) => m.width);
     }
 }
 
-export const wallsFactories = (width:number, depth:number, height:number):Map<string, () => Wall> => {
+const wallsFactories = (width:number, depth:number, height:number):Map<string, () => Wall> => {
 
     const axisY = new Vector3(0, 1, 0);
 

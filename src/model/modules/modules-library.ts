@@ -6,7 +6,7 @@ import {ModuleDefinition} from "./module";
 import {ModuleSubtypesOfTypes} from "./types";
 import {ModuleType} from "./types";
 
-export class ModulesLibrary {
+export default class ModulesLibrary {
     private loader: PromisingLoader = new PromisingLoader();
     private readonly scale: number = 3;
     private prototypes: Promise<Module[]> = null;
@@ -45,7 +45,7 @@ export class ModulesLibrary {
             .then((modules:Module[]) => modules.find((m:Module) => type === m.type));
     }
 
-    initMesh(m:Mesh): void {
+    private initMesh(m:Mesh): void {
         m.castShadow = true;
         m.receiveShadow = true;
         m.scale.multiplyScalar(this.scale);

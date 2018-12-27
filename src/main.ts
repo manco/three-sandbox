@@ -1,5 +1,5 @@
-import {ModulesLibrary} from './model/modules/modules-library'
-import {Kitchen, wallsFactories} from './model/kitchen/kitchen'
+import ModulesLibrary from './model/modules/modules-library'
+import {Kitchen} from './model/kitchen/kitchen'
 import {MouseTracker} from "./utils/mouseTracker";
 import {Camera} from "./view/camera";
 import {SceneFactory} from "./view/scene";
@@ -68,13 +68,7 @@ const init = ():void => {
         view.canvas.addEventListener('dblclick', () => controls.reset());
         //**
 
-        const factories = wallsFactories(width, depth, height);
-
-        view.guiCheckboxesValues().forEach((wallName:string) => {
-            const wall = factories.get(wallName)();
-            kitchen.addWall(wall);
-            kitchen.fillWallWithModules(wall);
-        });
+        kitchen.initFloorAndWalls(view.guiCheckboxesValues());
 
         const moduleSelector = new ModuleSelector(camera, kitchen, mouseTracker);
 
