@@ -58,7 +58,15 @@ class Wall {
         rect.lineTo( maxx, height );
         rect.lineTo( maxx, 0 );
         rect.lineTo( minx, 0 );
-        const mesh = new Mesh(new ExtrudeBufferGeometry([rect], { depth: 8 }), material );
+        const mesh = new Mesh(
+            new ExtrudeBufferGeometry(rect, {
+                depth: 8,
+                bevelThickness:1,
+                bevelSize: 0,
+                bevelSegments: 1
+            }
+        ), material
+        );
         mesh.name = "Wall" + name;
         mesh.receiveShadow = true;
         return mesh;
