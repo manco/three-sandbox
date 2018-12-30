@@ -27,6 +27,7 @@ export class ModuleSelector extends Observable {
         }
         const meshSelected = selectMeshFun(allModules.map((m:Module) => m.mesh));
         this.selected = allModules.find((m:Module) => m.mesh === meshSelected);
+        this.selected = this.selected === undefined ? null : this.selected;
         if (this.selected !== null) {
             this._notifyThat("SELECTED");
         }

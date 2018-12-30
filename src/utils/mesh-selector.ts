@@ -32,7 +32,9 @@ export class MeshSelector {
             MeshSelector.emissive(this.selected).setHex(this.previousSelectedEmissiveColor);
             this.selected = null;
         }
-        const mesh = meshFun();
+        let mesh = meshFun();
+        mesh = mesh === undefined ? null : mesh;
+
         if (mesh !== null) {
             this.previousSelectedEmissiveColor = MeshSelector.emissive(mesh).getHex();
             this.selected = mesh;
