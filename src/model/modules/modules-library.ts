@@ -7,7 +7,7 @@ import {ModuleSubtypesOfTypes} from "./types";
 import {ModuleType} from "./types";
 
 export default class ModulesLibrary {
-    private loader: PromisingLoader = new PromisingLoader();
+    private readonly loader: PromisingLoader = new PromisingLoader();
     private readonly scale: number = 3;
     private prototypes: Promise<Module[]> = null;
 

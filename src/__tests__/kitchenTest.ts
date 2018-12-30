@@ -5,8 +5,10 @@ import {PlaneBufferGeometry} from "three";
 import ModulesLibrary from "../model/modules/modules-library";
 import {ModuleType} from "../model/modules/types";
 import {ModuleTypesAll} from "../model/modules/types";
+import {TexturesLibrary} from "../model/textures";
 
 jest.mock("../model/modules/modules-library");
+jest.mock("../model/textures");
 
 test('kitchen creates floor, wall and wall modules', () => {
 
@@ -35,6 +37,7 @@ test('kitchen creates floor, wall and wall modules', () => {
     const scene = new Scene();
     const initFinished = new Kitchen(
         new ModulesLibrary(),
+        new TexturesLibrary(),
         scene,
         100,
         150,

@@ -10,6 +10,8 @@ import {Controls} from "./view/controls";
 import {ModuleSubtypesOfTypes} from "./model/modules/types";
 import {ModuleSubtype} from "./model/modules/types";
 import {ModuleType} from "./model/modules/types";
+import {TexturesLibrary} from "./model/textures";
+import {TextureType} from "./model/textures";
 
 const scene = SceneFactory.create();
 
@@ -18,6 +20,7 @@ const camera = new Camera(scene);
 window.camera = camera;
 
 const modulesLibrary = new ModulesLibrary();
+const texturesLibrary = new TexturesLibrary();
 
 const view = new Page(scene, camera);
 
@@ -39,7 +42,7 @@ const init = ():void => {
             window.kitchen.removeAll();
         }
 
-        const kitchen = new Kitchen(modulesLibrary, scene, width, height, depth);
+        const kitchen = new Kitchen(modulesLibrary, texturesLibrary, scene, width, height, depth);
         // @ts-ignore
         window.kitchen = kitchen;
 
@@ -120,6 +123,13 @@ const init = ():void => {
         { url: 'models/szafka_dol.obj', type: ModuleType.STANDING },
         { url: 'models/blat.obj', type: ModuleType.TABLETOP },
         { url: 'models/szafka_gora.obj', type: ModuleType.HANGING }
+    ]);
+
+    texturesLibrary.loadTextures([
+        { url: 'textures/black.jpg', type: TextureType.BLACK },
+        { url: 'textures/gray.jpg', type: TextureType.GRAY },
+        { url: 'textures/wood.jpg', type: TextureType.WOOD },
+        { url: 'textures/gray-light.jpg', type: TextureType.WHITE}
     ]);
 
     mouseTracker.registerMouseMoveListener();

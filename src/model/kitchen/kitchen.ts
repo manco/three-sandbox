@@ -5,6 +5,8 @@ import {MutateMeshFun, Utils} from "../../utils/utils";
 import {Module} from "../modules/module";
 import {ModuleTypesAll} from "../modules/types";
 import {ModuleType} from "../modules/types";
+import {TexturesLibrary} from "../textures";
+import {TextureType} from "../textures";
 
 class Floor {
     private readonly mesh: Mesh;
@@ -111,6 +113,7 @@ export class Kitchen extends Observable {
     readonly center = new Vector3(0, 0, 0);
     constructor(
         private readonly moduleLibrary : ModulesLibrary,
+        private readonly textureLibrary: TexturesLibrary,
         private readonly scene : Scene,
         readonly width: number,
         readonly height: number,
@@ -147,6 +150,7 @@ export class Kitchen extends Observable {
             this.moduleLibrary
                 .createModule(moduleType)
                 .then((m:Module) => {
+                    (m.mesh.material as MeshLambertMaterial).map = this.textureLibrary.get(TextureType.WOOD);
                     wall.wallSlots[i].put(m, i, this.scene);
                     this.notify({ type:"ADD", obj: m});
                 });
