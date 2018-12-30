@@ -8,10 +8,10 @@ import {Vector3} from "three";
 import {Page} from "./view/page";
 import {Controls} from "./view/controls";
 import {ModuleSubtypesOfTypes} from "./model/modules/types";
-import {ModuleSubtype} from "./model/modules/types";
 import {ModuleType} from "./model/modules/types";
 import {TexturesLibrary} from "./model/textures";
 import {TextureType} from "./model/textures";
+import {Html} from "./view/html";
 
 const scene = SceneFactory.create();
 
@@ -54,18 +54,15 @@ const init = ():void => {
         // @ts-ignore
         window.controls = controls;
 
-        view.buttonZoomIn.addEventListener('click', () => camera.zoomIn());
-        view.buttonZoomOut.addEventListener('click', () => camera.zoomOut());
-
-        view.buttonPanLeft.addEventListener('click', () => controls.panLeft());
-        view.buttonPanRight.addEventListener('click', () => controls.panRight());
-
-        view.buttonRotateLeft.addEventListener('click', () => controls.rotateLeft());
-        view.buttonRotateRight.addEventListener('click', () => controls.rotateRight());
-        view.buttonRotateUp.addEventListener('click', () => controls.rotateUp());
-        view.buttonRotateDown.addEventListener('click', () => controls.rotateDown());
-
-        view.buttonCenter.addEventListener('click', () => controls.reset());
+        Html.onClick(view.buttonZoomIn, () => camera.zoomIn());
+        Html.onClick(view.buttonZoomOut, () => camera.zoomOut());
+        Html.onClick(view.buttonPanLeft, () => controls.panLeft());
+        Html.onClick(view.buttonPanRight, () => controls.panRight());
+        Html.onClick(view.buttonRotateLeft, () => controls.rotateLeft());
+        Html.onClick(view.buttonRotateRight, () => controls.rotateRight());
+        Html.onClick(view.buttonRotateUp, () => controls.rotateUp());
+        Html.onClick(view.buttonRotateDown, () => controls.rotateDown());
+        Html.onClick(view.buttonCenter, () => controls.reset());
 
         //** TODO DELETE when https://github.com/manco/three-sandbox/issues/14 closed
         view.canvas.addEventListener('dblclick', () => controls.reset());
@@ -75,29 +72,24 @@ const init = ():void => {
 
         const moduleSelector = new ModuleSelector(camera, kitchen, mouseTracker);
 
-        view.canvas.addEventListener('click', () => moduleSelector.selectModule(), false);
+        Html.onClick(view.canvas, () => moduleSelector.selectModule());
 
         kitchen.subscribe(msg => {
             if (msg.type === "ADD") {
                 const objId = `${msg.obj.id}`;
-                const li = document.createElement("li") as HTMLLIElement;
-                li.id = objId;
-                //li.innerHTML = `${msg.obj.mesh.name}`; TODO moze bez tego lepiej?
+                const li = Html.listItem(objId);
 
-                const select = document.createElement("select") as HTMLSelectElement;
+                const options = ModuleSubtypesOfTypes.get(msg.obj.type)
+                    .map(stype => {
+                        return {
+                            value: `${stype}`,
+                            text: Page.ModuleSubtypesLabels.get(stype)
+                        }
+                    });
 
-                ModuleSubtypesOfTypes.get(msg.obj.type)
-                    .map((stype:ModuleSubtype) => {
-                        const option = document.createElement("option") as HTMLOptionElement;
-                        option.value = `${stype}`;
-                        option.text = Page.ModuleSubtypesLabels.get(stype);
-                        return option;
-                    })
-                    .forEach(o => select.add(o));
+                li.appendChild(Html.select(document, options));
 
-                li.appendChild(select);
-
-                li.addEventListener('click', () => moduleSelector.selectModuleById(objId));
+                Html.onClick(li, () => moduleSelector.selectModuleById(objId));
                 view.getModulesList(msg.obj.type).appendChild(li);
             }
             if (msg.type === "REMOVEALL") {
@@ -117,7 +109,7 @@ const init = ():void => {
             }
         });
     };
-    document.getElementById("drawKitchenButton").addEventListener('click', loadKitchen);
+    Html.onClick(document.getElementById("drawKitchenButton"), loadKitchen);
 
     modulesLibrary.loadPrototypes([
         { url: 'models/szafka_dol.obj', type: ModuleType.STANDING },

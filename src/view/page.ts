@@ -4,6 +4,7 @@ import {Camera} from "./camera";
 import {Scene} from "three";
 import {ModuleTypesAll} from "../model/modules/types";
 import {ModuleSubtype} from "../model/modules/types";
+import {Html} from "./html";
 
 export class Page {
 
@@ -28,17 +29,17 @@ export class Page {
     public readonly controlsPanel = document.getElementById("controls");
     public readonly canvas;
 
-    public readonly buttonZoomIn = this.controlsPanel.querySelector('button[id=\"zoomin\"]');
-    public readonly buttonZoomOut = this.controlsPanel.querySelector('button[id=\"zoomout\"]');
-    public readonly buttonCenter = this.controlsPanel.querySelector('button[id=\"center\"]');
+    public readonly buttonZoomIn : HTMLElement = this.controlsPanel.querySelector('button[id=\"zoomin\"]');
+    public readonly buttonZoomOut : HTMLElement = this.controlsPanel.querySelector('button[id=\"zoomout\"]');
+    public readonly buttonCenter : HTMLElement = this.controlsPanel.querySelector('button[id=\"center\"]');
 
-    public readonly buttonPanLeft = this.controlsPanel.querySelector('button[id=\"panleft\"');
-    public readonly buttonPanRight = this.controlsPanel.querySelector('button[id=\"panright\"');
+    public readonly buttonPanLeft : HTMLElement = this.controlsPanel.querySelector('button[id=\"panleft\"');
+    public readonly buttonPanRight : HTMLElement = this.controlsPanel.querySelector('button[id=\"panright\"');
 
-    public readonly buttonRotateLeft = this.controlsPanel.querySelector('button[id=\"rotateleft\"');
-    public readonly buttonRotateRight = this.controlsPanel.querySelector('button[id=\"rotateright\"');
-    public readonly buttonRotateUp = this.controlsPanel.querySelector('button[id=\"rotateup\"');
-    public readonly buttonRotateDown = this.controlsPanel.querySelector('button[id=\"rotatedown\"');
+    public readonly buttonRotateLeft : HTMLElement = this.controlsPanel.querySelector('button[id=\"rotateleft\"');
+    public readonly buttonRotateRight : HTMLElement = this.controlsPanel.querySelector('button[id=\"rotateright\"');
+    public readonly buttonRotateUp : HTMLElement = this.controlsPanel.querySelector('button[id=\"rotateup\"');
+    public readonly buttonRotateDown : HTMLElement = this.controlsPanel.querySelector('button[id=\"rotatedown\"');
 
 
     private readonly renderer: Renderer;
@@ -68,18 +69,18 @@ export class Page {
 
             const buttonChooseColor = document.createElement("button") as HTMLButtonElement;
             buttonChooseColor.innerText = "kolor";
-            buttonChooseColor.addEventListener("click", () => alert("jeszcze nie działa :)"));
+            Html.onClick(buttonChooseColor, () => alert("jeszcze nie działa :)"));
             this.guiPanel.appendChild(label);
             this.guiPanel.appendChild(buttonChooseColor);
             this.guiPanel.appendChild(ul);
         });
     }
 
-    public getModulesList(type: ModuleType) {
+    public getModulesList(type: ModuleType): HTMLElement {
         return document.getElementById('modulesList-' + type);
     }
 
-    public getAllModulesLists() {
+    public getAllModulesLists(): HTMLElement[] {
         return Page.toArray(document.querySelectorAll('[id^=\"modulesList-\"]'));
     }
 
