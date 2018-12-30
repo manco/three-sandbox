@@ -38,14 +38,18 @@ class Wall {
     readonly mesh: Mesh;
     readonly wallSlots: WallSlot[] = Array.from(new Array(50), () => new WallSlot(this));
 
-    constructor(name:string, width:number, height:number, readonly translateMesh:(_:Mesh) => void = (_:Mesh):void => {}, readonly rotateMesh:(_:Mesh) => void = (_:Mesh):void => {}) {
+    constructor(
+        readonly name:string,
+        readonly width:number,
+        readonly height:number,
+        readonly translateMesh:MutateMeshFun = Utils.noop,
+        readonly rotateMesh:MutateMeshFun = Utils.noop
+    ) {
         this.mesh = Wall.createMesh(name, width, height);
         this.translateMesh(this.mesh);
         this.rotateMesh(this.mesh);
         this.mesh.geometry.computeBoundingBox();
     }
-
-    name(): string { return this.mesh.name; }
 
     private static createMesh(name:string, width:number, height:number): Mesh {
         const material = new MeshLambertMaterial( {
@@ -76,7 +80,7 @@ class Wall {
 }
 
 class WallSlot {
-    private modulesByTypes: Map<ModuleType, Module> = new Map();
+    private readonly modulesByTypes: Map<ModuleType, Module> = new Map();
     constructor(private readonly wall:Wall) {}
 
     put(module:Module, index:number, scene:Scene): void {
@@ -150,15 +154,18 @@ export class Kitchen extends Observable {
             this.moduleLibrary
                 .createModule(moduleType)
                 .then((m:Module) => {
-                    (m.mesh.material as MeshLambertMaterial).map = this.textureLibrary.get(TextureType.WOOD);
                     wall.wallSlots[i].put(m, i, this.scene);
-                    this.notify({ type:"ADD", obj: m});
+                    this.notify(new Message("ADD", m));
                 });
         }
     }
 
     allModules(): Module[] {
         return Utils.flatten(Utils.flatten(this.walls.map((w:Wall) => w.wallSlots)).map((s:WallSlot) => s.allModules()));
+    }
+
+    setTexture(module: Module, type: TextureType): void {
+        module.setTexture(this.textureLibrary.get(type));
     }
 
     removeAll(): void {

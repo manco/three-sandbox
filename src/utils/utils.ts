@@ -14,6 +14,8 @@ export class Utils {
     static flatten<T>(arr:T[][]):T[] {
         return [].concat(...arr)
     }
+
+    static noop: MutateMeshFun = () => {}
 }
 
 export interface MutateMeshFun {

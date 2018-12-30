@@ -1,5 +1,6 @@
 import {Mesh} from "three";
 import {MeshLambertMaterial} from "three";
+import {Texture} from "three";
 import {MutateMeshFun} from "../../utils/utils";
 import {ModuleType} from "./types";
 import {ModuleSubtype} from "./types";
@@ -35,4 +36,14 @@ export class Module {
         cloned.mesh.material = new MeshLambertMaterial();
         return cloned;
     }
+
+    setTexture(tex:Texture): void {
+        this.material().map = tex;
+    }
+
+    getTexture(): Texture {
+        return this.material().map;
+    }
+
+    private material() { return (this.mesh.material as MeshLambertMaterial) }
 }

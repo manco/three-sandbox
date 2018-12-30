@@ -24,9 +24,9 @@ module.exports = {
             'THREE': 'three'
         }),
     ],
+    // devtool: 'inline-source-map',
     devServer: {
         port: 9090,
         contentBase: path.resolve(__dirname, './static')
-    }//,
-    //devtool: 'inline-source-map'
+    }
 };
