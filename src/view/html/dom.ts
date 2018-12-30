@@ -16,8 +16,4 @@ export class Html {
         li.id = id;
         return li;
     }
-
-    static onClick(htmlElement: HTMLElement, fun: () => void): void {
-        htmlElement.addEventListener("click", fun, false);
-    }
 }

@@ -2,7 +2,7 @@ import ModulesLibrary from './model/modules/modules-library'
 import {Kitchen} from './model/kitchen/kitchen'
 import {MouseTracker} from "./utils/mouseTracker";
 import {Camera} from "./view/camera";
-import {SceneFactory} from "./view/scene";
+import {SceneFactory} from "./model/scene";
 import {ModuleSelector} from './module-selector';
 import {Vector3} from "three";
 import {Page} from "./view/page";
@@ -11,7 +11,8 @@ import {ModuleSubtypesOfTypes} from "./model/modules/types";
 import {ModuleType} from "./model/modules/types";
 import {TexturesLibrary} from "./model/textures";
 import {TextureType} from "./model/textures";
-import {Html} from "./view/html";
+import {Html} from "./view/html/dom";
+import {Events} from "./view/html/events";
 
 const scene = SceneFactory.create();
 
@@ -54,15 +55,15 @@ const init = ():void => {
         // @ts-ignore
         window.controls = controls;
 
-        Html.onClick(view.buttonZoomIn, () => camera.zoomIn());
-        Html.onClick(view.buttonZoomOut, () => camera.zoomOut());
-        Html.onClick(view.buttonPanLeft, () => controls.panLeft());
-        Html.onClick(view.buttonPanRight, () => controls.panRight());
-        Html.onClick(view.buttonRotateLeft, () => controls.rotateLeft());
-        Html.onClick(view.buttonRotateRight, () => controls.rotateRight());
-        Html.onClick(view.buttonRotateUp, () => controls.rotateUp());
-        Html.onClick(view.buttonRotateDown, () => controls.rotateDown());
-        Html.onClick(view.buttonCenter, () => controls.reset());
+        Events.onClick(view.buttonZoomIn, () => camera.zoomIn());
+        Events.onClick(view.buttonZoomOut, () => camera.zoomOut());
+        Events.onClick(view.buttonPanLeft, () => controls.panLeft());
+        Events.onClick(view.buttonPanRight, () => controls.panRight());
+        Events.onClick(view.buttonRotateLeft, () => controls.rotateLeft());
+        Events.onClick(view.buttonRotateRight, () => controls.rotateRight());
+        Events.onClick(view.buttonRotateUp, () => controls.rotateUp());
+        Events.onClick(view.buttonRotateDown, () => controls.rotateDown());
+        Events.onClick(view.buttonCenter, () => controls.reset());
 
         //** TODO DELETE when https://github.com/manco/three-sandbox/issues/14 closed
         view.canvas.addEventListener('dblclick', () => controls.reset());
@@ -72,7 +73,7 @@ const init = ():void => {
 
         const moduleSelector = new ModuleSelector(camera, kitchen, mouseTracker);
 
-        Html.onClick(view.canvas, () => moduleSelector.selectModule());
+        Events.onClick(view.canvas, () => moduleSelector.selectModule());
 
         kitchen.subscribe(msg => {
             if (msg.type === "ADD") {
@@ -89,7 +90,7 @@ const init = ():void => {
 
                 li.appendChild(Html.select(document, options));
 
-                Html.onClick(li, () => moduleSelector.selectModuleById(objId));
+                Events.onClick(li, () => moduleSelector.selectModuleById(objId));
                 view.getModulesList(msg.obj.type).appendChild(li);
             }
             if (msg.type === "REMOVEALL") {
@@ -109,7 +110,7 @@ const init = ():void => {
             }
         });
     };
-    Html.onClick(document.getElementById("drawKitchenButton"), loadKitchen);
+    Events.onClick(document.getElementById("drawKitchenButton"), loadKitchen);
 
     modulesLibrary.loadPrototypes([
         { url: 'models/szafka_dol.obj', type: ModuleType.STANDING },

@@ -19,7 +19,7 @@ export class MeshSelector {
     }
 
     private castRay(meshes:Mesh[]): Object3D[] {
-        this.raycaster.setFromCamera(this.mouseTracker.xy, this.camera);
+        this.raycaster.setFromCamera(this.mouseTracker.xy(), this.camera);
         return this.raycaster.intersectObjects(meshes).map((i:Intersection) => i.object);
     };
 

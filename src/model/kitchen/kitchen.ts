@@ -1,12 +1,13 @@
 import ModulesLibrary from '../modules/modules-library'
 import {Message, Observable} from "../../utils/observable";
 import {DoubleSide, ExtrudeBufferGeometry, Mesh, MeshLambertMaterial, PlaneBufferGeometry, Scene, Shape, Vector3} from "three";
-import {MutateMeshFun, Utils} from "../../utils/utils";
+import {Meshes, MutateMeshFun} from "../../utils/meshes";
 import {Module} from "../modules/module";
 import {ModuleTypesAll} from "../modules/types";
 import {ModuleType} from "../modules/types";
 import {TexturesLibrary} from "../textures";
 import {TextureType} from "../textures";
+import {Lang} from "../../utils/lang";
 
 class Floor {
     private readonly mesh: Mesh;
@@ -42,8 +43,8 @@ class Wall {
         readonly name:string,
         readonly width:number,
         readonly height:number,
-        readonly translateMesh:MutateMeshFun = Utils.noop,
-        readonly rotateMesh:MutateMeshFun = Utils.noop
+        readonly translateMesh:MutateMeshFun = Lang.noop,
+        readonly rotateMesh:MutateMeshFun = Lang.noop
     ) {
         this.mesh = Wall.createMesh(name, width, height);
         this.translateMesh(this.mesh);
@@ -142,7 +143,7 @@ export class Kitchen extends Observable {
     private fillWallsWithModules(): Promise<void> {
         return this.slotWidthF().then((slotWidth :number)=> {
             this.walls.forEach(wall => {
-                const wallWidth = Utils.meshWidthX(wall.mesh);
+                const wallWidth = Meshes.meshWidthX(wall.mesh);
                 const items = Math.floor(wallWidth / slotWidth);
                 ModuleTypesAll.forEach((type) => this.addModuleToWallSlots(wall, items, type))
             });
@@ -161,7 +162,7 @@ export class Kitchen extends Observable {
     }
 
     allModules(): Module[] {
-        return Utils.flatten(Utils.flatten(this.walls.map((w:Wall) => w.wallSlots)).map((s:WallSlot) => s.allModules()));
+        return Lang.flatten(Lang.flatten(this.walls.map((w:Wall) => w.wallSlots)).map((s:WallSlot) => s.allModules()));
     }
 
     setTexture(module: Module, type: TextureType): void {

@@ -1,8 +1,10 @@
 import {Vector2} from "three";
 
 export class MouseTracker {
-    xy: Vector2 = new Vector2(0, 0); //TODO private setter
+    private _xy: Vector2 = new Vector2(0, 0);
     constructor(private readonly canvas: HTMLCanvasElement) {}
+
+    public xy() { return this._xy };
 
     registerMouseMoveListener(): void {
         const onMouseMove = (event) => {
@@ -10,8 +12,8 @@ export class MouseTracker {
             const relX = event.clientX - rect.left;
             const relY = event.clientY - rect.top;
 
-            this.xy.x = relX / this.canvas.clientWidth *  2 - 1;
-            this.xy.y = relY / this.canvas.clientHeight * -2 + 1;
+            this._xy.x = relX / this.canvas.clientWidth *  2 - 1;
+            this._xy.y = relY / this.canvas.clientHeight * -2 + 1;
         };
         this.canvas.addEventListener('mousemove', onMouseMove, false);
     }

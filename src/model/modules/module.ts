@@ -1,7 +1,7 @@
 import {Mesh} from "three";
 import {MeshLambertMaterial} from "three";
 import {Texture} from "three";
-import {MutateMeshFun} from "../../utils/utils";
+import {MutateMeshFun} from "../../utils/meshes";
 import {ModuleType} from "./types";
 import {ModuleSubtype} from "./types";
 

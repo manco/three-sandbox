@@ -1,5 +1,5 @@
 import {PromisingLoader} from "../../utils/loader";
-import {Utils} from "../../utils/utils";
+import {Meshes} from "../../utils/meshes";
 import {Mesh} from "three";
 import {Module} from "./module";
 import {ModuleDefinition} from "./module";
@@ -23,8 +23,8 @@ export default class ModulesLibrary {
                                     m,
                                     d.type,
                                     ModuleSubtypesOfTypes.get(d.type)[0],
-                                    this.scale * Utils.meshWidthX(m),
-                                    this.scale * Utils.meshDepthY(m),
+                                    this.scale * Meshes.meshWidthX(m),
+                                    this.scale * Meshes.meshDepthY(m),
                                     (mm:Mesh):void => { mm.rotateX(-Math.PI / 2); }
                                 );
                             })

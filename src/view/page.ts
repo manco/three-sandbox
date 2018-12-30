@@ -1,10 +1,10 @@
 import {ModuleType} from "../model/modules/types";
+import {ModuleTypesAll} from "../model/modules/types";
+import {ModuleSubtype} from "../model/modules/types";
 import {Renderer} from "./renderer";
 import {Camera} from "./camera";
 import {Scene} from "three";
-import {ModuleTypesAll} from "../model/modules/types";
-import {ModuleSubtype} from "../model/modules/types";
-import {Html} from "./html";
+import {Events} from "./html/events";
 
 export class Page {
 
@@ -69,7 +69,7 @@ export class Page {
 
             const buttonChooseColor = document.createElement("button") as HTMLButtonElement;
             buttonChooseColor.innerText = "kolor";
-            Html.onClick(buttonChooseColor, () => alert("jeszcze nie działa :)"));
+            Events.onClick(buttonChooseColor, () => alert("jeszcze nie działa :)"));
             this.guiPanel.appendChild(label);
             this.guiPanel.appendChild(buttonChooseColor);
             this.guiPanel.appendChild(ul);
