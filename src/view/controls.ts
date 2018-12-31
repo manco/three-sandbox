@@ -3,8 +3,8 @@ import {Vector3} from "three";
 import {OrbitControls} from "../utils/OrbitControls";
 
 export class Controls {
-    private static RotateStep = Math.PI * 0.05;
-    private static PanStep = 50;
+    private static readonly RotateStep = Math.PI * 0.05;
+    private static readonly PanStep = 50;
 
     private readonly orbitControls: OrbitControls;
     constructor(camera: Camera, canvas: HTMLCanvasElement, target: Vector3) {

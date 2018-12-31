@@ -114,23 +114,24 @@ class WallSlot {
 }
 export class Kitchen extends Observable {
     private walls: Wall[] = [];
-    private floor: Floor;
-    readonly center = new Vector3(0, 0, 0);
+    private floor: Floor = null;
     constructor(
         private readonly moduleLibrary : ModulesLibrary,
         private readonly textureLibrary: TexturesLibrary,
-        private readonly scene : Scene,
-        readonly width: number,
-        readonly height: number,
-        readonly depth: number
+        private readonly scene : Scene
     ) {
         super();
     }
 
-    initFloorAndWalls(wallNames: string[]): Promise<void> {
-        this.floor = new Floor(this.width, this.depth, (m:Mesh):void => { m.rotateX(- Math.PI / 2 ) });
+    initFloorAndWalls(
+        width: number,
+        height: number,
+        depth: number,
+        wallNames: string[]
+    ): Promise<void> {
+        this.floor = new Floor(width, depth, (m:Mesh):void => { m.rotateX(- Math.PI / 2 ) });
         this.floor.addTo(this.scene);
-        const factories = wallsFactories(this.width, this.depth, this.height);
+        const factories = wallsFactories(width, depth, height);
         wallNames.forEach(name => this.addWall(factories.get(name)()));
         return this.fillWallsWithModules();
     }
@@ -175,8 +176,10 @@ export class Kitchen extends Observable {
             this.scene.remove(wall.mesh);
         });
         this.walls = [];
+        if (this.floor !== null) {
+            this.floor.removeFrom(this.scene);
+        }
         this.notify(new Message("REMOVEALL"));
-        this.floor.removeFrom(this.scene);
     }
 
     private slotWidthF(): Promise<number> {

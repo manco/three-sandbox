@@ -28,6 +28,8 @@ const view = new Page(scene, camera);
 
 const mouseTracker = new MouseTracker(view.canvas);
 
+const kitchen = new Kitchen(modulesLibrary, texturesLibrary, scene);
+
 const init = ():void => {
 
     const loadKitchen = ():void => {
@@ -38,23 +40,12 @@ const init = ():void => {
             (document.getElementById("kitchen-height") as HTMLInputElement).valueAsNumber
         ];
 
-        // @ts-ignore
-        if (window.kitchen !== undefined) {
-            // @ts-ignore
-            window.kitchen.removeAll();
-        }
-
-        const kitchen = new Kitchen(modulesLibrary, texturesLibrary, scene, width, height, depth);
-        // @ts-ignore
-        window.kitchen = kitchen;
-
+        //TODO move to separate handler
         const controls = new Controls(
             camera,
             view.canvas,
-            kitchen.center.clone().add(new Vector3(0, kitchen.height / 2, 0))
+            new Vector3(0, height / 2, 0)
         );
-        // @ts-ignore
-        window.controls = controls;
 
         Events.onClick(view.buttonZoomIn, () => camera.zoomIn());
         Events.onClick(view.buttonZoomOut, () => camera.zoomOut());
@@ -66,11 +57,8 @@ const init = ():void => {
         Events.onClick(view.buttonRotateDown, () => controls.rotateDown());
         Events.onClick(view.buttonCenter, () => controls.reset());
 
-        //** TODO DELETE when https://github.com/manco/three-sandbox/issues/14 closed
-        view.canvas.addEventListener('dblclick', () => controls.reset());
-        //**
-
-        kitchen.initFloorAndWalls(view.guiCheckboxesValues());
+        kitchen.removeAll();
+        kitchen.initFloorAndWalls(width, height, depth, view.guiCheckboxesValues());
 
         const moduleSelector = new ModuleSelector(camera, kitchen, mouseTracker);
 

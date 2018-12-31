@@ -27,11 +27,8 @@ test('kitchen creates floor, wall and wall modules', () => {
     const initFinished = new Kitchen(
         new ModulesLibrary(),
         new TexturesLibrary(),
-        scene,
-        100,
-        150,
-        200
-    ).initFloorAndWalls(["A"]);
+        scene
+    ).initFloorAndWalls(100, 150, 200, ["A"]);
 
     return initFinished.then(() => {
         expect(scene.getObjectByName("Floor")).toBeDefined();
@@ -55,10 +52,7 @@ test('kitchen can change module texture', () => {
     const kitchen = new Kitchen(
         null,
         new TexturesLibrary(),
-        null,
-        100,
-        150,
-        200
+        null
     );
 
     kitchen.setTexture(
