@@ -13,6 +13,7 @@ import {TexturesLibrary} from "./model/textures";
 import {TextureType} from "./model/textures";
 import {Html} from "./view/html/dom";
 import {Events} from "./view/html/events";
+import {SmartDoc} from "./view/html/smart-doc";
 
 const scene = SceneFactory.create();
 
@@ -88,7 +89,7 @@ const init = ():void => {
                         }
                     });
 
-                li.appendChild(Html.select(document, options));
+                li.appendChild(Html.select(new SmartDoc(document), options));
 
                 Events.onClick(li, () => moduleSelector.selectModuleById(objId));
                 view.getModulesList(msg.obj.type).appendChild(li);

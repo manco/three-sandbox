@@ -4,8 +4,14 @@ import {ModuleSubtype} from "../model/modules/types";
 import {Renderer} from "./renderer";
 import {Camera} from "./camera";
 import {Scene} from "three";
-import {Events} from "./html/events";
+import {SmartDoc} from "./html/smart-doc";
 
+//TODO
+
+//1. Page/View should only know model events and controller actions
+//2. Controller exposes actions to view
+//3. Controller changes model
+//4. model broadcasts events (view listens)
 export class Page {
 
     public static readonly ModuleSubtypesLabels = new Map<ModuleSubtype, string>([
@@ -25,9 +31,11 @@ export class Page {
         [ModuleType.HANGING, "SZAFKI WISZĄCE"]
     ]);
 
-    public readonly guiPanel = document.getElementById("gui-panel");
-    public readonly controlsPanel = document.getElementById("controls");
-    public readonly canvas;
+    private readonly doc = new SmartDoc(document);
+
+    public readonly guiPanel: HTMLElement = this.doc.getElementById("gui-panel");
+    public readonly controlsPanel: HTMLElement = this.doc.getElementById("controls");
+    public readonly canvas: HTMLCanvasElement;
 
     public readonly buttonZoomIn : HTMLElement = this.controlsPanel.querySelector('button[id=\"zoomin\"]');
     public readonly buttonZoomOut : HTMLElement = this.controlsPanel.querySelector('button[id=\"zoomout\"]');
@@ -45,7 +53,7 @@ export class Page {
     private readonly renderer: Renderer;
 
     constructor(scene: Scene, camera: Camera) {
-        const canvasContainer = document.getElementById("canvasContainer");
+        const canvasContainer = this.doc.getElementById("canvasContainer");
 
         this.renderer = new Renderer(
             scene,
@@ -60,16 +68,16 @@ export class Page {
 
         ModuleTypesAll.forEach(t => {
 
-            const ul = document.createElement("ul") as HTMLUListElement;
-            ul.id = `modulesList-${t}`;
+            const ul = this.doc.createUl(`modulesList-${t}`);
 
-            const label = document.createElement("label") as HTMLLabelElement;
-            label.setAttribute("for", ul.id);
-            label.innerText = Page.ModuleTypesLabels.get(t);
+            const label = this.doc.createLabel(ul, Page.ModuleTypesLabels.get(t));
 
-            const buttonChooseColor = document.createElement("button") as HTMLButtonElement;
-            buttonChooseColor.innerText = "kolor";
-            Events.onClick(buttonChooseColor, () => alert("jeszcze nie działa :)"));
+            const buttonChooseColor = this.doc.createButton("kolor");
+
+            // should be registered after kitchen loaded
+            //Events.onClick(buttonChooseColor, () => actions.changeColor(t, TextureType.WOOD));
+
+            //should be grouped in div and group exposed via view API
             this.guiPanel.appendChild(label);
             this.guiPanel.appendChild(buttonChooseColor);
             this.guiPanel.appendChild(ul);
@@ -77,15 +85,15 @@ export class Page {
     }
 
     public getModulesList(type: ModuleType): HTMLElement {
-        return document.getElementById('modulesList-' + type);
+        return this.doc.getElementById('modulesList-' + type);
     }
 
     public getAllModulesLists(): HTMLElement[] {
-        return Page.toArray(document.querySelectorAll('[id^=\"modulesList-\"]'));
+        return this.doc.findByIdPrefix('modulesList-');
     }
 
     public guiCheckboxesValues(): string[] {
-        return Page.toArray(document.querySelectorAll('[id^=\"checkbox-wall\"'))
+        return this.doc.findByIdPrefix('checkbox-wall')
             .filter(c => c.checked)
             .map(w => w.value);
     }
@@ -94,9 +102,7 @@ export class Page {
         this.renderer.render();
     }
 
-    private static toArray<T>(htmlCollection: NodeListOf<Element>) {
-        return [].slice.call(htmlCollection);
-    }
+
 
 }
 
