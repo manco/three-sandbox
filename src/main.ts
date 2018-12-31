@@ -79,7 +79,7 @@ const init = ():void => {
         kitchen.subscribe(msg => {
             if (msg.type === "ADD") {
                 const objId = `${msg.obj.id}`;
-                const li = Html.listItem(objId);
+                const li = new SmartDoc(document).createLi(objId);
 
                 const options = ModuleSubtypesOfTypes.get(msg.obj.type)
                     .map(stype => {

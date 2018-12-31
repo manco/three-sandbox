@@ -12,10 +12,4 @@ export class Html {
 
         return element;
     }
-
-    static listItem(id: string): HTMLLIElement {
-        const li = document.createElement("li") as HTMLLIElement;
-        li.id = id;
-        return li;
-    }
 }

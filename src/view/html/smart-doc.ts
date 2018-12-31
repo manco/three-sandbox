@@ -18,6 +18,12 @@ export class SmartDoc {
         return ul;
     }
 
+    createLi(id: string) {
+        const li = this.doc.createElement("li") as HTMLLIElement;
+        li.id = id;
+        return li;
+    }
+
     createLabel(forElement: HTMLElement, text: string): HTMLLabelElement {
         const label = this.doc.createElement("label") as HTMLLabelElement;
         label.setAttribute("for", forElement.id);
