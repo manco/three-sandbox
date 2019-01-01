@@ -1,20 +1,20 @@
-import {Vector2} from "three";
+import {Coords} from "./lang";
 
 export class MouseTracker {
-    private _xy: Vector2 = new Vector2(0, 0);
-    constructor(private readonly canvas: HTMLCanvasElement) {}
-
-    public xy() { return this._xy };
-
-    registerMouseMoveListener(): void {
+    private readonly _xy: Coords = { x:0, y:0 };
+    constructor(canvas: HTMLCanvasElement) {
         const onMouseMove = (event) => {
-            const rect = this.canvas.getBoundingClientRect();
+            const rect = canvas.getBoundingClientRect();
             const relX = event.clientX - rect.left;
             const relY = event.clientY - rect.top;
 
-            this._xy.x = relX / this.canvas.clientWidth *  2 - 1;
-            this._xy.y = relY / this.canvas.clientHeight * -2 + 1;
+            this._xy.x = relX / canvas.clientWidth * 2 - 1;
+            this._xy.y = relY / canvas.clientHeight * -2 + 1;
         };
-        this.canvas.addEventListener('mousemove', onMouseMove, false);
+        canvas.addEventListener('mousemove', onMouseMove, false);
+    }
+
+    public xy():Coords {
+        return this._xy;
     }
 }

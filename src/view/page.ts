@@ -5,6 +5,14 @@ import {Renderer} from "./renderer";
 import {Camera} from "./camera";
 import {Scene} from "three";
 import {SmartDoc} from "./html/smart-doc";
+import {KitchenApi} from "../model/kitchen/api";
+import {ModuleSubtypesOfTypes} from "../model/modules/types";
+import {Html} from "./html/dom";
+import {Events} from "./html/events";
+import {MouseTracker} from "../utils/mouseTracker";
+import {ModuleSelector} from "../module-selector";
+import {TextureType} from "../model/textures";
+import {Actions} from "../actions";
 
 //TODO
 
@@ -52,7 +60,8 @@ export class Page {
 
     private readonly renderer: Renderer;
 
-    constructor(scene: Scene, camera: Camera) {
+    //TODO moduleSelector doesn't fit here
+    constructor(scene: Scene, camera: Camera, actions: Actions, kitchenApi: KitchenApi, moduleSelector: ModuleSelector) {
         const canvasContainer = this.doc.getElementById("canvasContainer");
 
         this.renderer = new Renderer(
@@ -66,6 +75,10 @@ export class Page {
 
         canvasContainer.appendChild(this.canvas);
 
+        const mouseTracker = new MouseTracker(this.canvas);
+
+        Events.onClick(this.canvas, () => moduleSelector.selectModule(mouseTracker.xy(), camera));
+
         ModuleTypesAll.forEach(t => {
 
             const ul = this.doc.createUl(`modulesList-${t}`);
@@ -74,21 +87,42 @@ export class Page {
 
             const buttonChooseColor = this.doc.createButton("kolor");
 
-            // should be registered after kitchen loaded
-            //Events.onClick(buttonChooseColor, () => actions.changeColor(t, TextureType.WOOD));
+            Events.onClick(buttonChooseColor, () => actions.changeColor(t, TextureType.WOOD));
 
             //should be grouped in div and group exposed via view API
             this.guiPanel.appendChild(label);
             this.guiPanel.appendChild(buttonChooseColor);
             this.guiPanel.appendChild(ul);
         });
+
+        kitchenApi.onAddModule(msg => {
+                const objId = `${msg.obj.id}`;
+                const li = this.doc.createLi(objId);
+
+                const options = ModuleSubtypesOfTypes.get(msg.obj.type)
+                    .map(stype => {
+                        return {
+                            value: `${stype}`,
+                            text: Page.ModuleSubtypesLabels.get(stype)
+                        }
+                    });
+
+                li.appendChild(Html.select(this.doc, options));
+
+                Events.onClick(li, () => moduleSelector.selectModuleById(objId));
+                this.getModulesList(msg.obj.type).appendChild(li);
+        });
+
+        kitchenApi.onRemoveAll(() => {
+            this.getAllModulesLists().forEach((ml:Element) => ml.innerHTML = '');
+        });
     }
 
-    public getModulesList(type: ModuleType): HTMLElement {
+    private getModulesList(type: ModuleType): HTMLElement {
         return this.doc.getElementById('modulesList-' + type);
     }
 
-    public getAllModulesLists(): HTMLElement[] {
+    private getAllModulesLists(): HTMLElement[] {
         return this.doc.findByIdPrefix('modulesList-');
     }
 

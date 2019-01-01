@@ -133,7 +133,7 @@ export class Kitchen extends Observable {
         this.floor.addTo(this.scene);
         const factories = wallsFactories(width, depth, height);
         wallNames.forEach(name => this.addWall(factories.get(name)()));
-        return this.fillWallsWithModules();
+        return this.fillWallsWithModules().then(() => this.notify(new Message("LOADED")));
     }
 
     private addWall(wall:Wall): void {

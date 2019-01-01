@@ -3,18 +3,17 @@ import {Message, Observable} from "./utils/observable";
 import {Kitchen} from "./model/kitchen/kitchen"
 import {Module} from "./model/modules/module"
 import {Camera} from "./view/camera";
-import {MouseTracker} from "./utils/mouseTracker";
 import {Mesh} from "three";
+import {Coords} from "./utils/lang";
 
 export class ModuleSelector extends Observable {
-    private readonly meshSelector: MeshSelector;
-    private selected: Module = null;
-    constructor(camera : Camera, private readonly kitchen : Kitchen, mouseTracker : MouseTracker) {
+    private readonly meshSelector: MeshSelector = new MeshSelector();
+    private selected: Module = null; //TODO selectedId?
+    constructor(private readonly kitchen : Kitchen) {
         super();
-        this.meshSelector = new MeshSelector(camera.threeJsCamera, mouseTracker);
     }
-    selectModule(): void {
-        this._selectModule((meshes) => this.meshSelector.selectMeshByRaycast(meshes));
+    selectModule(xy:Coords, camera:Camera): void {
+        this._selectModule((meshes) => this.meshSelector.selectMeshByRaycast(camera.threeJsCamera, xy, meshes));
     }
     selectModuleById(id:string): void {
         this._selectModule((meshes) => this.meshSelector.selectMeshById(id, meshes));

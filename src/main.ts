@@ -1,34 +1,32 @@
 import ModulesLibrary from './model/modules/modules-library'
 import {Kitchen} from './model/kitchen/kitchen'
-import {MouseTracker} from "./utils/mouseTracker";
 import {Camera} from "./view/camera";
 import {SceneFactory} from "./model/scene";
 import {ModuleSelector} from './module-selector';
 import {Vector3} from "three";
 import {Page} from "./view/page";
 import {Controls} from "./view/controls";
-import {ModuleSubtypesOfTypes} from "./model/modules/types";
 import {ModuleType} from "./model/modules/types";
 import {TexturesLibrary} from "./model/textures";
 import {TextureType} from "./model/textures";
-import {Html} from "./view/html/dom";
 import {Events} from "./view/html/events";
-import {SmartDoc} from "./view/html/smart-doc";
+import {KitchenApi} from "./model/kitchen/api";
+import {Actions} from "./actions";
 
 const scene = SceneFactory.create();
 
 const camera = new Camera(scene);
-// @ts-ignore
-window.camera = camera;
 
 const modulesLibrary = new ModulesLibrary();
 const texturesLibrary = new TexturesLibrary();
 
-const view = new Page(scene, camera);
-
-const mouseTracker = new MouseTracker(view.canvas);
-
 const kitchen = new Kitchen(modulesLibrary, texturesLibrary, scene);
+// @ts-ignore
+window.kitchen = kitchen;
+
+const moduleSelector = new ModuleSelector(kitchen);
+
+const view = new Page(scene, camera, new Actions(kitchen), new KitchenApi(kitchen), moduleSelector);
 
 const init = ():void => {
 
@@ -40,7 +38,7 @@ const init = ():void => {
             (document.getElementById("kitchen-height") as HTMLInputElement).valueAsNumber
         ];
 
-        //TODO move to separate handler
+        //TODO move to Page
         const controls = new Controls(
             camera,
             view.canvas,
@@ -60,32 +58,6 @@ const init = ():void => {
         kitchen.removeAll();
         kitchen.initFloorAndWalls(width, height, depth, view.guiCheckboxesValues());
 
-        const moduleSelector = new ModuleSelector(camera, kitchen, mouseTracker);
-
-        Events.onClick(view.canvas, () => moduleSelector.selectModule());
-
-        kitchen.subscribe(msg => {
-            if (msg.type === "ADD") {
-                const objId = `${msg.obj.id}`;
-                const li = new SmartDoc(document).createLi(objId);
-
-                const options = ModuleSubtypesOfTypes.get(msg.obj.type)
-                    .map(stype => {
-                        return {
-                            value: `${stype}`,
-                            text: Page.ModuleSubtypesLabels.get(stype)
-                        }
-                    });
-
-                li.appendChild(Html.select(new SmartDoc(document), options));
-
-                Events.onClick(li, () => moduleSelector.selectModuleById(objId));
-                view.getModulesList(msg.obj.type).appendChild(li);
-            }
-            if (msg.type === "REMOVEALL") {
-                view.getAllModulesLists().forEach((ml:Element) => ml.innerHTML = '');
-            }
-        });
 
         moduleSelector.subscribe(msg => {
             const objElement = document.getElementById(msg.obj.id);
@@ -113,8 +85,6 @@ const init = ():void => {
         { url: 'textures/wood.jpg', type: TextureType.WOOD },
         { url: 'textures/gray-light.jpg', type: TextureType.WHITE}
     ]);
-
-    mouseTracker.registerMouseMoveListener();
 };
 
 const animate = ():void => {

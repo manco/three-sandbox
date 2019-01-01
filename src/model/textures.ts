@@ -19,8 +19,14 @@ export class TexturesLibrary {
 
     loadTextures(definitions: TextureDefinition[]): void {
      definitions.map(
-         d => this.textures.set(d.type, this.loader.load(d.url))
+         d => this.textures.set(d.type, this.loadTexture(d))
             );
+    }
+
+    private loadTexture(d:TextureDefinition):Texture {
+        const tex = this.loader.load(d.url);
+        tex.name = d.type.toString();
+        return tex;
     }
 
     get(type: TextureType): Texture | undefined {

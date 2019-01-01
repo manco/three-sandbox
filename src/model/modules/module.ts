@@ -39,6 +39,7 @@ export class Module {
 
     setTexture(tex:Texture): void {
         this.material().map = tex;
+        this.material().needsUpdate = true;
     }
 
     getTexture(): Texture {

@@ -1,16 +1,17 @@
 import {MeshMarker} from "./mesh-marker";
-import {Camera, Color, Intersection, Mesh, MeshLambertMaterial, Object3D, Raycaster} from "three";
-import {MouseTracker} from "./mouseTracker";
+import {Color, Intersection, Mesh, MeshLambertMaterial, Object3D, Raycaster} from "three";
+import {Coords} from "./lang";
+import {Camera} from "three";
 
 export class MeshSelector {
     private readonly raycaster: Raycaster = new Raycaster();
     private readonly marker: MeshMarker = new MeshMarker(0x00ff00);
     private selected:Mesh = null;
     private previousSelectedEmissiveColor:number = null;
-    constructor(private readonly camera:Camera, private readonly mouseTracker:MouseTracker) {}
-    selectMeshByRaycast(meshes:Mesh[]):Mesh {
+
+    selectMeshByRaycast(camera: Camera, xy:Coords, meshes:Mesh[]):Mesh {
         return this.select(() => {
-            const intersectingMeshes = this.castRay(meshes);
+            const intersectingMeshes = this.castRay(camera, xy, meshes);
             if (intersectingMeshes.length > 0) {
                 return intersectingMeshes[0] as Mesh;
             }
@@ -18,11 +19,13 @@ export class MeshSelector {
         });
     }
 
-    private castRay(meshes:Mesh[]): Object3D[] {
-        this.raycaster.setFromCamera(this.mouseTracker.xy(), this.camera);
+    //TODO czytanie modelu - powinno byc w view
+    private castRay(camera: Camera, xy:Coords, meshes:Mesh[]): Object3D[] {
+        this.raycaster.setFromCamera(xy, camera);
         return this.raycaster.intersectObjects(meshes).map((i:Intersection) => i.object);
     };
 
+    //TODO zmiana modelu - powinna isc przez actions
     selectMeshById(id:string, meshes:Mesh[]):Mesh {
         return this.select( () => meshes.find((m:Mesh) => m.uuid === id) );
     }
