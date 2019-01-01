@@ -4,6 +4,10 @@ export class SmartDoc {
         return this.doc.getElementById(elementId);
     }
 
+    getInputNumberValue(elementId: string): number {
+        return (this.getElementById(elementId) as HTMLInputElement).valueAsNumber;
+    }
+
     createSelect(): HTMLSelectElement {
         return this.doc.createElement("select") as HTMLSelectElement;
     }

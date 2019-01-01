@@ -1,5 +1,3 @@
-//TODO extract actions from main.ts
-
 import {ModuleType} from "./model/modules/types";
 import {TextureType} from "./model/textures";
 import {Kitchen} from "./model/kitchen/kitchen";
@@ -9,8 +7,9 @@ export class Actions {
         private readonly kitchen: Kitchen
     ) {}
 
-    loadKitchen() {
-        //TODO move from main.ts
+    loadKitchen([ width, depth, height ]: [number, number, number], wallNames : string[]):void {
+        this.kitchen.removeAll();
+        this.kitchen.initFloorAndWalls(width, height, depth, wallNames);
     }
 
     changeColor(modules: ModuleType, toColor: TextureType): void {

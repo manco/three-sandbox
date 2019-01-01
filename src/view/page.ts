@@ -13,6 +13,8 @@ import {MouseTracker} from "../utils/mouseTracker";
 import {ModuleSelector} from "../module-selector";
 import {TextureType} from "../model/textures";
 import {Actions} from "../actions";
+import {Controls} from "./controls";
+import {Vector3} from "three";
 
 //TODO
 
@@ -57,7 +59,6 @@ export class Page {
     public readonly buttonRotateUp : HTMLElement = this.controlsPanel.querySelector('button[id=\"rotateup\"');
     public readonly buttonRotateDown : HTMLElement = this.controlsPanel.querySelector('button[id=\"rotatedown\"');
 
-
     private readonly renderer: Renderer;
 
     //TODO moduleSelector doesn't fit here
@@ -78,6 +79,33 @@ export class Page {
         const mouseTracker = new MouseTracker(this.canvas);
 
         Events.onClick(this.canvas, () => moduleSelector.selectModule(mouseTracker.xy(), camera));
+
+        const [width, depth, height]: [number, number, number] = [
+            this.doc.getInputNumberValue("kitchen-width"),
+            this.doc.getInputNumberValue("kitchen-depth"),
+            this.doc.getInputNumberValue("kitchen-height")
+        ];
+
+        Events.onClick(
+            this.doc.getElementById("drawKitchenButton"),
+            () => actions.loadKitchen([width, depth, height], this.guiCheckboxesValues())
+        );
+
+        const controls = new Controls(
+            camera,
+            this.canvas,
+            new Vector3(0, height / 2, 0)
+        );
+
+        Events.onClick(this.buttonZoomIn, () => camera.zoomIn());
+        Events.onClick(this.buttonZoomOut, () => camera.zoomOut());
+        Events.onClick(this.buttonPanLeft, () => controls.panLeft());
+        Events.onClick(this.buttonPanRight, () => controls.panRight());
+        Events.onClick(this.buttonRotateLeft, () => controls.rotateLeft());
+        Events.onClick(this.buttonRotateRight, () => controls.rotateRight());
+        Events.onClick(this.buttonRotateUp, () => controls.rotateUp());
+        Events.onClick(this.buttonRotateDown, () => controls.rotateDown());
+        Events.onClick(this.buttonCenter, () => controls.reset());
 
         ModuleTypesAll.forEach(t => {
 
@@ -116,6 +144,20 @@ export class Page {
         kitchenApi.onRemoveAll(() => {
             this.getAllModulesLists().forEach((ml:Element) => ml.innerHTML = '');
         });
+
+        kitchenApi.onLoad(() => {
+            moduleSelector.subscribe(msg => {
+                const objElement = this.doc.getElementById(msg.obj.id);
+                if (objElement !== null) {
+                    if (msg.type === "DESELECTED") {
+                        objElement.className = "";
+                    }
+                    if (msg.type === "SELECTED") {
+                        objElement.className = "selectedModule";
+                    }
+                }
+            });
+        })
     }
 
     private getModulesList(type: ModuleType): HTMLElement {
@@ -126,7 +168,7 @@ export class Page {
         return this.doc.findByIdPrefix('modulesList-');
     }
 
-    public guiCheckboxesValues(): string[] {
+    private guiCheckboxesValues(): string[] {
         return this.doc.findByIdPrefix('checkbox-wall')
             .filter(c => c.checked)
             .map(w => w.value);

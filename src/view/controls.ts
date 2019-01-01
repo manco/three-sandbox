@@ -15,6 +15,20 @@ export class Controls {
         this.orbitControls.saveState();
     }
 
+    zoomIn(): void {
+        this.zoomChange(0.1);
+    }
+
+    zoomOut(): void {
+        this.zoomChange(-0.1);
+    }
+
+    private zoomChange(delta: number) {
+        const newZoom = this.orbitControls.threeJsCamera.zoom + delta;
+        this.threeJsCamera.zoom = Math.min(10, Math.max(0, newZoom));
+        this.threeJsCamera.updateProjectionMatrix();
+    }
+
     panLeft() {
         this.panHorizontally(Controls.PanStep);
     }

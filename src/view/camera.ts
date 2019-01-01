@@ -12,21 +12,6 @@ export class Camera extends Observable {
         window.addEventListener( 'resize', () => this.setFrustum(), false );
     }
 
-    //TODO przeniesc obsluge do controls
-    zoomIn(): void {
-        this.zoomChange(0.1);
-    }
-
-    zoomOut(): void {
-        this.zoomChange(-0.1);
-    }
-
-    private zoomChange(delta: number) {
-        const newZoom = this.threeJsCamera.zoom + delta;
-        this.threeJsCamera.zoom = Math.min(10, Math.max(0, newZoom));
-        this.threeJsCamera.updateProjectionMatrix();
-    }
-
     private setFrustum():void {
         const aspect = window.innerWidth / window.innerHeight;
         this.threeJsCamera.left = -Camera.frustumSize * aspect;
