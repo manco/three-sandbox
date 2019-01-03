@@ -1,12 +1,12 @@
 import {ModuleType} from "../model/modules/types";
 import {ModuleTypesAll} from "../model/modules/types";
-import {ModuleSubtype} from "../model/modules/types";
+import {ModuleSubtypesOfTypes} from "../model/modules/types";
 import {Renderer} from "./renderer";
 import {Camera} from "./camera";
 import {Scene} from "three";
+import {Vector3} from "three";
 import {SmartDoc} from "./html/smart-doc";
 import {KitchenApi} from "../model/kitchen/api";
-import {ModuleSubtypesOfTypes} from "../model/modules/types";
 import {Html} from "./html/dom";
 import {Events} from "./html/events";
 import {MouseTracker} from "../utils/mouseTracker";
@@ -14,7 +14,7 @@ import {ModuleSelector} from "../module-selector";
 import {TextureType} from "../model/textures";
 import {Actions} from "../actions";
 import {Controls} from "./controls";
-import {Vector3} from "three";
+import {Labels} from "./labels";
 
 //TODO
 
@@ -23,23 +23,6 @@ import {Vector3} from "three";
 //3. Controller changes model
 //4. model broadcasts events (view listens)
 export class Page {
-
-    public static readonly ModuleSubtypesLabels = new Map<ModuleSubtype, string>([
-        [ModuleSubtype.SHELVES, "półki"],
-        [ModuleSubtype.DRAWERS, "szuflady"],
-        [ModuleSubtype.TABLETOP, "blat"],
-        [ModuleSubtype.SINK, "zlewozmywak"],
-        [ModuleSubtype.OVEN, "piekarnik"],
-        [ModuleSubtype.OVEN_TABLETOP, "palniki"],
-        [ModuleSubtype.WASHER, "pralka"],
-        [ModuleSubtype.FRIDGE, "lodówka"]
-    ]);
-
-    public static readonly ModuleTypesLabels = new Map<ModuleType, string>([
-        [ModuleType.STANDING, "SZAFKI STOJĄCE"],
-        [ModuleType.TABLETOP, "BLAT KUCHENNY"],
-        [ModuleType.HANGING, "SZAFKI WISZĄCE"]
-    ]);
 
     private readonly doc = new SmartDoc(document);
 
@@ -112,7 +95,7 @@ export class Page {
 
             const ul = this.doc.createUl(`modulesList-${t}`);
 
-            const label = this.doc.createLabel(ul, Page.ModuleTypesLabels.get(t));
+            const label = this.doc.createLabel(ul, Labels.ModuleTypesLabels.get(t));
 
             const buttonChooseColor = this.doc.createButton("kolor");
 
@@ -132,7 +115,7 @@ export class Page {
                     .map(stype => {
                         return {
                             value: `${stype}`,
-                            text: Page.ModuleSubtypesLabels.get(stype)
+                            text: Labels.ModuleSubtypesLabels.get(stype)
                         }
                     });
 
