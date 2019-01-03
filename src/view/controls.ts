@@ -6,9 +6,12 @@ export class Controls {
     private static readonly RotateStep = Math.PI * 0.05;
     private static readonly PanStep = 50;
 
+    private readonly threeJsCamera;
+
     private readonly orbitControls: OrbitControls;
     constructor(camera: Camera, canvas: HTMLCanvasElement, target: Vector3) {
-        this.orbitControls = new OrbitControls( camera.threeJsCamera, canvas );
+        this.threeJsCamera = camera.threeJsCamera;
+        this.orbitControls = new OrbitControls( this.threeJsCamera, canvas );
         this.orbitControls.maxPolarAngle = Math.PI /2;
         this.orbitControls.target = target;
         this.orbitControls.update();
@@ -24,7 +27,7 @@ export class Controls {
     }
 
     private zoomChange(delta: number) {
-        const newZoom = this.orbitControls.threeJsCamera.zoom + delta;
+        const newZoom = this.threeJsCamera.zoom + delta;
         this.threeJsCamera.zoom = Math.min(10, Math.max(0, newZoom));
         this.threeJsCamera.updateProjectionMatrix();
     }

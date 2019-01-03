@@ -45,7 +45,6 @@ export class Page {
 
     public readonly guiPanel: HTMLElement = this.doc.getElementById("gui-panel");
     public readonly controlsPanel: HTMLElement = this.doc.getElementById("controls");
-    public readonly canvas: HTMLCanvasElement;
 
     public readonly buttonZoomIn : HTMLElement = this.controlsPanel.querySelector('button[id=\"zoomin\"]');
     public readonly buttonZoomOut : HTMLElement = this.controlsPanel.querySelector('button[id=\"zoomout\"]');
@@ -72,40 +71,42 @@ export class Page {
             canvasContainer.offsetHeight
         );
 
-        this.canvas = this.renderer.canvas();
+        const canvas = this.renderer.canvas();
 
-        canvasContainer.appendChild(this.canvas);
+        canvasContainer.appendChild(canvas);
 
-        const mouseTracker = new MouseTracker(this.canvas);
+        const mouseTracker = new MouseTracker(canvas);
 
-        Events.onClick(this.canvas, () => moduleSelector.selectModule(mouseTracker.xy(), camera));
-
-        const [width, depth, height]: [number, number, number] = [
-            this.doc.getInputNumberValue("kitchen-width"),
-            this.doc.getInputNumberValue("kitchen-depth"),
-            this.doc.getInputNumberValue("kitchen-height")
-        ];
+        Events.onClick(canvas, () => moduleSelector.selectModule(mouseTracker.xy(), camera));
 
         Events.onClick(
             this.doc.getElementById("drawKitchenButton"),
-            () => actions.loadKitchen([width, depth, height], this.guiCheckboxesValues())
-        );
+            () => {
+                const [width, depth, height]: [number, number, number] = [
+                    this.doc.getInputNumberValue("kitchen-width"),
+                    this.doc.getInputNumberValue("kitchen-depth"),
+                    this.doc.getInputNumberValue("kitchen-height")
+                ];
+                actions.loadKitchen([width, depth, height], this.guiCheckboxesValues());
 
-        const controls = new Controls(
-            camera,
-            this.canvas,
-            new Vector3(0, height / 2, 0)
-        );
+                //move it to constructor, on event only reset controls target?
+                const controls = new Controls(
+                    camera,
+                    canvas,
+                    new Vector3(0, height / 2, 0)
+                );
 
-        Events.onClick(this.buttonZoomIn, () => camera.zoomIn());
-        Events.onClick(this.buttonZoomOut, () => camera.zoomOut());
-        Events.onClick(this.buttonPanLeft, () => controls.panLeft());
-        Events.onClick(this.buttonPanRight, () => controls.panRight());
-        Events.onClick(this.buttonRotateLeft, () => controls.rotateLeft());
-        Events.onClick(this.buttonRotateRight, () => controls.rotateRight());
-        Events.onClick(this.buttonRotateUp, () => controls.rotateUp());
-        Events.onClick(this.buttonRotateDown, () => controls.rotateDown());
-        Events.onClick(this.buttonCenter, () => controls.reset());
+                Events.onClick(this.buttonZoomIn, () => controls.zoomIn());
+                Events.onClick(this.buttonZoomOut, () => controls.zoomOut());
+                Events.onClick(this.buttonPanLeft, () => controls.panLeft());
+                Events.onClick(this.buttonPanRight, () => controls.panRight());
+                Events.onClick(this.buttonRotateLeft, () => controls.rotateLeft());
+                Events.onClick(this.buttonRotateRight, () => controls.rotateRight());
+                Events.onClick(this.buttonRotateUp, () => controls.rotateUp());
+                Events.onClick(this.buttonRotateDown, () => controls.rotateDown());
+                Events.onClick(this.buttonCenter, () => controls.reset());
+            }
+        );
 
         ModuleTypesAll.forEach(t => {
 
