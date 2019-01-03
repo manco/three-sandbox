@@ -26,20 +26,20 @@ export class Page {
 
     private readonly doc = new SmartDoc(document);
 
-    public readonly guiPanel: HTMLElement = this.doc.getElementById("gui-panel");
-    public readonly controlsPanel: HTMLElement = this.doc.getElementById("controls");
+    private readonly guiPanel: HTMLElement = this.doc.getElementById("gui-panel");
+    private readonly controlsPanel: HTMLElement = this.doc.getElementById("controls");
 
-    public readonly buttonZoomIn : HTMLElement = this.controlsPanel.querySelector('button[id=\"zoomin\"]');
-    public readonly buttonZoomOut : HTMLElement = this.controlsPanel.querySelector('button[id=\"zoomout\"]');
-    public readonly buttonCenter : HTMLElement = this.controlsPanel.querySelector('button[id=\"center\"]');
+    private readonly buttonZoomIn : HTMLElement = this.controlsPanel.querySelector('button[id=\"zoomin\"]');
+    private readonly buttonZoomOut : HTMLElement = this.controlsPanel.querySelector('button[id=\"zoomout\"]');
+    private readonly buttonCenter : HTMLElement = this.controlsPanel.querySelector('button[id=\"center\"]');
 
-    public readonly buttonPanLeft : HTMLElement = this.controlsPanel.querySelector('button[id=\"panleft\"');
-    public readonly buttonPanRight : HTMLElement = this.controlsPanel.querySelector('button[id=\"panright\"');
+    private readonly buttonPanLeft : HTMLElement = this.controlsPanel.querySelector('button[id=\"panleft\"');
+    private readonly buttonPanRight : HTMLElement = this.controlsPanel.querySelector('button[id=\"panright\"');
 
-    public readonly buttonRotateLeft : HTMLElement = this.controlsPanel.querySelector('button[id=\"rotateleft\"');
-    public readonly buttonRotateRight : HTMLElement = this.controlsPanel.querySelector('button[id=\"rotateright\"');
-    public readonly buttonRotateUp : HTMLElement = this.controlsPanel.querySelector('button[id=\"rotateup\"');
-    public readonly buttonRotateDown : HTMLElement = this.controlsPanel.querySelector('button[id=\"rotatedown\"');
+    private readonly buttonRotateLeft : HTMLElement = this.controlsPanel.querySelector('button[id=\"rotateleft\"');
+    private readonly buttonRotateRight : HTMLElement = this.controlsPanel.querySelector('button[id=\"rotateright\"');
+    private readonly buttonRotateUp : HTMLElement = this.controlsPanel.querySelector('button[id=\"rotateup\"');
+    private readonly buttonRotateDown : HTMLElement = this.controlsPanel.querySelector('button[id=\"rotatedown\"');
 
     private readonly renderer: Renderer;
 
