@@ -7,9 +7,12 @@ export class Controls {
     private static readonly PanStep = 50;
 
     private readonly orbitControls: OrbitControls;
-    constructor(private readonly camera: OrthographicCamera, canvas: HTMLCanvasElement, target: Vector3) {
+    constructor(private readonly camera: OrthographicCamera, canvas: HTMLCanvasElement) {
         this.orbitControls = new OrbitControls( camera, canvas );
         this.orbitControls.maxPolarAngle = Math.PI /2;
+    }
+
+    setTarget(target: Vector3) {
         this.orbitControls.target = target;
         this.orbitControls.update();
         this.orbitControls.saveState();

@@ -15,17 +15,13 @@ import {Actions} from "../actions";
 import {Controls} from "./controls";
 import {Labels} from "./labels";
 
-//TODO
-
-//1. Page/View should only know model events and controller actions
-//2. Controller exposes actions to view
-//3. Controller changes model
-//4. model broadcasts events (view listens)
 export class Page {
 
     private readonly doc = new SmartDoc(document);
 
     private readonly guiPanel: HTMLElement = this.doc.getElementById("gui-panel");
+
+    //TODO dedicated class for control panel?
     private readonly controlsPanel: HTMLElement = this.doc.getElementById("controls");
 
     private readonly buttonZoomIn : HTMLElement = this.controlsPanel.querySelector('button[id=\"zoomin\"]');
@@ -76,6 +72,21 @@ export class Page {
 
         Events.onClick(canvas, () => actions.selectModule(mouseTracker.xy()));
 
+        const controls = new Controls(
+            camera,
+            canvas
+        );
+
+        Events.onClick(this.buttonZoomIn, () => controls.zoomIn());
+        Events.onClick(this.buttonZoomOut, () => controls.zoomOut());
+        Events.onClick(this.buttonPanLeft, () => controls.panLeft());
+        Events.onClick(this.buttonPanRight, () => controls.panRight());
+        Events.onClick(this.buttonRotateLeft, () => controls.rotateLeft());
+        Events.onClick(this.buttonRotateRight, () => controls.rotateRight());
+        Events.onClick(this.buttonRotateUp, () => controls.rotateUp());
+        Events.onClick(this.buttonRotateDown, () => controls.rotateDown());
+        Events.onClick(this.buttonCenter, () => controls.reset());
+
         Events.onClick(
             this.doc.getElementById("drawKitchenButton"),
             () => {
@@ -86,22 +97,8 @@ export class Page {
                 ];
                 actions.loadKitchen([width, depth, height], this.guiCheckboxesValues());
 
-                //TODO move it to constructor, on event only reset controls target?
-                const controls = new Controls(
-                    camera,
-                    canvas,
-                    new Vector3(0, height / 2, 0)
-                );
+                controls.setTarget(new Vector3(0, height / 2, 0));
 
-                Events.onClick(this.buttonZoomIn, () => controls.zoomIn());
-                Events.onClick(this.buttonZoomOut, () => controls.zoomOut());
-                Events.onClick(this.buttonPanLeft, () => controls.panLeft());
-                Events.onClick(this.buttonPanRight, () => controls.panRight());
-                Events.onClick(this.buttonRotateLeft, () => controls.rotateLeft());
-                Events.onClick(this.buttonRotateRight, () => controls.rotateRight());
-                Events.onClick(this.buttonRotateUp, () => controls.rotateUp());
-                Events.onClick(this.buttonRotateDown, () => controls.rotateDown());
-                Events.onClick(this.buttonCenter, () => controls.reset());
             }
         );
 
