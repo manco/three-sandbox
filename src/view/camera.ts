@@ -1,11 +1,9 @@
 import {OrthographicCamera, Scene} from "three";
-import {Observable} from "../utils/observable";
 
-export class Camera extends Observable {
+export class Camera {
     private static readonly frustumSize: number = 350;
     readonly threeJsCamera: OrthographicCamera = new OrthographicCamera(0,0,0,0);
     constructor(private readonly scene:Scene) {
-        super();
         scene.add(this.threeJsCamera);
         this.setFrustum();
         this.threeJsCamera.position.set(90, 450, 350);

@@ -1,10 +1,10 @@
-import {MeshSelector} from "./utils/mesh-selector";
-import {Message, Observable} from "./utils/observable";
-import {Kitchen} from "./model/kitchen/kitchen"
-import {Module} from "./model/modules/module"
-import {Camera} from "./view/camera";
+import {MeshSelector} from "../utils/mesh-selector";
+import {Message, Observable} from "../utils/observable";
+import {Kitchen} from "./kitchen/kitchen"
+import {Module} from "./modules/module"
+import {Camera} from "../view/camera";
 import {Mesh} from "three";
-import {Coords} from "./utils/lang";
+import {Coords} from "../utils/lang";
 
 export class ModuleSelector extends Observable {
     private readonly meshSelector: MeshSelector = new MeshSelector();

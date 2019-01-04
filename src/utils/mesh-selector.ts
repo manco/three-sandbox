@@ -1,11 +1,10 @@
-import {MeshMarker} from "./mesh-marker";
 import {Color, Intersection, Mesh, MeshLambertMaterial, Object3D, Raycaster} from "three";
-import {Coords} from "./lang";
 import {Camera} from "three";
+import {Coords} from "./lang";
 
 export class MeshSelector {
     private readonly raycaster: Raycaster = new Raycaster();
-    private readonly marker: MeshMarker = new MeshMarker(0x00ff00);
+    private readonly SelectionColor: number = 0x00ff00;
     private selected:Mesh = null;
     private previousSelectedEmissiveColor:number = null;
 
@@ -19,13 +18,11 @@ export class MeshSelector {
         });
     }
 
-    //TODO czytanie modelu - powinno byc w view
     private castRay(camera: Camera, xy:Coords, meshes:Mesh[]): Object3D[] {
         this.raycaster.setFromCamera(xy, camera);
         return this.raycaster.intersectObjects(meshes).map((i:Intersection) => i.object);
     };
 
-    //TODO zmiana modelu - powinna isc przez actions
     selectMeshById(id:string, meshes:Mesh[]):Mesh {
         return this.select( () => meshes.find((m:Mesh) => m.uuid === id) );
     }
@@ -41,7 +38,7 @@ export class MeshSelector {
         if (mesh !== null) {
             this.previousSelectedEmissiveColor = MeshSelector.emissive(mesh).getHex();
             this.selected = mesh;
-            this.marker.mark(mesh);
+            MeshSelector.emissive(this.selected).setHex(this.SelectionColor);
         }
         return mesh;
     }

@@ -10,7 +10,6 @@ import {KitchenApi} from "../model/kitchen/api";
 import {Html} from "./html/dom";
 import {Events} from "./html/events";
 import {MouseTracker} from "../utils/mouseTracker";
-import {ModuleSelector} from "../module-selector";
 import {TextureType} from "../model/textures";
 import {Actions} from "../actions";
 import {Controls} from "./controls";
@@ -43,8 +42,7 @@ export class Page {
 
     private readonly renderer: Renderer;
 
-    //TODO moduleSelector doesn't fit here
-    constructor(scene: Scene, camera: Camera, actions: Actions, kitchenApi: KitchenApi, moduleSelector: ModuleSelector) {
+    constructor(scene: Scene, camera: Camera, actions: Actions, kitchenApi: KitchenApi) {
         const canvasContainer = this.doc.getElementById("canvasContainer");
 
         this.renderer = new Renderer(
@@ -60,7 +58,7 @@ export class Page {
 
         const mouseTracker = new MouseTracker(canvas);
 
-        Events.onClick(canvas, () => moduleSelector.selectModule(mouseTracker.xy(), camera));
+        Events.onClick(canvas, () => actions.selectModule(mouseTracker.xy()));
 
         Events.onClick(
             this.doc.getElementById("drawKitchenButton"),
@@ -72,7 +70,7 @@ export class Page {
                 ];
                 actions.loadKitchen([width, depth, height], this.guiCheckboxesValues());
 
-                //move it to constructor, on event only reset controls target?
+                //TODO move it to constructor, on event only reset controls target?
                 const controls = new Controls(
                     camera,
                     canvas,
@@ -121,7 +119,7 @@ export class Page {
 
                 li.appendChild(Html.select(this.doc, options));
 
-                Events.onClick(li, () => moduleSelector.selectModuleById(objId));
+                Events.onClick(li, () => actions.selectModuleById(objId));
                 this.getModulesList(msg.obj.type).appendChild(li);
         });
 
@@ -130,15 +128,17 @@ export class Page {
         });
 
         kitchenApi.onLoad(() => {
-            moduleSelector.subscribe(msg => {
+            kitchenApi.onModuleSelected(msg => {
                 const objElement = this.doc.getElementById(msg.obj.id);
                 if (objElement !== null) {
-                    if (msg.type === "DESELECTED") {
-                        objElement.className = "";
-                    }
-                    if (msg.type === "SELECTED") {
-                        objElement.className = "selectedModule";
-                    }
+                    objElement.className = "selectedModule";
+                }
+            });
+
+            kitchenApi.onModuleDeselected(msg => {
+                const objElement = this.doc.getElementById(msg.obj.id);
+                if (objElement !== null) {
+                    objElement.className = "";
                 }
             });
         })

@@ -2,7 +2,7 @@ import ModulesLibrary from './model/modules/modules-library'
 import {Kitchen} from './model/kitchen/kitchen'
 import {Camera} from "./view/camera";
 import {SceneFactory} from "./model/scene";
-import {ModuleSelector} from './module-selector';
+import {ModuleSelector} from './model/module-selector';
 import {Page} from "./view/page";
 import {ModuleType} from "./model/modules/types";
 import {TexturesLibrary} from "./model/textures";
@@ -31,12 +31,15 @@ const kitchen = new Kitchen(modulesLibrary, texturesLibrary, scene);
 // @ts-ignore
 window.kitchen = kitchen;
 
+const moduleSelector = new ModuleSelector(kitchen);
+
+const camera = new Camera(scene);
+
 const view = new Page(
     scene,
-    new Camera(scene),
-    new Actions(kitchen),
-    new KitchenApi(kitchen),
-    new ModuleSelector(kitchen)
+    camera,
+    new Actions(kitchen, moduleSelector, camera),
+    new KitchenApi(kitchen, moduleSelector)
 );
 
 const animate = ():void => {
