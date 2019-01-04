@@ -2,9 +2,9 @@ import {ModuleType} from "../model/modules/types";
 import {ModuleTypesAll} from "../model/modules/types";
 import {ModuleSubtypesOfTypes} from "../model/modules/types";
 import {Renderer} from "./renderer";
-import {Camera} from "./camera";
 import {Scene} from "three";
 import {Vector3} from "three";
+import {OrthographicCamera} from "three";
 import {SmartDoc} from "./html/smart-doc";
 import {KitchenApi} from "../model/kitchen/api";
 import {Html} from "./html/dom";
@@ -42,7 +42,7 @@ export class Page {
 
     private readonly renderer: Renderer;
 
-    constructor(scene: Scene, camera: Camera, actions: Actions, kitchenApi: KitchenApi) {
+    constructor(scene: Scene, camera: OrthographicCamera, actions: Actions, kitchenApi: KitchenApi) {
         const canvasContainer = this.doc.getElementById("canvasContainer");
 
         this.renderer = new Renderer(

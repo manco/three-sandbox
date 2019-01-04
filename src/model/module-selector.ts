@@ -2,9 +2,10 @@ import {MeshSelector} from "../utils/mesh-selector";
 import {Message, Observable} from "../utils/observable";
 import {Kitchen} from "./kitchen/kitchen"
 import {Module} from "./modules/module"
-import {Camera} from "../view/camera";
+import {CameraFactory} from "../view/cameraFactory";
 import {Mesh} from "three";
 import {Coords} from "../utils/lang";
+import {Camera} from "three";
 
 export class ModuleSelector extends Observable {
     private readonly meshSelector: MeshSelector = new MeshSelector();
@@ -13,7 +14,7 @@ export class ModuleSelector extends Observable {
         super();
     }
     selectModule(xy:Coords, camera:Camera): void {
-        this._selectModule((meshes) => this.meshSelector.selectMeshByRaycast(camera.threeJsCamera, xy, meshes));
+        this._selectModule((meshes) => this.meshSelector.selectMeshByRaycast(camera, xy, meshes));
     }
     selectModuleById(id:string): void {
         this._selectModule((meshes) => this.meshSelector.selectMeshById(id, meshes));

@@ -1,17 +1,14 @@
-import {Camera} from "./camera";
 import {Vector3} from "three";
+import {OrthographicCamera} from "three";
 import {OrbitControls} from "../utils/OrbitControls";
 
 export class Controls {
     private static readonly RotateStep = Math.PI * 0.05;
     private static readonly PanStep = 50;
 
-    private readonly threeJsCamera;
-
     private readonly orbitControls: OrbitControls;
-    constructor(camera: Camera, canvas: HTMLCanvasElement, target: Vector3) {
-        this.threeJsCamera = camera.threeJsCamera;
-        this.orbitControls = new OrbitControls( this.threeJsCamera, canvas );
+    constructor(private readonly camera: OrthographicCamera, canvas: HTMLCanvasElement, target: Vector3) {
+        this.orbitControls = new OrbitControls( camera, canvas );
         this.orbitControls.maxPolarAngle = Math.PI /2;
         this.orbitControls.target = target;
         this.orbitControls.update();
@@ -27,9 +24,9 @@ export class Controls {
     }
 
     private zoomChange(delta: number) {
-        const newZoom = this.threeJsCamera.zoom + delta;
-        this.threeJsCamera.zoom = Math.min(10, Math.max(0, newZoom));
-        this.threeJsCamera.updateProjectionMatrix();
+        const newZoom = this.camera.zoom + delta;
+        this.camera.zoom = Math.min(10, Math.max(0, newZoom));
+        this.camera.updateProjectionMatrix();
     }
 
     panLeft() {

@@ -1,5 +1,5 @@
 import {BasicShadowMap, Scene, WebGLRenderer} from "three";
-import {Camera} from "./camera";
+import {Camera} from "three";
 
 export class Renderer {
 
@@ -21,6 +21,6 @@ export class Renderer {
 
     }
 
-    render(): void { return this.renderer.render(this.scene, this.camera.threeJsCamera) }
+    render(): void { return this.renderer.render(this.scene, this.camera) }
     canvas(): HTMLCanvasElement { return this.renderer.domElement; }
 }

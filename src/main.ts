@@ -1,6 +1,6 @@
 import ModulesLibrary from './model/modules/modules-library'
 import {Kitchen} from './model/kitchen/kitchen'
-import {Camera} from "./view/camera";
+import {CameraFactory} from "./view/cameraFactory";
 import {SceneFactory} from "./model/scene";
 import {ModuleSelector} from './model/module-selector';
 import {Page} from "./view/page";
@@ -33,7 +33,7 @@ window.kitchen = kitchen;
 
 const moduleSelector = new ModuleSelector(kitchen);
 
-const camera = new Camera(scene);
+const camera = CameraFactory.create(scene);
 
 const view = new Page(
     scene,

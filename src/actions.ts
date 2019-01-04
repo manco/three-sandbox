@@ -3,7 +3,7 @@ import {TextureType} from "./model/textures";
 import {Kitchen} from "./model/kitchen/kitchen";
 import {ModuleSelector} from "./model/module-selector";
 import {Coords} from "./utils/lang";
-import {Camera} from "./view/camera";
+import {Camera} from "three";
 
 export class Actions {
     constructor(

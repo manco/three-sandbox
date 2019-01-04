@@ -9,29 +9,18 @@ import {TexturesLibrary} from "../textures";
 import {TextureType} from "../textures";
 import {Lang} from "../../utils/lang";
 
-class Floor {
-    private readonly mesh: Mesh;
-    constructor(width:number, depth:number, rotate:MutateMeshFun) {
-        this.mesh = Floor.createFloor(width, depth);
-        rotate(this.mesh);
-    }
-    private static createFloor(width:number, depth:number): Mesh {
-        const material = new MeshLambertMaterial( {
-            color: 0xbdbdbd,
-            side: DoubleSide
-        } );
-        const g = new Mesh(
-            new PlaneBufferGeometry( width, depth ), material );
-        g.name = "Floor";
-        g.receiveShadow = true;
-        return g;
-    }
-
-    addTo(scene: Scene): void {
-        scene.add(this.mesh);
-    }
-    removeFrom(scene: Scene): void {
-        scene.remove(this.mesh);
+class FloorFactory {
+    public static create(width:number, depth:number, rotate:MutateMeshFun): Mesh {
+        const mesh = new Mesh(
+            new PlaneBufferGeometry( width, depth ),
+            new MeshLambertMaterial({
+                color: 0xbdbdbd,
+                side: DoubleSide
+            }) );
+        mesh.name = "Floor";
+        mesh.receiveShadow = true;
+        rotate(mesh);
+        return mesh;
     }
 }
 
@@ -114,7 +103,7 @@ class WallSlot {
 }
 export class Kitchen extends Observable {
     private walls: Wall[] = [];
-    private floor: Floor = null;
+    private floor: Mesh = null;
     constructor(
         private readonly moduleLibrary : ModulesLibrary,
         private readonly textureLibrary: TexturesLibrary,
@@ -129,8 +118,8 @@ export class Kitchen extends Observable {
         depth: number,
         wallNames: string[]
     ): Promise<void> {
-        this.floor = new Floor(width, depth, (m:Mesh):void => { m.rotateX(- Math.PI / 2 ) });
-        this.floor.addTo(this.scene);
+        this.floor = FloorFactory.create(width, depth, m => m.rotateX(- Math.PI / 2 ) );
+        this.scene.add(this.floor);
         const factories = wallsFactories(width, depth, height);
         wallNames.forEach(name => this.addWall(factories.get(name)()));
         return this.fillWallsWithModules().then(() => this.notify(new Message("LOADED")));
@@ -176,9 +165,7 @@ export class Kitchen extends Observable {
             this.scene.remove(wall.mesh);
         });
         this.walls = [];
-        if (this.floor !== null) {
-            this.floor.removeFrom(this.scene);
-        }
+        this.scene.remove(this.floor);
         this.notify(new Message("REMOVEALL"));
     }
 
