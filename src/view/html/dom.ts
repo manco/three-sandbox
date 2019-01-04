@@ -12,4 +12,8 @@ export class Html {
 
         return element;
     }
+
+    static toArray<T extends Element>(htmlCollection: NodeListOf<T>):T[] {
+        return [].slice.call(htmlCollection);
+    }
 }

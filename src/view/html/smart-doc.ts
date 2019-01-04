@@ -1,3 +1,5 @@
+import {Html} from "./dom";
+
 export class SmartDoc {
     constructor(private readonly doc: Document) {}
     getElementById(elementId: string): HTMLElement | null {
@@ -41,11 +43,7 @@ export class SmartDoc {
         return b;
     }
 
-    findByIdPrefix(idPrefix:string) {
-        return SmartDoc.toArray(this.doc.querySelectorAll(`[id^=\"${idPrefix}\"]`));
-    }
-
-    private static toArray<T>(htmlCollection: NodeListOf<Element>) {
-        return [].slice.call(htmlCollection);
+    findByIdPrefix<T extends HTMLElement>(idPrefix:string) {
+        return Html.toArray<T>(this.doc.querySelectorAll(`[id^=\"${idPrefix}\"]`));
     }
 }

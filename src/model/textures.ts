@@ -12,6 +12,7 @@ export class TextureDefinition {
 export enum TextureType {
     BLACK, GRAY, WHITE, WOOD
 }
+export const TextureTypesAll = [TextureType.BLACK, TextureType.GRAY, TextureType.WHITE, TextureType.WOOD];
 
 export class TexturesLibrary {
     private readonly loader = new TextureLoader();

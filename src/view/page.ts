@@ -10,7 +10,7 @@ import {KitchenApi} from "../model/kitchen/api";
 import {Html} from "./html/dom";
 import {Events} from "./html/events";
 import {MouseTracker} from "../utils/mouseTracker";
-import {TextureType} from "../model/textures";
+import {TextureTypesAll} from "../model/textures";
 import {Actions} from "../actions";
 import {Controls} from "./controls";
 import {Labels} from "./labels";
@@ -32,17 +32,33 @@ export class Page {
     private readonly buttonZoomOut : HTMLElement = this.controlsPanel.querySelector('button[id=\"zoomout\"]');
     private readonly buttonCenter : HTMLElement = this.controlsPanel.querySelector('button[id=\"center\"]');
 
-    private readonly buttonPanLeft : HTMLElement = this.controlsPanel.querySelector('button[id=\"panleft\"');
-    private readonly buttonPanRight : HTMLElement = this.controlsPanel.querySelector('button[id=\"panright\"');
+    private readonly buttonPanLeft : HTMLElement = this.controlsPanel.querySelector('button[id=\"panleft\"]');
+    private readonly buttonPanRight : HTMLElement = this.controlsPanel.querySelector('button[id=\"panright\"]');
 
-    private readonly buttonRotateLeft : HTMLElement = this.controlsPanel.querySelector('button[id=\"rotateleft\"');
-    private readonly buttonRotateRight : HTMLElement = this.controlsPanel.querySelector('button[id=\"rotateright\"');
-    private readonly buttonRotateUp : HTMLElement = this.controlsPanel.querySelector('button[id=\"rotateup\"');
-    private readonly buttonRotateDown : HTMLElement = this.controlsPanel.querySelector('button[id=\"rotatedown\"');
+    private readonly buttonRotateLeft : HTMLElement = this.controlsPanel.querySelector('button[id=\"rotateleft\"]');
+    private readonly buttonRotateRight : HTMLElement = this.controlsPanel.querySelector('button[id=\"rotateright\"]');
+    private readonly buttonRotateUp : HTMLElement = this.controlsPanel.querySelector('button[id=\"rotateup\"]');
+    private readonly buttonRotateDown : HTMLElement = this.controlsPanel.querySelector('button[id=\"rotatedown\"]');
+
+    private readonly chooseColorModal = this.doc.getElementById("chooseColorModal");
+    private readonly chooseColorModalClose = this.doc.getElementById("chooseColorModalClose");
 
     private readonly renderer: Renderer;
 
     constructor(scene: Scene, camera: OrthographicCamera, actions: Actions, kitchenApi: KitchenApi) {
+
+        const modalContent = this.chooseColorModal.querySelector('div[class=\"modal-content\"]');
+        TextureTypesAll.forEach( t => {
+            const b = this.doc.createButton(t.toString());
+            b.className = "textureButton";
+            Events.onClick(b, () => actions.changeColor(ModuleType[b.value], t));
+            modalContent.appendChild(b);
+        });
+        Events.onClick(this.chooseColorModalClose, () => this.chooseColorModal.style.display = "none");
+        Events.onClick(window, (event) => {
+            if (event.target === this.chooseColorModal) this.chooseColorModal.style.display = "none"
+        });
+
         const canvasContainer = this.doc.getElementById("canvasContainer");
 
         this.renderer = new Renderer(
@@ -96,10 +112,12 @@ export class Page {
             const label = this.doc.createLabel(ul, Labels.ModuleTypesLabels.get(t));
 
             const buttonChooseColor = this.doc.createButton("kolor");
+            Events.onClick(buttonChooseColor, () => {
+                this.chooseColorModal.style.display = "block";
+                const buttons = Html.toArray(this.chooseColorModal.querySelectorAll('button[class=\"textureButton\"]'));
+                buttons.forEach(b => (b as HTMLButtonElement).value = ModuleType[t]);
+            });
 
-            Events.onClick(buttonChooseColor, () => actions.changeColor(t, TextureType.WOOD));
-
-            //should be grouped in div and group exposed via view API
             this.guiPanel.appendChild(label);
             this.guiPanel.appendChild(buttonChooseColor);
             this.guiPanel.appendChild(ul);
@@ -153,7 +171,7 @@ export class Page {
     }
 
     private guiCheckboxesValues(): string[] {
-        return this.doc.findByIdPrefix('checkbox-wall')
+        return this.doc.findByIdPrefix<HTMLInputElement>('checkbox-wall')
             .filter(c => c.checked)
             .map(w => w.value);
     }
