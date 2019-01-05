@@ -37,7 +37,7 @@ export class SmartDoc {
         return label;
     }
 
-    createButton(text: string) {
+    createButton(text: string):HTMLButtonElement {
         const b = this.doc.createElement("button") as HTMLButtonElement;
         b.innerText = text;
         return b;

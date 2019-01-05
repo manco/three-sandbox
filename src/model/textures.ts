@@ -1,6 +1,10 @@
 import {TextureLoader} from "three";
 import {Texture} from "three";
 
+export enum TextureType {
+    BLACK, GRAY, WHITE, WOOD
+}
+
 export class TextureDefinition {
     constructor(
         readonly url: string,
@@ -9,9 +13,14 @@ export class TextureDefinition {
     }
 }
 
-export enum TextureType {
-    BLACK, GRAY, WHITE, WOOD
-}
+export const TexturesUrls = new Map<TextureType, string>([
+    [ TextureType.BLACK , 'textures/black.jpg'],
+    [ TextureType.GRAY , 'textures/gray.jpg'],
+    [ TextureType.WOOD , 'textures/wood.jpg'],
+    [ TextureType.WHITE, 'textures/gray-light.jpg']
+]);
+
+
 export const TextureTypesAll = [TextureType.BLACK, TextureType.GRAY, TextureType.WHITE, TextureType.WOOD];
 
 export class TexturesLibrary {

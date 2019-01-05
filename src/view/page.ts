@@ -11,6 +11,7 @@ import {Html} from "./html/dom";
 import {Events} from "./html/events";
 import {MouseTracker} from "../utils/mouseTracker";
 import {TextureTypesAll} from "../model/textures";
+import {TexturesUrls} from "../model/textures";
 import {Actions} from "../actions";
 import {Controls} from "./controls";
 import {Labels} from "./labels";
@@ -45,8 +46,9 @@ export class Page {
 
         const modalContent = this.chooseColorModal.querySelector('div[class=\"modal-content\"]');
         TextureTypesAll.forEach( t => {
-            const b = this.doc.createButton(t.toString());
+            const b = this.doc.createButton("");
             b.className = "textureButton";
+            b.style.backgroundImage = `url(${TexturesUrls.get(t)})`;
             Events.onClick(b, () => actions.changeColor(ModuleType[b.value], t));
             modalContent.appendChild(b);
         });

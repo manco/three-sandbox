@@ -6,7 +6,8 @@ import {ModuleSelector} from './model/module-selector';
 import {Page} from "./view/page";
 import {ModuleType} from "./model/modules/types";
 import {TexturesLibrary} from "./model/textures";
-import {TextureType} from "./model/textures";
+import {TexturesUrls} from "./model/textures";
+import {TextureDefinition} from "./model/textures";
 import {KitchenApi} from "./model/kitchen/api";
 import {Actions} from "./actions";
 
@@ -18,12 +19,9 @@ modulesLibrary.loadPrototypes([
 ]);
 
 const texturesLibrary = new TexturesLibrary();
-texturesLibrary.loadTextures([
-    { url: 'textures/black.jpg', type: TextureType.BLACK },
-    { url: 'textures/gray.jpg', type: TextureType.GRAY },
-    { url: 'textures/wood.jpg', type: TextureType.WOOD },
-    { url: 'textures/gray-light.jpg', type: TextureType.WHITE}
-]);
+texturesLibrary.loadTextures(
+    Array.from(TexturesUrls.entries()).map(kv => new TextureDefinition(kv[1], kv[0]))
+);
 
 const scene = SceneFactory.create();
 
