@@ -9,7 +9,7 @@ import {ModuleType} from "./types";
 export default class ModulesLibrary {
     private readonly loader: PromisingLoader = new PromisingLoader();
     private readonly scale: number = 3;
-    private prototypes: Promise<Module[]> = null;
+    private prototypes: Promise<Map<ModuleType, Module>> = null;
 
     loadPrototypes(definitions: ModuleDefinition[]):void {
         if (this.prototypes === null) {
@@ -29,7 +29,7 @@ export default class ModulesLibrary {
                                 );
                             })
                 )
-            );
+            ).then(modules => new Map<ModuleType, Module>(modules.map(m => [m.type, m] as [ModuleType, Module])));
         } else {
             throw "sorry, prototypes already loaded or being loaded";
         }
@@ -41,8 +41,7 @@ export default class ModulesLibrary {
     }
 
     ofType(type:ModuleType):Promise<Module> {
-        return this.prototypes
-            .then((modules:Module[]) => modules.find((m:Module) => type === m.type));
+        return this.prototypes.then(modules => modules.get(type));
     }
 
     private initMesh(m:Mesh): void {

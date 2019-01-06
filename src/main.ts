@@ -29,7 +29,7 @@ const kitchen = new Kitchen(modulesLibrary, texturesLibrary, scene);
 // @ts-ignore
 window.kitchen = kitchen;
 
-const moduleSelector = new ModuleSelector(kitchen);
+const moduleSelector = new ModuleSelector();
 
 const camera = CameraFactory.create(scene);
 

@@ -18,17 +18,17 @@ export class Actions {
     }
 
     changeColor(modules: ModuleType, toColor: TextureType): void {
-        this.kitchen.allModules()
-            .filter(m => m.type === modules)
+        this.kitchen.modules.byType(modules)
             .forEach(m => this.kitchen.setTexture(m, toColor));
     }
 
     selectModuleById(objId: string):void {
-        this.moduleSelector.selectModuleById(objId);
+        this.moduleSelector.selectModule(this.kitchen.modules.byId(objId));
     }
 
     selectModule(coords: Coords) {
-        this.moduleSelector.selectModule(coords, this.camera);
+        const module = this.kitchen.byRaycast(this.camera, coords);
+        this.moduleSelector.selectModule(module);
     }
 }
 

@@ -1,6 +1,10 @@
 import ModulesLibrary from '../modules/modules-library'
 import {Message, Observable} from "../../utils/observable";
 import {DoubleSide, ExtrudeBufferGeometry, Mesh, MeshLambertMaterial, PlaneBufferGeometry, Scene, Shape, Vector3} from "three";
+import {Camera} from "three";
+import {Raycaster} from "three";
+import {Intersection} from "three";
+import {Object3D} from "three";
 import {Meshes, MutateMeshFun} from "../../utils/meshes";
 import {Module} from "../modules/module";
 import {ModuleTypesAll} from "../modules/types";
@@ -8,6 +12,7 @@ import {ModuleType} from "../modules/types";
 import {TexturesLibrary} from "../textures";
 import {TextureType} from "../textures";
 import {Lang} from "../../utils/lang";
+import {Coords} from "../../utils/lang";
 
 class FloorFactory {
     public static create(width:number, depth:number, rotate:MutateMeshFun): Mesh {
@@ -69,6 +74,7 @@ class Wall {
     }
 }
 
+//TODO Wall should have list of Map<ModuleType -> Module> instead of wallslots
 class WallSlot {
     private readonly modulesByTypes: Map<ModuleType, Module> = new Map();
     constructor(private readonly wall:Wall) {}
@@ -88,20 +94,19 @@ class WallSlot {
         scene.add(module.mesh);
     }
 
-    allModules(): Module[] {
-        return Array.from(this.modulesByTypes.values());
+    removeAll(scene:Scene): void {
+        Array.from(this.modulesByTypes.keys()).forEach((t) => this.remove(t, scene));
     }
 
-    remove(moduleType:ModuleType, scene:Scene): void {
+    private remove(moduleType:ModuleType, scene:Scene): void {
         const module = this.modulesByTypes.get(moduleType);
         scene.remove(module.mesh);
         this.modulesByTypes.delete(moduleType);
     }
-    removeAll(scene:Scene): void {
-        Array.from(this.modulesByTypes.keys()).forEach((t) => this.remove(t, scene));
-    }
 }
 export class Kitchen extends Observable {
+    public readonly modules = new Indexes();
+    private readonly raycaster = new Raycaster();
     private walls: Wall[] = [];
     private floor: Mesh = null;
     constructor(
@@ -146,14 +151,24 @@ export class Kitchen extends Observable {
                 .createModule(moduleType)
                 .then((m:Module) => {
                     wall.wallSlots[i].put(m, i, this.scene);
+                    this.modules.add(m);
                     this.notify(new Message("ADD", m));
                 });
         }
     }
 
-    allModules(): Module[] {
-        return Lang.flatten(Lang.flatten(this.walls.map((w:Wall) => w.wallSlots)).map((s:WallSlot) => s.allModules()));
+    byRaycast(camera: Camera, xy:Coords):Module | null {
+        const intersectingMeshes = this.castRay(camera, xy);
+        if (intersectingMeshes.length > 0) {
+            return this.modules.byId(intersectingMeshes[0].uuid);
+        }
+        return null;
     }
+
+    private castRay(camera: Camera, xy:Coords): Object3D[] {
+        this.raycaster.setFromCamera(xy, camera);
+        return this.raycaster.intersectObjects((this.modules.all()).map(_ => _.mesh)).map((i:Intersection) => i.object);
+    };
 
     setTexture(module: Module, type: TextureType): void {
         module.setTexture(this.textureLibrary.get(type));
@@ -165,6 +180,7 @@ export class Kitchen extends Observable {
             this.scene.remove(wall.mesh);
         });
         this.walls = [];
+        this.modules.clear();
         this.scene.remove(this.floor);
         this.notify(new Message("REMOVEALL"));
     }
@@ -203,3 +219,30 @@ const wallsFactories = (width:number, depth:number, height:number):Map<string, (
 
     return new Map([["A", wallA], ["B", wallB], ["C", wallC], ["D", wallD]]);
 };
+
+export class Indexes {
+    private readonly _byId: Map<string, Module> = new Map();
+    private readonly _byType: Map<ModuleType, Module[]> = new Map();
+
+    all(): Module[] { return Array.from(this._byId.values()); }
+
+    byId(id: string): Module | undefined { return this._byId.get(id); }
+
+    byType(type: ModuleType): Module[] { return this._byType.get(type); }
+
+    add(module: Module) {
+        this._byId.set(module.id, module);
+
+        if (this._byType.has(module.type)) {
+            this.byType(module.type).push(module);
+        } else {
+            this._byType.set(module.type, [module]);
+        }
+    }
+
+    clear() {
+        this._byId.clear();
+        this._byType.clear();
+    }
+
+}

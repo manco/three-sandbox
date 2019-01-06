@@ -14,7 +14,7 @@ export class ModuleDefinition {
 }
 
 export class Module {
-    private readonly id: string;
+    public readonly id: string;
 
     constructor(
         readonly mesh: Mesh,
