@@ -2,9 +2,7 @@ import {ModuleType} from "../model/modules/types";
 import {ModuleTypesAll} from "../model/modules/types";
 import {ModuleSubtypesOfTypes} from "../model/modules/types";
 import {Renderer} from "./renderer";
-import {Scene} from "three";
 import {Vector3} from "three";
-import {OrthographicCamera} from "three";
 import {SmartDoc} from "./html/smart-doc";
 import {KitchenApi} from "../model/kitchen/api";
 import {Html} from "./html/dom";
@@ -13,8 +11,9 @@ import {MouseTracker} from "../utils/mouseTracker";
 import {TextureTypesAll} from "../model/textures";
 import {TexturesUrls} from "../model/textures";
 import {Actions} from "../actions";
-import {Controls} from "./controls";
 import {Labels} from "./labels";
+import {RendererFactory} from "./rendererFactory";
+import {ControlsFactory} from "./controlsFactory";
 
 export class Page {
 
@@ -37,12 +36,18 @@ export class Page {
     private readonly buttonRotateUp : HTMLElement = this.controlsPanel.querySelector('button[id=\"rotateup\"]');
     private readonly buttonRotateDown : HTMLElement = this.controlsPanel.querySelector('button[id=\"rotatedown\"]');
 
+    //TODO encapsulate
     private readonly chooseColorModal = this.doc.getElementById("chooseColorModal");
     private readonly chooseColorModalClose = this.doc.getElementById("chooseColorModalClose");
 
     private readonly renderer: Renderer;
 
-    constructor(scene: Scene, camera: OrthographicCamera, actions: Actions, kitchenApi: KitchenApi) {
+    constructor(
+        rendererFactory: RendererFactory,
+        controlsFactory: ControlsFactory,
+        actions: Actions,
+        kitchenApi: KitchenApi
+    ) {
 
         const modalContent = this.chooseColorModal.querySelector('div[class=\"modal-content\"]');
         TextureTypesAll.forEach( t => {
@@ -59,9 +64,7 @@ export class Page {
 
         const canvasContainer = this.doc.getElementById("canvasContainer");
 
-        this.renderer = new Renderer(
-            scene,
-            camera,
+        this.renderer = rendererFactory.create(
             canvasContainer.offsetWidth,
             canvasContainer.offsetHeight
         );
@@ -74,10 +77,7 @@ export class Page {
 
         Events.onClick(canvas, () => actions.selectModule(mouseTracker.xy()));
 
-        const controls = new Controls(
-            camera,
-            canvas
-        );
+        const controls = controlsFactory.create(canvas);
 
         Events.onClick(this.buttonZoomIn, () => controls.zoomIn());
         Events.onClick(this.buttonZoomOut, () => controls.zoomOut());
@@ -123,8 +123,7 @@ export class Page {
         });
 
         kitchenApi.onAddModule(msg => {
-                const objId = `${msg.obj.id}`;
-                const li = this.doc.createLi(objId);
+            const li = this.doc.createLi(`${msg.obj.id}`);
 
                 const options = ModuleSubtypesOfTypes.get(msg.obj.type)
                     .map(stype => {
@@ -136,7 +135,7 @@ export class Page {
 
                 li.appendChild(Html.select(this.doc, options));
 
-                Events.onClick(li, () => actions.selectModuleById(objId));
+                Events.onClick(li, () => actions.selectModuleById(li.id));
                 this.getModulesList(msg.obj.type).appendChild(li);
         });
 

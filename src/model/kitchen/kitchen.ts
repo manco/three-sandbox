@@ -74,7 +74,6 @@ class Wall {
     }
 }
 
-//TODO Wall should have list of Map<ModuleType -> Module> instead of wallslots
 class WallSlot {
     private readonly modulesByTypes: Map<ModuleType, Module> = new Map();
     constructor(private readonly wall:Wall) {}

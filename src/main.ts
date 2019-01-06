@@ -10,6 +10,8 @@ import {TexturesUrls} from "./model/textures";
 import {TextureDefinition} from "./model/textures";
 import {KitchenApi} from "./model/kitchen/api";
 import {Actions} from "./actions";
+import {RendererFactory} from "./view/rendererFactory";
+import {ControlsFactory} from "./view/controlsFactory";
 
 const modulesLibrary = new ModulesLibrary();
 modulesLibrary.loadPrototypes([
@@ -34,8 +36,8 @@ const moduleSelector = new ModuleSelector();
 const camera = CameraFactory.create(scene);
 
 const view = new Page(
-    scene,
-    camera,
+    new RendererFactory(scene, camera),
+    new ControlsFactory(camera),
     new Actions(kitchen, moduleSelector, camera),
     new KitchenApi(kitchen, moduleSelector)
 );
