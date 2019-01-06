@@ -3,7 +3,7 @@ import {Meshes} from "../../utils/meshes";
 import {Mesh} from "three";
 import {Module} from "./module";
 import {ModuleDefinition} from "./module";
-import {ModuleSubtypesOfTypes} from "./types";
+import {ModuleTypeLvl1To2} from "./types";
 import {ModuleType} from "./types";
 
 export default class ModulesLibrary {
@@ -22,7 +22,7 @@ export default class ModulesLibrary {
                                 return new Module(
                                     m,
                                     d.type,
-                                    ModuleSubtypesOfTypes.get(d.type)[0],
+                                    ModuleTypeLvl1To2.get(d.type)[0],
                                     this.scale * Meshes.meshWidthX(m),
                                     this.scale * Meshes.meshDepthY(m),
                                     (mm:Mesh):void => { mm.rotateX(-Math.PI / 2); }
