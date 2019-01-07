@@ -4,6 +4,7 @@ import {Texture} from "three";
 import {MutateMeshFun} from "../../utils/meshes";
 import {ModuleType} from "./types";
 import {ModuleSubtype} from "./types";
+import {ModuleFunction} from "./module-functions";
 
 export class ModuleDefinition {
     constructor(
@@ -20,6 +21,7 @@ export class Module {
         readonly mesh: Mesh,
         readonly type: ModuleType,
         readonly subtype: ModuleSubtype,
+        readonly moduleFunction: ModuleFunction,
         readonly width: number,
         readonly depth: number,
         private readonly rotateFun: MutateMeshFun
@@ -32,7 +34,7 @@ export class Module {
     }
 
     clone(): Module {
-        const cloned = new Module(this.mesh.clone(), this.type, this.subtype, this.width, this.depth, this.rotateFun);
+        const cloned = new Module(this.mesh.clone(), this.type, this.subtype, this.moduleFunction, this.width, this.depth, this.rotateFun);
         cloned.mesh.material = new MeshLambertMaterial();
         return cloned;
     }

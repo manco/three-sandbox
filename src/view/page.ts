@@ -1,6 +1,6 @@
 import {ModuleType} from "../model/modules/types";
 import {ModuleTypesAll} from "../model/modules/types";
-import {ModuleTypeLvl1To2} from "../model/modules/types";
+import {ModuleTypeToSubtype} from "../model/modules/types";
 import {Renderer} from "./renderer";
 import {Vector3} from "three";
 import {SmartDoc} from "./html/smart-doc";
@@ -125,7 +125,7 @@ export class Page {
         kitchenApi.onAddModule(msg => {
             const li = this.doc.createLi(`${msg.obj.id}`);
 
-                const options = ModuleTypeLvl1To2.get(msg.obj.type)
+                const options = ModuleTypeToSubtype.get(msg.obj.type)
                     .map(stype => {
                         return {
                             value: `${stype}`,

@@ -3,8 +3,9 @@ import {Meshes} from "../../utils/meshes";
 import {Mesh} from "three";
 import {Module} from "./module";
 import {ModuleDefinition} from "./module";
-import {ModuleTypeLvl1To2} from "./types";
+import {ModuleTypeToSubtype} from "./types";
 import {ModuleType} from "./types";
+import {ModuleSubtypeToModuleFunction} from "./module-functions";
 
 export default class ModulesLibrary {
     private readonly loader: PromisingLoader = new PromisingLoader();
@@ -19,10 +20,12 @@ export default class ModulesLibrary {
                         this.loader.loadSingleMesh(d.url)
                             .then((m:Mesh) => {
                                 this.initMesh(m);
+                                const defaultSubtype = ModuleTypeToSubtype.get(d.type)[0];
                                 return new Module(
                                     m,
                                     d.type,
-                                    ModuleTypeLvl1To2.get(d.type)[0],
+                                    defaultSubtype,
+                                    ModuleSubtypeToModuleFunction.get(defaultSubtype)[0],
                                     this.scale * Meshes.meshWidthX(m),
                                     this.scale * Meshes.meshDepthY(m),
                                     (mm:Mesh):void => { mm.rotateX(-Math.PI / 2); }

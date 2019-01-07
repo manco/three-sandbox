@@ -6,6 +6,6 @@ import {Lang} from "../../utils/lang";
 
 export class Modules {
     static module(type: ModuleType = null, mesh: Mesh = Meshes.mesh()):Module {
-        return new Module(mesh, type, null, 50, 30, Lang.noop);
+        return new Module(mesh, type, null, null, 50, 30, Lang.noop);
     }
 }

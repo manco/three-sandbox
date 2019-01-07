@@ -8,10 +8,10 @@ export enum ModuleSubtype {
     DRAWERS, FRIDGE, WASHER, OVEN //standing
 }
 
-export const ModuleTypeLvl1To2: Map<ModuleType, ModuleSubtype[]> = new Map([
+export const ModuleTypeToSubtype: Map<ModuleType, ModuleSubtype[]> = new Map([
     [ModuleType.HANGING, [ModuleSubtype.SHELVES]],
     [ModuleType.TABLETOP, [ModuleSubtype.TABLETOP, ModuleSubtype.SINK, ModuleSubtype.OVEN_TABLETOP]],
     [ModuleType.STANDING, [ModuleSubtype.DRAWERS, ModuleSubtype.FRIDGE, ModuleSubtype.WASHER, ModuleSubtype.OVEN]]
 ]);
 
-export const ModuleTypesAll = Array.from(ModuleTypeLvl1To2.keys());
+export const ModuleTypesAll = Array.from(ModuleTypeToSubtype.keys());
