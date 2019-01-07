@@ -3,7 +3,7 @@ import {MeshLambertMaterial} from "three";
 import {Texture} from "three";
 import {MutateMeshFun} from "../../utils/meshes";
 import {ModuleType} from "./types";
-import {ModuleTypeLvl2} from "./types";
+import {ModuleSubtype} from "./types";
 
 export class ModuleDefinition {
     constructor(
@@ -19,7 +19,7 @@ export class Module {
     constructor(
         readonly mesh: Mesh,
         readonly type: ModuleType,
-        readonly subtype: ModuleTypeLvl2,
+        readonly subtype: ModuleSubtype,
         readonly width: number,
         readonly depth: number,
         private readonly rotateFun: MutateMeshFun

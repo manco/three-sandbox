@@ -1,4 +1,4 @@
-import {ModuleTypeLvl2} from "./types";
+import {ModuleSubtype} from "./types";
 
 export enum ModuleFunction {
     BIG_2, AVG_2_BIG_1, AVG_4, SMALL_2_AVG_1_BIG_1, SMALL_2_AVG_3, //drawers
@@ -8,12 +8,12 @@ export enum ModuleFunction {
     FRIDGE_1 //fridge
 }
 
-export const ModuleTypeLvl2ToModuleFunction: Map<ModuleTypeLvl2, ModuleFunction[]> = new Map([
-    [ModuleTypeLvl2.SINK, [ModuleFunction.CHAMBER_1, ModuleFunction.CHAMBER_DRAINER, ModuleFunction.CHAMBER_2]],
-    [ModuleTypeLvl2.DRAWERS, [ModuleFunction.BIG_2, ModuleFunction.AVG_2_BIG_1, ModuleFunction.AVG_4, ModuleFunction.SMALL_2_AVG_1_BIG_1, ModuleFunction.SMALL_2_AVG_3]],
-    [ModuleTypeLvl2.OVEN,   [ModuleFunction.OVEN_1]],
-    [ModuleTypeLvl2.WASHER, [ModuleFunction.WASHER_1]],
-    [ModuleTypeLvl2.FRIDGE, [ModuleFunction.FRIDGE_1]]
+export const ModuleSubtypeToModuleFunction: Map<ModuleSubtype, ModuleFunction[]> = new Map([
+    [ModuleSubtype.SINK, [ModuleFunction.CHAMBER_1, ModuleFunction.CHAMBER_DRAINER, ModuleFunction.CHAMBER_2]],
+    [ModuleSubtype.DRAWERS, [ModuleFunction.BIG_2, ModuleFunction.AVG_2_BIG_1, ModuleFunction.AVG_4, ModuleFunction.SMALL_2_AVG_1_BIG_1, ModuleFunction.SMALL_2_AVG_3]],
+    [ModuleSubtype.OVEN,   [ModuleFunction.OVEN_1]],
+    [ModuleSubtype.WASHER, [ModuleFunction.WASHER_1]],
+    [ModuleSubtype.FRIDGE, [ModuleFunction.FRIDGE_1]]
 ]);
 
 export const ModuleFunctionsUrls = new Map<ModuleFunction, string>([

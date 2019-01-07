@@ -1,16 +1,16 @@
-import {ModuleTypeLvl2} from "../model/modules/types";
+import {ModuleSubtype} from "../model/modules/types";
 import {ModuleType} from "../model/modules/types";
 
 export class Labels {
-    public static readonly ModuleSubtypesLabels = new Map<ModuleTypeLvl2, string>([
-        [ModuleTypeLvl2.SHELVES, "półki"],
-        [ModuleTypeLvl2.DRAWERS, "szuflady"],
-        [ModuleTypeLvl2.TABLETOP, "blat"],
-        [ModuleTypeLvl2.SINK, "zlewozmywak"],
-        [ModuleTypeLvl2.OVEN, "piekarnik"],
-        [ModuleTypeLvl2.OVEN_TABLETOP, "palniki"],
-        [ModuleTypeLvl2.WASHER, "pralka"],
-        [ModuleTypeLvl2.FRIDGE, "lodówka"]
+    public static readonly ModuleSubtypesLabels = new Map<ModuleSubtype, string>([
+        [ModuleSubtype.SHELVES, "półki"],
+        [ModuleSubtype.DRAWERS, "szuflady"],
+        [ModuleSubtype.TABLETOP, "blat"],
+        [ModuleSubtype.SINK, "zlewozmywak"],
+        [ModuleSubtype.OVEN, "piekarnik"],
+        [ModuleSubtype.OVEN_TABLETOP, "palniki"],
+        [ModuleSubtype.WASHER, "pralka"],
+        [ModuleSubtype.FRIDGE, "lodówka"]
     ]);
 
     public static readonly ModuleTypesLabels = new Map<ModuleType, string>([
