@@ -13,7 +13,10 @@ export const ModuleSubtypeToModuleFunction: Map<ModuleSubtype, ModuleFunction[]>
     [ModuleSubtype.DRAWERS, [ModuleFunction.BIG_2, ModuleFunction.AVG_2_BIG_1, ModuleFunction.AVG_4, ModuleFunction.SMALL_2_AVG_1_BIG_1, ModuleFunction.SMALL_2_AVG_3]],
     [ModuleSubtype.OVEN,   [ModuleFunction.OVEN_1]],
     [ModuleSubtype.WASHER, [ModuleFunction.WASHER_1]],
-    [ModuleSubtype.FRIDGE, [ModuleFunction.FRIDGE_1]]
+    [ModuleSubtype.FRIDGE, [ModuleFunction.FRIDGE_1]],
+    [ModuleSubtype.SHELVES, []],
+    [ModuleSubtype.TABLETOP, []],
+    [ModuleSubtype.OVEN_TABLETOP, []]
 ]);
 
 export const ModuleFunctionsUrls = new Map<ModuleFunction, string>([

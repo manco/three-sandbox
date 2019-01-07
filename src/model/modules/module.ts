@@ -20,7 +20,7 @@ export class Module {
     constructor(
         readonly mesh: Mesh,
         readonly type: ModuleType,
-        readonly subtype: ModuleSubtype,
+        public subtype: ModuleSubtype,
         readonly moduleFunction: ModuleFunction,
         readonly width: number,
         readonly depth: number,

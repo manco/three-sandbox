@@ -4,6 +4,8 @@ import {Kitchen} from "./model/kitchen/kitchen";
 import {ModuleSelector} from "./model/module-selector";
 import {Coords} from "./utils/lang";
 import {Camera} from "three";
+import {Module} from "./model/modules/module";
+import {ModuleSubtype} from "./model/modules/types";
 
 export class Actions {
     constructor(
@@ -29,6 +31,11 @@ export class Actions {
     selectModule(coords: Coords) {
         const module = this.kitchen.byRaycast(this.camera, coords);
         this.moduleSelector.selectModule(module);
+    }
+
+    setModuleSubtype(module: Module, moduleSubtype: ModuleSubtype): void {
+        module.subtype = moduleSubtype;
+        console.log(`set module subtype ${moduleSubtype}`);
     }
 }
 

@@ -1,5 +1,9 @@
 export class Events {
-    static onClick(htmlElement: EventTarget, fun: (event) => void): void {
+    static onClick<T extends EventTarget>(htmlElement: T, fun: (event: Event) => void): void {
         htmlElement.addEventListener("click", fun, false);
+    }
+
+    static onInputChange<T extends EventTarget>(htmlElement: T, fun: (event: Event) => void): void {
+        htmlElement.addEventListener("input", fun, false);
     }
 }

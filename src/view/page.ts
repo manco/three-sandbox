@@ -14,6 +14,8 @@ import {Actions} from "../actions";
 import {Labels} from "./labels";
 import {RendererFactory} from "./rendererFactory";
 import {ControlsFactory} from "./controlsFactory";
+import {Module} from "../model/modules/module";
+import {ModuleSubtype} from "../model/modules/types";
 
 export class Page {
 
@@ -23,6 +25,8 @@ export class Page {
 
     //TODO dedicated class for control panel?
     private readonly controlsPanel: HTMLElement = this.doc.getElementById("controls");
+
+    //TODO functionsPanel = this.doc.getElement...
 
     private readonly buttonZoomIn : HTMLElement = this.controlsPanel.querySelector('button[id=\"zoomin\"]');
     private readonly buttonZoomOut : HTMLElement = this.controlsPanel.querySelector('button[id=\"zoomout\"]');
@@ -97,7 +101,7 @@ export class Page {
         ModuleTypesAll.forEach(t => this.createModulesListHtml(t));
 
         kitchenApi.onAddModule(msg => {
-            this.addModuleToModuleList(msg, actions);
+            this.addModuleToModuleList(msg.obj, actions);
         });
 
         kitchenApi.onRemoveAll(() => {
@@ -110,6 +114,7 @@ export class Page {
                 if (objElement !== null) {
                     objElement.className = "selectedModule";
                 }
+                //TODO functionsPanel.reset(msg.obj)
             });
 
             kitchenApi.onModuleDeselected(msg => {
@@ -121,10 +126,10 @@ export class Page {
         })
     }
 
-    private addModuleToModuleList(msg, actions: Actions) {
-        const li = this.doc.createLi(`${msg.obj.id}`);
+    private addModuleToModuleList(module: Module, actions: Actions) {
+        const li = this.doc.createLi(`${module.id}`);
 
-        const options = ModuleTypeToSubtype.get(msg.obj.type)
+        const options = ModuleTypeToSubtype.get(module.type)
             .map(stype => {
                 return {
                     value: `${stype}`,
@@ -132,10 +137,17 @@ export class Page {
                 }
             });
 
-        li.appendChild(Html.select(this.doc, options));
+        const selectBox = Html.select(this.doc, options);
+        Events.onInputChange(
+            selectBox,
+            (event) => actions.setModuleSubtype(module, ModuleSubtype[(event.target as HTMLSelectElement).value])
+        );
+        li.appendChild(selectBox);
 
-        Events.onClick(li, () => actions.selectModuleById(li.id));
-        this.getModulesList(msg.obj.type).appendChild(li);
+        Events.onClick(li, () => {
+            actions.selectModuleById(li.id)
+        });
+        this.getModulesList(module.type).appendChild(li);
     }
 
     private createModulesListHtml(t) {
@@ -183,8 +195,5 @@ export class Page {
     public render() {
         this.renderer.render();
     }
-
-
-
 }
 
