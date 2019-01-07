@@ -26,7 +26,7 @@ export class Page {
     //TODO dedicated class for control panel?
     private readonly controlsPanel: HTMLElement = this.doc.getElementById("controls");
 
-    //TODO functionsPanel = this.doc.getElement...
+    private readonly functionsPanel = this.doc.getElementById("moduleFunctionDetails");
 
     private readonly buttonZoomIn : HTMLElement = this.controlsPanel.querySelector('button[id=\"zoomin\"]');
     private readonly buttonZoomOut : HTMLElement = this.controlsPanel.querySelector('button[id=\"zoomout\"]');
@@ -114,7 +114,6 @@ export class Page {
                 if (objElement !== null) {
                     objElement.className = "selectedModule";
                 }
-                //TODO functionsPanel.reset(msg.obj)
             });
 
             kitchenApi.onModuleDeselected(msg => {
@@ -144,9 +143,7 @@ export class Page {
         );
         li.appendChild(selectBox);
 
-        Events.onClick(li, () => {
-            actions.selectModuleById(li.id)
-        });
+        Events.onClick(li, () => actions.selectModuleById(li.id));
         this.getModulesList(module.type).appendChild(li);
     }
 

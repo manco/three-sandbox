@@ -2,6 +2,7 @@ import {Observer} from "../../utils/observable";
 import {Kitchen} from "./kitchen";
 import {ModuleSelector} from "../module-selector";
 import {Observable} from "../../utils/observable";
+import {Module} from "../modules/module";
 
 export class KitchenApi {
 
@@ -10,35 +11,35 @@ export class KitchenApi {
         private readonly moduleSelector: ModuleSelector
     ) {}
 
-    onAddModule(fun: Observer) {
+    onAddModule(fun: Observer<Module>) {
         this.observeKitchen("ADD", fun);
     }
 
-    onLoad(fun: Observer) {
+    onLoad(fun: Observer<void>) {
         this.observeKitchen("LOADED", fun);
     }
 
-    onRemoveAll(fun: Observer) {
+    onRemoveAll(fun: Observer<void>) {
         this.observeKitchen("REMOVEALL", fun);
     }
 
-    onModuleSelected(fun: Observer) {
+    onModuleSelected(fun: Observer<Module>) {
         this.observeSelector("SELECTED", fun);
     }
 
-    onModuleDeselected(fun: Observer) {
+    onModuleDeselected(fun: Observer<Module>) {
         this.observeSelector("DESELECTED", fun);
     }
 
-    private observeKitchen(type: string, fun: Observer) {
+    private observeKitchen(type: string, fun: Observer<any>) {
         KitchenApi.observe(this.kitchen, type, fun);
     }
 
-    private observeSelector(type: string, fun: Observer) {
+    private observeSelector(type: string, fun: Observer<Module>) {
         KitchenApi.observe(this.moduleSelector, type, fun);
     }
 
-    private static observe(emitter: Observable, type: string, fun: Observer) {
+    private static observe(emitter: Observable, type: string, fun: Observer<any>) {
         emitter.subscribe(msg => {
             if (msg.type === type) {
                 fun(msg);
