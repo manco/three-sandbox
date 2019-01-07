@@ -91,52 +91,13 @@ export class Page {
 
         Events.onClick(
             this.doc.getElementById("drawKitchenButton"),
-            () => {
-                const [width, depth, height]: [number, number, number] = [
-                    this.doc.getInputNumberValue("kitchen-width"),
-                    this.doc.getInputNumberValue("kitchen-depth"),
-                    this.doc.getInputNumberValue("kitchen-height")
-                ];
-                actions.loadKitchen([width, depth, height], this.guiCheckboxesValues());
-
-                controls.setTarget(new Vector3(0, height / 2, 0));
-
-            }
+            () => this.loadKitchenAndSetControls(actions, controls)
         );
 
-        ModuleTypesAll.forEach(t => {
-
-            const ul = this.doc.createUl(`modulesList-${t}`);
-
-            const label = this.doc.createLabel(ul, Labels.ModuleTypesLabels.get(t));
-
-            const buttonChooseColor = this.doc.createButton("kolor");
-            Events.onClick(buttonChooseColor, () => {
-                this.chooseColorModal.style.display = "block";
-                const buttons = Html.toArray(this.chooseColorModal.querySelectorAll('button[class=\"textureButton\"]'));
-                buttons.forEach(b => (b as HTMLButtonElement).value = ModuleType[t]);
-            });
-
-            this.guiPanel.appendChild(label);
-            this.guiPanel.appendChild(buttonChooseColor);
-            this.guiPanel.appendChild(ul);
-        });
+        ModuleTypesAll.forEach(t => this.createModulesListHtml(t));
 
         kitchenApi.onAddModule(msg => {
-            const li = this.doc.createLi(`${msg.obj.id}`);
-
-                const options = ModuleTypeToSubtype.get(msg.obj.type)
-                    .map(stype => {
-                        return {
-                            value: `${stype}`,
-                            text: Labels.ModuleSubtypesLabels.get(stype)
-                        }
-                    });
-
-                li.appendChild(Html.select(this.doc, options));
-
-                Events.onClick(li, () => actions.selectModuleById(li.id));
-                this.getModulesList(msg.obj.type).appendChild(li);
+            this.addModuleToModuleList(msg, actions);
         });
 
         kitchenApi.onRemoveAll(() => {
@@ -158,6 +119,51 @@ export class Page {
                 }
             });
         })
+    }
+
+    private addModuleToModuleList(msg, actions: Actions) {
+        const li = this.doc.createLi(`${msg.obj.id}`);
+
+        const options = ModuleTypeToSubtype.get(msg.obj.type)
+            .map(stype => {
+                return {
+                    value: `${stype}`,
+                    text: Labels.ModuleSubtypesLabels.get(stype)
+                }
+            });
+
+        li.appendChild(Html.select(this.doc, options));
+
+        Events.onClick(li, () => actions.selectModuleById(li.id));
+        this.getModulesList(msg.obj.type).appendChild(li);
+    }
+
+    private createModulesListHtml(t) {
+        const ul = this.doc.createUl(`modulesList-${t}`);
+
+        const label = this.doc.createLabel(ul, Labels.ModuleTypesLabels.get(t));
+
+        const buttonChooseColor = this.doc.createButton("kolor");
+        Events.onClick(buttonChooseColor, () => {
+            this.chooseColorModal.style.display = "block";
+            const buttons = Html.toArray(this.chooseColorModal.querySelectorAll('button[class=\"textureButton\"]'));
+            buttons.forEach(b => (b as HTMLButtonElement).value = ModuleType[t]);
+        });
+
+        this.guiPanel.appendChild(label);
+        this.guiPanel.appendChild(buttonChooseColor);
+        this.guiPanel.appendChild(ul);
+    }
+
+    private loadKitchenAndSetControls(actions: Actions, controls) {
+        const [width, depth, height]: [number, number, number] = [
+            this.doc.getInputNumberValue("kitchen-width"),
+            this.doc.getInputNumberValue("kitchen-depth"),
+            this.doc.getInputNumberValue("kitchen-height")
+        ];
+        actions.loadKitchen([width, depth, height], this.guiCheckboxesValues());
+
+        controls.setTarget(new Vector3(0, height / 2, 0));
     }
 
     private getModulesList(type: ModuleType): HTMLElement {
