@@ -34,8 +34,7 @@ export class Actions {
     }
 
     setModuleSubtype(module: Module, moduleSubtype: ModuleSubtype): void {
-        module.subtype = moduleSubtype;
-        console.log(`set module subtype ${moduleSubtype}`);
+        this.kitchen.setModuleSubtype(module, moduleSubtype);
     }
 }
 

@@ -110,20 +110,18 @@ export class Page {
             this.getAllModulesLists().forEach((ml:Element) => ml.innerHTML = '');
         });
 
+        kitchenApi.onModuleChanged(msg => {
+            this.functionsPanel.innerText = "";
+            this.functionsPanel.appendChild(this.createFunctionsList(msg.obj));
+        });
+
         kitchenApi.onLoad(() => {
             kitchenApi.onModuleSelected(msg => {
                 const objElement = this.doc.getElementById(msg.obj.id);
                 if (objElement !== null) {
                     objElement.className = "selectedModule";
                 }
-                const funsList = this.doc.createUl("functions");
-                const listItems = ModuleSubtypeToModuleFunction.get(msg.obj.subtype).map(mf => {
-                    const li = this.doc.createLi(mf.toString());
-                    li.innerText = ModuleFunctionsUrls.get(mf);
-                    return li;
-                });
-                listItems.forEach(li => funsList.appendChild(li));
-                this.functionsPanel.appendChild(funsList);
+                this.functionsPanel.appendChild(this.createFunctionsList(msg.obj));
             });
 
             kitchenApi.onModuleDeselected(msg => {
@@ -131,8 +129,20 @@ export class Page {
                 if (objElement !== null) {
                     objElement.className = "";
                 }
+                this.functionsPanel.innerText = "";
             });
         })
+    }
+
+    private createFunctionsList(module: Module) {
+        const funsList = this.doc.createUl("functions");
+        const listItems = ModuleSubtypeToModuleFunction.get(module.subtype).map(mf => {
+            const li = this.doc.createLi(mf.toString());
+            li.innerText = ModuleFunctionsUrls.get(mf);
+            return li;
+        });
+        listItems.forEach(li => funsList.appendChild(li));
+        return funsList;
     }
 
     private addModuleToModuleList(module: Module, actions: Actions) {
@@ -152,7 +162,6 @@ export class Page {
             (event) => {
                 const inputValue = Number.parseInt((event.target as HTMLSelectElement).value);
                 actions.setModuleSubtype(module, ModuleSubtype[ModuleSubtype[inputValue]]);
-                //TODO should also reload functions panel
             }
         );
         li.appendChild(selectBox);

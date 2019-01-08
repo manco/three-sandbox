@@ -13,6 +13,7 @@ import {TexturesLibrary} from "../textures";
 import {TextureType} from "../textures";
 import {Lang} from "../../utils/lang";
 import {Coords} from "../../utils/lang";
+import {ModuleSubtype} from "../modules/types";
 
 class FloorFactory {
     public static create(width:number, depth:number, rotate:MutateMeshFun): Mesh {
@@ -186,6 +187,11 @@ export class Kitchen extends Observable {
 
     private slotWidthF(): Promise<number> {
         return this.moduleLibrary.ofType(ModuleType.STANDING).then((m:Module) => m.width);
+    }
+
+    setModuleSubtype(module: Module, moduleSubtype: ModuleSubtype) {
+        module.subtype = moduleSubtype;
+        this.notify(new Message("MODULE_CHANGED", module));
     }
 }
 
