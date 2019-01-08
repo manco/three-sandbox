@@ -1,6 +1,7 @@
 import {ModuleType} from "../model/modules/types";
 import {ModuleTypesAll} from "../model/modules/types";
 import {ModuleTypeToSubtype} from "../model/modules/types";
+import {ModuleSubtype} from "../model/modules/types";
 import {Renderer} from "./renderer";
 import {Vector3} from "three";
 import {SmartDoc} from "./html/smart-doc";
@@ -15,7 +16,8 @@ import {Labels} from "./labels";
 import {RendererFactory} from "./rendererFactory";
 import {ControlsFactory} from "./controlsFactory";
 import {Module} from "../model/modules/module";
-import {ModuleSubtype} from "../model/modules/types";
+import {ModuleSubtypeToModuleFunction} from "../model/modules/module-functions";
+import {ModuleFunctionsUrls} from "../model/modules/module-functions";
 
 export class Page {
 
@@ -114,6 +116,14 @@ export class Page {
                 if (objElement !== null) {
                     objElement.className = "selectedModule";
                 }
+                const funsList = this.doc.createUl("functions");
+                const listItems = ModuleSubtypeToModuleFunction.get(msg.obj.subtype).map(mf => {
+                    const li = this.doc.createLi(mf.toString());
+                    li.innerText = ModuleFunctionsUrls.get(mf);
+                    return li;
+                });
+                listItems.forEach(li => funsList.appendChild(li));
+                this.functionsPanel.appendChild(funsList);
             });
 
             kitchenApi.onModuleDeselected(msg => {
@@ -139,7 +149,11 @@ export class Page {
         const selectBox = Html.select(this.doc, options);
         Events.onInputChange(
             selectBox,
-            (event) => actions.setModuleSubtype(module, ModuleSubtype[(event.target as HTMLSelectElement).value])
+            (event) => {
+                const inputValue = Number.parseInt((event.target as HTMLSelectElement).value);
+                actions.setModuleSubtype(module, ModuleSubtype[ModuleSubtype[inputValue]]);
+                //TODO should also reload functions panel
+            }
         );
         li.appendChild(selectBox);
 
