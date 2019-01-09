@@ -16,34 +16,19 @@ import {ControlsFactory} from "../controller/controlsFactory";
 import {Module} from "../model/modules/module";
 import {ColorModal} from "./colorModal";
 import {FunctionsPanel} from "./functionsPanel";
+import {ControlsPanel} from "./controlsPanel";
+import {Controls} from "../controller/controls";
 
 export class Page {
 
     private readonly doc = new SmartDoc(document);
 
     private readonly guiPanel: HTMLElement = this.doc.getElementById("gui-panel");
-
-    //TODO dedicated class for control panel?
-    private readonly controlsPanel: HTMLElement = this.doc.getElementById("controls");
-
-    //TODO encapsulate
-
-    private readonly buttonZoomIn : HTMLElement = this.controlsPanel.querySelector('button[id=\"zoomin\"]');
-    private readonly buttonZoomOut : HTMLElement = this.controlsPanel.querySelector('button[id=\"zoomout\"]');
-    private readonly buttonCenter : HTMLElement = this.controlsPanel.querySelector('button[id=\"center\"]');
-
-    private readonly buttonPanLeft : HTMLElement = this.controlsPanel.querySelector('button[id=\"panleft\"]');
-    private readonly buttonPanRight : HTMLElement = this.controlsPanel.querySelector('button[id=\"panright\"]');
-
-    private readonly buttonRotateLeft : HTMLElement = this.controlsPanel.querySelector('button[id=\"rotateleft\"]');
-    private readonly buttonRotateRight : HTMLElement = this.controlsPanel.querySelector('button[id=\"rotateright\"]');
-    private readonly buttonRotateUp : HTMLElement = this.controlsPanel.querySelector('button[id=\"rotateup\"]');
-    private readonly buttonRotateDown : HTMLElement = this.controlsPanel.querySelector('button[id=\"rotatedown\"]');
-
-    private readonly colorModal:ColorModal = null;
+    private readonly controlsPanel: ControlsPanel;
+    private readonly colorModal:ColorModal;
+    private readonly functionsPanel: FunctionsPanel;
 
     private readonly renderer: Renderer;
-    private readonly functionsPanel: FunctionsPanel;
 
     constructor(
         rendererFactory: RendererFactory,
@@ -70,16 +55,7 @@ export class Page {
         Events.onClick(canvas, () => actions.selectModule(mouseTracker.xy()));
 
         const controls = controlsFactory.create(canvas);
-
-        Events.onClick(this.buttonZoomIn, () => controls.zoomIn());
-        Events.onClick(this.buttonZoomOut, () => controls.zoomOut());
-        Events.onClick(this.buttonPanLeft, () => controls.panLeft());
-        Events.onClick(this.buttonPanRight, () => controls.panRight());
-        Events.onClick(this.buttonRotateLeft, () => controls.rotateLeft());
-        Events.onClick(this.buttonRotateRight, () => controls.rotateRight());
-        Events.onClick(this.buttonRotateUp, () => controls.rotateUp());
-        Events.onClick(this.buttonRotateDown, () => controls.rotateDown());
-        Events.onClick(this.buttonCenter, () => controls.reset());
+        this.controlsPanel = new ControlsPanel(controls, this.doc);
 
         Events.onClick(
             this.doc.getElementById("drawKitchenButton"),
@@ -161,7 +137,7 @@ export class Page {
         this.guiPanel.appendChild(ul);
     }
 
-    private loadKitchenAndSetControls(actions: Actions, controls) {
+    private loadKitchenAndSetControls(actions: Actions, controls: Controls) {
         const [width, depth, height]: [number, number, number] = [
             this.doc.getInputNumberValue("kitchen-width"),
             this.doc.getInputNumberValue("kitchen-depth"),
