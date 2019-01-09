@@ -10,7 +10,6 @@ export class ColorModal {
     private readonly chooseColorModal;
     private readonly chooseColorModalClose;
     private context: ModuleType = null;
-    readonly buttons:HTMLButtonElement[];
 
     constructor(doc: SmartDoc, actions: Actions) {
 
@@ -18,14 +17,14 @@ export class ColorModal {
         this.chooseColorModalClose = doc.getElementById("chooseColorModalClose");
 
         const modalContent = this.chooseColorModal.querySelector('div[class=\"modal-content\"]');
-        this.buttons = TextureTypesAll.map( texture => {
+
+        TextureTypesAll.forEach( texture => {
             const b = doc.createButton("");
             b.className = "textureButton";
             b.style.backgroundImage = `url(${TexturesUrls.get(texture)})`;
             Events.onClick(b, () => actions.changeColor(this.context, texture));
-            return b;
+            modalContent.appendChild(b);
         });
-        this.buttons.forEach(b => modalContent.appendChild(b));
 
         Events.onClick(this.chooseColorModalClose, () => this.hide());
         Events.onClick(window, (event) => {
