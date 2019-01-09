@@ -1,6 +1,6 @@
 import ModulesLibrary from './model/modules/modules-library'
 import {Kitchen} from './model/kitchen/kitchen'
-import {CameraFactory} from "./view/cameraFactory";
+import {CameraFactory} from "./model/cameraFactory";
 import {SceneFactory} from "./model/scene";
 import {ModuleSelector} from './model/module-selector';
 import {Page} from "./view/page";
@@ -9,9 +9,9 @@ import {TexturesLibrary} from "./model/textures";
 import {TexturesUrls} from "./model/textures";
 import {TextureDefinition} from "./model/textures";
 import {KitchenApi} from "./model/kitchen/api";
-import {Actions} from "./actions";
+import {Actions} from "./controller/actions";
 import {RendererFactory} from "./view/rendererFactory";
-import {ControlsFactory} from "./view/controlsFactory";
+import {ControlsFactory} from "./controller/controlsFactory";
 
 const modulesLibrary = new ModulesLibrary();
 modulesLibrary.loadPrototypes([

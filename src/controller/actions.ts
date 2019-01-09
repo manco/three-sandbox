@@ -1,11 +1,11 @@
-import {ModuleType} from "./model/modules/types";
-import {TextureType} from "./model/textures";
-import {Kitchen} from "./model/kitchen/kitchen";
-import {ModuleSelector} from "./model/module-selector";
-import {Coords} from "./utils/lang";
+import {ModuleType} from "../model/modules/types";
+import {TextureType} from "../model/textures";
+import {Kitchen} from "../model/kitchen/kitchen";
+import {ModuleSelector} from "../model/module-selector";
+import {Coords} from "../utils/lang";
 import {Camera} from "three";
-import {Module} from "./model/modules/module";
-import {ModuleSubtype} from "./model/modules/types";
+import {Module} from "../model/modules/module";
+import {ModuleSubtype} from "../model/modules/types";
 
 export class Actions {
     constructor(

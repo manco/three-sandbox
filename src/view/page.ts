@@ -9,15 +9,14 @@ import {KitchenApi} from "../model/kitchen/api";
 import {Html} from "./html/dom";
 import {Events} from "./html/events";
 import {MouseTracker} from "../utils/mouseTracker";
-import {TextureTypesAll} from "../model/textures";
-import {TexturesUrls} from "../model/textures";
-import {Actions} from "../actions";
+import {Actions} from "../controller/actions";
 import {Labels} from "./labels";
 import {RendererFactory} from "./rendererFactory";
-import {ControlsFactory} from "./controlsFactory";
+import {ControlsFactory} from "../controller/controlsFactory";
 import {Module} from "../model/modules/module";
 import {ModuleSubtypeToModuleFunction} from "../model/modules/module-functions";
 import {ModuleFunctionsUrls} from "../model/modules/module-functions";
+import {ColorModal} from "./colorModal";
 
 export class Page {
 
@@ -28,6 +27,7 @@ export class Page {
     //TODO dedicated class for control panel?
     private readonly controlsPanel: HTMLElement = this.doc.getElementById("controls");
 
+    //TODO encapsulate
     private readonly functionsPanel = this.doc.getElementById("moduleFunctionDetails");
 
     private readonly buttonZoomIn : HTMLElement = this.controlsPanel.querySelector('button[id=\"zoomin\"]');
@@ -42,9 +42,7 @@ export class Page {
     private readonly buttonRotateUp : HTMLElement = this.controlsPanel.querySelector('button[id=\"rotateup\"]');
     private readonly buttonRotateDown : HTMLElement = this.controlsPanel.querySelector('button[id=\"rotatedown\"]');
 
-    //TODO encapsulate
-    private readonly chooseColorModal = this.doc.getElementById("chooseColorModal");
-    private readonly chooseColorModalClose = this.doc.getElementById("chooseColorModalClose");
+    private readonly colorModal:ColorModal = null;
 
     private readonly renderer: Renderer;
 
@@ -54,19 +52,7 @@ export class Page {
         actions: Actions,
         kitchenApi: KitchenApi
     ) {
-
-        const modalContent = this.chooseColorModal.querySelector('div[class=\"modal-content\"]');
-        TextureTypesAll.forEach( t => {
-            const b = this.doc.createButton("");
-            b.className = "textureButton";
-            b.style.backgroundImage = `url(${TexturesUrls.get(t)})`;
-            Events.onClick(b, () => actions.changeColor(ModuleType[b.value], t));
-            modalContent.appendChild(b);
-        });
-        Events.onClick(this.chooseColorModalClose, () => this.chooseColorModal.style.display = "none");
-        Events.onClick(window, (event) => {
-            if (event.target === this.chooseColorModal) this.chooseColorModal.style.display = "none"
-        });
+        this.colorModal = new ColorModal(this.doc, actions);
 
         const canvasContainer = this.doc.getElementById("canvasContainer");
 
@@ -170,16 +156,15 @@ export class Page {
         this.getModulesList(module.type).appendChild(li);
     }
 
-    private createModulesListHtml(t) {
-        const ul = this.doc.createUl(`modulesList-${t}`);
+    private createModulesListHtml(moduleType: ModuleType) {
+        const ul = this.doc.createUl(`modulesList-${moduleType}`);
 
-        const label = this.doc.createLabel(ul, Labels.ModuleTypesLabels.get(t));
+        const label = this.doc.createLabel(ul, Labels.ModuleTypesLabels.get(moduleType));
 
         const buttonChooseColor = this.doc.createButton("kolor");
         Events.onClick(buttonChooseColor, () => {
-            this.chooseColorModal.style.display = "block";
-            const buttons = Html.toArray(this.chooseColorModal.querySelectorAll('button[class=\"textureButton\"]'));
-            buttons.forEach(b => (b as HTMLButtonElement).value = ModuleType[t]);
+            this.colorModal.setContext(moduleType);
+            this.colorModal.show();
         });
 
         this.guiPanel.appendChild(label);
@@ -198,6 +183,7 @@ export class Page {
         controls.setTarget(new Vector3(0, height / 2, 0));
     }
 
+    //TODO encapsulate
     private getModulesList(type: ModuleType): HTMLElement {
         return this.doc.getElementById('modulesList-' + type);
     }
