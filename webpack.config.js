@@ -24,7 +24,7 @@ module.exports = {
             'THREE': 'three'
         }),
     ],
-    // devtool: 'inline-source-map',
+    // devtool: 'eval',
     devServer: {
         port: 9090,
         contentBase: path.resolve(__dirname, './static')

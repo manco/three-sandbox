@@ -6,7 +6,7 @@
   "author": "Krzysztof Możejko <kmozejko@gmail.com>",
   "license": "MIT",
   "scripts": {
-    "watch": "webpack-dev-server --inline --open",
+    "watch": "webpack-dev-server --devtool eval --inline --open",
     "start": "node ./static/server.js",
     "test": "jest",
     "heroku-postbuild": "webpack -p",
