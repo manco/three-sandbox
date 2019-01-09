@@ -14,9 +14,9 @@ export class Actions {
         private readonly camera: Camera
     ) {}
 
-    loadKitchen([ width, depth, height ]: [number, number, number], wallNames : string[]):void {
+    loadKitchen(dims: {width:number, depth:number, height:number}, wallNames : string[]):void {
         this.kitchen.removeAll();
-        this.kitchen.initFloorAndWalls(width, height, depth, wallNames);
+        this.kitchen.initFloorAndWalls(dims.width, dims.height, dims.depth, wallNames);
     }
 
     changeColor(modules: ModuleType, toColor: TextureType): void {
