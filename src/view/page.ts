@@ -14,9 +14,8 @@ import {Labels} from "./labels";
 import {RendererFactory} from "./rendererFactory";
 import {ControlsFactory} from "../controller/controlsFactory";
 import {Module} from "../model/modules/module";
-import {ModuleSubtypeToModuleFunction} from "../model/modules/module-functions";
-import {ModuleFunctionsUrls} from "../model/modules/module-functions";
 import {ColorModal} from "./colorModal";
+import {FunctionsPanel} from "./functionsPanel";
 
 export class Page {
 
@@ -28,7 +27,6 @@ export class Page {
     private readonly controlsPanel: HTMLElement = this.doc.getElementById("controls");
 
     //TODO encapsulate
-    private readonly functionsPanel = this.doc.getElementById("moduleFunctionDetails");
 
     private readonly buttonZoomIn : HTMLElement = this.controlsPanel.querySelector('button[id=\"zoomin\"]');
     private readonly buttonZoomOut : HTMLElement = this.controlsPanel.querySelector('button[id=\"zoomout\"]');
@@ -45,6 +43,7 @@ export class Page {
     private readonly colorModal:ColorModal = null;
 
     private readonly renderer: Renderer;
+    private readonly functionsPanel: FunctionsPanel;
 
     constructor(
         rendererFactory: RendererFactory,
@@ -53,6 +52,7 @@ export class Page {
         kitchenApi: KitchenApi
     ) {
         this.colorModal = new ColorModal(this.doc, actions);
+        this.functionsPanel = new FunctionsPanel(this.doc);
 
         const canvasContainer = this.doc.getElementById("canvasContainer");
 
@@ -97,8 +97,8 @@ export class Page {
         });
 
         kitchenApi.onModuleChanged(msg => {
-            this.functionsPanel.innerText = "";
-            this.functionsPanel.appendChild(this.createFunctionsList(msg.obj));
+            this.functionsPanel.clear();
+            this.functionsPanel.fillFunctionsList(msg.obj);
         });
 
         kitchenApi.onLoad(() => {
@@ -107,7 +107,7 @@ export class Page {
                 if (objElement !== null) {
                     objElement.className = "selectedModule";
                 }
-                this.functionsPanel.appendChild(this.createFunctionsList(msg.obj));
+                this.functionsPanel.fillFunctionsList(msg.obj);
             });
 
             kitchenApi.onModuleDeselected(msg => {
@@ -115,20 +115,9 @@ export class Page {
                 if (objElement !== null) {
                     objElement.className = "";
                 }
-                this.functionsPanel.innerText = "";
+                this.functionsPanel.clear();
             });
         })
-    }
-
-    private createFunctionsList(module: Module) {
-        const funsList = this.doc.createUl("functions");
-        const listItems = ModuleSubtypeToModuleFunction.get(module.subtype).map(mf => {
-            const li = this.doc.createLi(mf.toString());
-            li.innerText = ModuleFunctionsUrls.get(mf);
-            return li;
-        });
-        listItems.forEach(li => funsList.appendChild(li));
-        return funsList;
     }
 
     private addModuleToModuleList(module: Module, actions: Actions) {
