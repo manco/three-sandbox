@@ -11,15 +11,25 @@ import {Module} from "../model/modules/module";
 import {Html} from "./html/dom";
 
 export class GuiPanel {
-    private readonly panel: HTMLElement;
-    private readonly colorModal:ColorModal;
+    private readonly panel: HTMLElement = this.doc.getElementById("gui-panel");
+    private readonly kitchenWidth: HTMLInputElement = this.doc.getInput("kitchen-width");
+    private readonly kitchenHeight: HTMLInputElement = this.doc.getInput("kitchen-height");
+    private readonly kitchenDepth: HTMLInputElement = this.doc.getInput("kitchen-depth");
+    private readonly drawKitchenButton = this.doc.getElementById("drawKitchenButton");
+    private readonly colorModal:ColorModal = new ColorModal(this.doc, this.actions);
     private readonly modulesLists: Map<ModuleType, HTMLElement> = new Map();
 
     constructor(private readonly doc: SmartDoc, private readonly actions: Actions) {
-        this.panel = doc.getElementById("gui-panel");
-        this.colorModal = new ColorModal(this.doc, actions);
 
         ModuleTypesAll.forEach(t => this.modulesLists.set(t, this.createModulesListHtml(t)));
+
+        Events.onClick(
+            this.drawKitchenButton,
+            () => actions.loadKitchen(
+                this.kitchenDimensions(),
+                this.guiCheckboxesValues()
+            )
+        );
     }
 
     public addModuleToModuleList(module: Module) {
@@ -47,7 +57,7 @@ export class GuiPanel {
         this.getModulesList(module.type).appendChild(li);
     }
 
-    public guiCheckboxesValues(): string[] {
+    private guiCheckboxesValues(): string[] {
         return this.doc.findByIdPrefix<HTMLInputElement>('checkbox-wall')
             .filter(c => c.checked)
             .map(w => w.value);
@@ -75,11 +85,11 @@ export class GuiPanel {
         return ul;
     }
 
-    public kitchenDimensions():{width:number, depth:number, height:number} {
+    private kitchenDimensions():{width:number, depth:number, height:number} {
         return {
-            width: this.doc.getInputNumberValue("kitchen-width"),
-            depth: this.doc.getInputNumberValue("kitchen-depth"),
-            height: this.doc.getInputNumberValue("kitchen-height")
+            width: this.kitchenWidth.valueAsNumber,
+            depth: this.kitchenDepth.valueAsNumber,
+            height: this.kitchenHeight.valueAsNumber
         };
     }
 

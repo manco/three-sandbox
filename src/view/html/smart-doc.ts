@@ -6,8 +6,8 @@ export class SmartDoc {
         return this.doc.getElementById(elementId);
     }
 
-    getInputNumberValue(elementId: string): number {
-        return (this.getElementById(elementId) as HTMLInputElement).valueAsNumber;
+    getInput(elementId: string): HTMLInputElement{
+        return (this.getElementById(elementId) as HTMLInputElement);
     }
 
     createSelect(): HTMLSelectElement {
@@ -43,7 +43,7 @@ export class SmartDoc {
         return b;
     }
 
-    findByIdPrefix<T extends HTMLElement>(idPrefix:string) {
+    findByIdPrefix<T extends HTMLElement>(idPrefix:string): T[] {
         return Html.toArray<T>(this.doc.querySelectorAll(`[id^=\"${idPrefix}\"]`));
     }
 }

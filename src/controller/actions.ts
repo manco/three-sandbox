@@ -16,7 +16,7 @@ export class Actions {
 
     loadKitchen(dims: {width:number, depth:number, height:number}, wallNames : string[]):void {
         this.kitchen.removeAll();
-        this.kitchen.initFloorAndWalls(dims.width, dims.height, dims.depth, wallNames);
+        this.kitchen.initFloorAndWalls(dims, wallNames);
     }
 
     changeColor(modules: ModuleType, toColor: TextureType): void {

@@ -118,16 +118,14 @@ export class Kitchen extends Observable {
     }
 
     initFloorAndWalls(
-        width: number,
-        height: number,
-        depth: number,
+        dimensions: Dimensions,
         wallNames: string[]
     ): Promise<void> {
-        this.floor = FloorFactory.create(width, depth, m => m.rotateX(- Math.PI / 2 ) );
+        this.floor = FloorFactory.create(dimensions.width, dimensions.depth, m => m.rotateX(- Math.PI / 2 ) );
         this.scene.add(this.floor);
-        const factories = wallsFactories(width, depth, height);
+        const factories = wallsFactories(dimensions.width, dimensions.depth, dimensions.height);
         wallNames.forEach(name => this.addWall(factories.get(name)()));
-        return this.fillWallsWithModules().then(() => this.notify(new Message("LOADED")));
+        return this.fillWallsWithModules().then(() => this.notify(new Message("LOADED", dimensions)));
     }
 
     private addWall(wall:Wall): void {
@@ -224,6 +222,14 @@ const wallsFactories = (width:number, depth:number, height:number):Map<string, (
 
     return new Map([["A", wallA], ["B", wallB], ["C", wallC], ["D", wallD]]);
 };
+
+export class Dimensions {
+    constructor(
+        public readonly width:number,
+        public readonly depth:number,
+        public readonly height:number
+    ) {}
+}
 
 export class Indexes {
     private readonly _byId: Map<string, Module> = new Map();

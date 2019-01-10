@@ -8,6 +8,7 @@ import {TexturesLibrary} from "../model/textures";
 import {TextureType} from "../model/textures";
 import {Meshes} from "./helpers/meshes";
 import {Modules} from "./helpers/modules";
+import {Dimensions} from "../model/kitchen/kitchen";
 
 jest.mock("../model/modules/modules-library");
 jest.mock("../model/textures");
@@ -28,7 +29,7 @@ test('kitchen creates floor, wall and wall modules', () => {
         new ModulesLibrary(),
         new TexturesLibrary(),
         scene
-    ).initFloorAndWalls(100, 150, 200, ["A"]);
+    ).initFloorAndWalls(new Dimensions(100, 150, 200), ["A"]);
 
     return initFinished.then(() => {
         expect(scene.getObjectByName("Floor")).toBeDefined();
