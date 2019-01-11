@@ -20,15 +20,15 @@ export const ModuleSubtypeToModuleFunction: Map<ModuleSubtype, ModuleFunction[]>
 ]);
 
 export const ModuleFunctionsUrls = new Map<ModuleFunction, string>([
-    [ ModuleFunction.FRIDGE_1, 'textures/lodowka.jpg'],
-    [ ModuleFunction.OVEN_1, 'textures/piekarnik.jpg'],
-    [ ModuleFunction.WASHER_1, 'textures/pralka.jpg'],
-    [ ModuleFunction.BIG_2, 'textures/szuflady_1p1.jpg'],
-    [ ModuleFunction.AVG_2_BIG_1, 'textures/szuflady_2p1.jpg'],
-    [ ModuleFunction.SMALL_2_AVG_1_BIG_1, 'textures/szuflady_2p1p1.jpg'],
-    [ ModuleFunction.SMALL_2_AVG_3, 'textures/szuflady_2p3.jpg'],
-    [ ModuleFunction.AVG_4, 'textures/szuflady_4.jpg'],
-    [ ModuleFunction.CHAMBER_1, 'textures/zlew.jpg'],
-    [ ModuleFunction.CHAMBER_DRAINER, 'textures/zlew.jpg'],
-    [ ModuleFunction.CHAMBER_2, 'textures/zlew.jpg']
+    [ ModuleFunction.FRIDGE_1, 'functions/lodowka.jpg'],
+    [ ModuleFunction.OVEN_1, 'functions/piekarnik.jpg'],
+    [ ModuleFunction.WASHER_1, 'functions/pralka.jpg'],
+    [ ModuleFunction.BIG_2, 'functions/szuflady_1p1.jpg'],
+    [ ModuleFunction.AVG_2_BIG_1, 'functions/szuflady_2p1.jpg'],
+    [ ModuleFunction.SMALL_2_AVG_1_BIG_1, 'functions/szuflady_2p1p1.jpg'],
+    [ ModuleFunction.SMALL_2_AVG_3, 'functions/szuflady_2p3.jpg'],
+    [ ModuleFunction.AVG_4, 'functions/szuflady_4.jpg'],
+    [ ModuleFunction.CHAMBER_1, 'functions/zlew.jpg'],
+    [ ModuleFunction.CHAMBER_DRAINER, 'functions/zlew.jpg'],
+    [ ModuleFunction.CHAMBER_2, 'functions/zlew.jpg']
 ]);

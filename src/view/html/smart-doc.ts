@@ -46,4 +46,15 @@ export class SmartDoc {
     findByIdPrefix<T extends HTMLElement>(idPrefix:string): T[] {
         return Html.toArray<T>(this.doc.querySelectorAll(`[id^=\"${idPrefix}\"]`));
     }
+
+    createImageInput(imageSrc: string) {
+        const elem = this.doc.createElement("input") as HTMLInputElement;
+        elem.type = "image";
+        elem.src = imageSrc;
+        return elem;
+    }
+
+    createDiv(): HTMLDivElement {
+        return this.doc.createElement("div") as HTMLDivElement;
+    }
 }
