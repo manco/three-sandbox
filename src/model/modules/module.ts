@@ -21,7 +21,7 @@ export class Module {
         readonly mesh: Mesh,
         readonly type: ModuleType,
         public subtype: ModuleSubtype,
-        readonly moduleFunction: ModuleFunction,
+        public moduleFunction: ModuleFunction,
         readonly width: number,
         readonly depth: number,
         private readonly rotateFun: MutateMeshFun

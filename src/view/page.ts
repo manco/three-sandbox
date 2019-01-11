@@ -25,7 +25,7 @@ export class Page {
         kitchenApi: KitchenApi
     ) {
         this.guiPanel = new GuiPanel(this.doc, actions);
-        this.functionsPanel = new FunctionsPanel(this.doc);
+        this.functionsPanel = new FunctionsPanel(this.doc, actions);
         this.canvas = new Canvas(rendererFactory, actions, this.doc);
         const controls = controlsFactory.create(this.canvas.canvas());
         this.controlsPanel = new ControlsPanel(controls, this.doc);

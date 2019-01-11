@@ -1,11 +1,12 @@
 import {ModuleType} from "../model/modules/types";
+import {ModuleSubtype} from "../model/modules/types";
 import {TextureType} from "../model/textures";
 import {Kitchen} from "../model/kitchen/kitchen";
 import {ModuleSelector} from "../model/module-selector";
 import {Coords} from "../utils/lang";
 import {Camera} from "three";
 import {Module} from "../model/modules/module";
-import {ModuleSubtype} from "../model/modules/types";
+import {ModuleFunction} from "../model/modules/module-functions";
 
 export class Actions {
     constructor(
@@ -35,6 +36,11 @@ export class Actions {
 
     setModuleSubtype(module: Module, moduleSubtype: ModuleSubtype): void {
         this.kitchen.setModuleSubtype(module, moduleSubtype);
+    }
+
+    setModuleFunction(module:Module, moduleFunction: ModuleFunction): void {
+        this.kitchen.setModuleFunction(module, moduleFunction);
+        console.log(`setModuleFunction: ${module}, ${moduleFunction}`);
     }
 }
 
