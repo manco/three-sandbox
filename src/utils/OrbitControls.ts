@@ -6,6 +6,7 @@ import {OrthographicCamera} from "three";
 import {PerspectiveCamera} from "three";
 import {EventDispatcher} from "three";
 import {Quaternion} from "three";
+import {MouseMode} from "../controller/controls";
 
 // This set of controls performs orbiting, dollying (zooming), and panning.
 // Unlike TrackballControls, it maintains the "up" direction object.up (+Y by default).
@@ -20,39 +21,39 @@ export class OrbitControls extends EventDispatcher {
     target = new Vector3();
 
     // How far you can dolly in and out ( PerspectiveCamera only )
-    minDistance = 0;
-    maxDistance = Infinity;
+    private minDistance = 0;
+    private maxDistance = Infinity;
 
     // How far you can zoom in and out ( OrthographicCamera only )
-    minZoom = 0;
-    maxZoom = Infinity;
+    private minZoom = 0;
+    private maxZoom = Infinity;
 
     // How far you can orbit vertically, upper and lower limits.
     // Range is 0 to Math.PI radians.
-    minPolarAngle = 0; // radians
-    maxPolarAngle = Math.PI; // radians
+    private minPolarAngle = 0; // radians
+    private maxPolarAngle = Math.PI /2; // radians
 
     // How far you can orbit horizontally, upper and lower limits.
     // If set, must be a sub-interval of the interval [ - Math.PI, Math.PI ].
-    minAzimuthAngle = - Infinity; // radians
-    maxAzimuthAngle = Infinity; // radians
+    private minAzimuthAngle = - Infinity; // radians
+    private maxAzimuthAngle = Infinity; // radians
 
-    zoomSpeed = 1.0;
-    rotateSpeed = 1.0;
-    panSpeed = 1.0;
-    screenSpacePanning = false; // if true, pan in screen-space
-    keyPanSpeed = 7.0;	// pixels moved per arrow key push
+    private zoomSpeed = 1.0;
+    private rotateSpeed = 1.0;
+    private panSpeed = 1.0;
+    private screenSpacePanning = false; // if true, pan in screen-space
+    private keyPanSpeed = 7.0;	// pixels moved per arrow key push
 
     // The four arrow keys
-    static keys = { LEFT: 37, UP: 38, RIGHT: 39, BOTTOM: 40 };
+    private static keys = { LEFT: 37, UP: 38, RIGHT: 39, BOTTOM: 40 };
 
     // Mouse buttons
-    static mouseButtons = { LEFT: MOUSE.LEFT, MIDDLE: MOUSE.MIDDLE, RIGHT: MOUSE.RIGHT };
+    private static mouseButtons = { LEFT: MOUSE.LEFT, MIDDLE: MOUSE.MIDDLE, RIGHT: MOUSE.RIGHT };
 
     // for reset
-    target0 = this.target.clone();
-    position0 = this.object.position.clone();
-    zoom0 = this.object.zoom;
+    private target0 = this.target.clone();
+    private position0 = this.object.position.clone();
+    private zoom0 = this.object.zoom;
 
     private changeEvent = { type: 'change' };
     private startEvent = { type: 'start' };
@@ -83,6 +84,7 @@ export class OrbitControls extends EventDispatcher {
     private dollyStart = new Vector2();
     private dollyEnd = new Vector2();
     private dollyDelta = new Vector2();
+    public mouseMode: MouseMode = MouseMode.NONE;
 
 	constructor( private readonly object: OrthographicCamera | PerspectiveCamera, private readonly domElement:HTMLCanvasElement ) {
 		super();
@@ -458,36 +460,32 @@ export class OrbitControls extends EventDispatcher {
 
             case OrbitControls.mouseButtons.LEFT:
 
-                if ( event.ctrlKey || event.metaKey ) {
-
+                // if ( event.ctrlKey || event.metaKey ) {
+                if (this.mouseMode === MouseMode.PAN_ONLY) {
                     this.handleMouseDownPan( event );
-
                     this.state = OrbitControls.STATE.PAN;
-
-                } else {
-
+                }
+                if (this.mouseMode === MouseMode.ROTATE_ONLY) {
                     this.handleMouseDownRotate( event );
-
                     this.state = OrbitControls.STATE.ROTATE;
-
                 }
 
                 break;
 
-            case OrbitControls.mouseButtons.MIDDLE:
-
-                this.handleMouseDownDolly( event );
-
-                this.state = OrbitControls.STATE.DOLLY;
-
-                break;
-
-            case OrbitControls.mouseButtons.RIGHT:
-                this.handleMouseDownPan( event );
-
-                this.state = OrbitControls.STATE.PAN;
-
-                break;
+            // case OrbitControls.mouseButtons.MIDDLE:
+            //
+            //     this.handleMouseDownDolly( event );
+            //
+            //     this.state = OrbitControls.STATE.DOLLY;
+            //
+            //     break;
+            //
+            // case OrbitControls.mouseButtons.RIGHT:
+            //     this.handleMouseDownPan( event );
+            //
+            //     this.state = OrbitControls.STATE.PAN;
+            //
+            //     break;
 
         }
 

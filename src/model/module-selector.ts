@@ -9,6 +9,7 @@ export class ModuleSelector extends Observable {
         super();
     }
 
+    //TODO bug meshSelector should unselect mesh when no raycast hit
     selectModule(module:Module): void {
         if (this.selected !== null) {
             this._notifyThat("DESELECTED");

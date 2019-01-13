@@ -9,13 +9,16 @@ export class Controls {
     private readonly orbitControls: OrbitControls;
     constructor(private readonly camera: OrthographicCamera, canvas: HTMLCanvasElement) {
         this.orbitControls = new OrbitControls( camera, canvas );
-        this.orbitControls.maxPolarAngle = Math.PI /2;
     }
 
     setTarget(target: Vector3) {
         this.orbitControls.target = target;
         this.orbitControls.update();
         this.orbitControls.saveState();
+    }
+
+    setMouseMode(mode: MouseMode) {
+        this.orbitControls.mouseMode = mode;
     }
 
     zoomIn(): void {
@@ -74,4 +77,8 @@ export class Controls {
     reset() {
         this.orbitControls.reset();
     }
+}
+
+export enum MouseMode {
+    PAN_ONLY, ROTATE_ONLY, NONE
 }
