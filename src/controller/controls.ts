@@ -1,11 +1,14 @@
 import {Vector3} from "three";
 import {OrthographicCamera} from "three";
 import {OrbitControls} from "../utils/OrbitControls";
+import {Observable} from "../utils/observable";
+import {Message} from "../utils/observable";
 
-export class Controls {
+export class Controls extends Observable {
 
     private readonly orbitControls: OrbitControls;
     constructor(private readonly camera: OrthographicCamera, canvas: HTMLCanvasElement) {
+        super();
         this.orbitControls = new OrbitControls( camera, canvas );
     }
 
@@ -15,8 +18,16 @@ export class Controls {
         this.orbitControls.saveState();
     }
 
-    setMouseMode(mode: MouseMode) {
-        this.orbitControls.mouseMode = mode;
+    toggleMouseMode(mode: MouseMode) {
+        if (this.orbitControls.mouseMode !== MouseMode.NONE) {
+            this.notify(new Message("UNSET", this.orbitControls.mouseMode));
+        }
+        if (this.orbitControls.mouseMode === mode) {
+            this.orbitControls.mouseMode = MouseMode.NONE;
+        } else {
+            this.orbitControls.mouseMode = mode;
+            this.notify(new Message("SET", mode));
+        }
     }
 
     zoomIn(): void {

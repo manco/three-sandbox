@@ -14,10 +14,28 @@ export class ControlsPanel {
         const buttonModePan = panel.querySelector('button[id=\"modepan\"]');
         const buttonModeRotate = panel.querySelector('button[id=\"moderotate\"]');
 
+        const buttonsByMouseMode = new Map<MouseMode, Element>([
+            [MouseMode.PAN_ONLY, buttonModePan],
+            [MouseMode.ROTATE_ONLY, buttonModeRotate]
+        ]);
+
+        controls.subscribe(msg => {
+            switch(msg.type) {
+                case "UNSET":
+                    buttonsByMouseMode.get(msg.obj).classList.remove("selected");
+                    break;
+                case "SET":
+                    buttonsByMouseMode.get(msg.obj).classList.add("selected");
+                    break;
+                default:
+                    break;
+            }
+        });
+
         Events.onClick(buttonZoomIn, () => controls.zoomIn());
         Events.onClick(buttonZoomOut, () => controls.zoomOut());
-        Events.onClick(buttonModePan, () => controls.setMouseMode(MouseMode.PAN_ONLY));
-        Events.onClick(buttonModeRotate, () => controls.setMouseMode(MouseMode.ROTATE_ONLY));
+        Events.onClick(buttonModePan, () => controls.toggleMouseMode(MouseMode.PAN_ONLY));
+        Events.onClick(buttonModeRotate, () => controls.toggleMouseMode(MouseMode.ROTATE_ONLY));
         Events.onClick(buttonCenter, () => controls.reset());
     }
 }
