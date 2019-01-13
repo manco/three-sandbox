@@ -79,6 +79,12 @@
     .selectedFunction {
         opacity: .5;
     }
+    .controlsButton {
+        background-size: contain;
+        background-repeat: no-repeat;
+        height: 3vw;
+        width:3vw;
+    }
 </style>
 <body>
     <div id="gui-panel">
@@ -116,11 +122,11 @@
     <div id="2ndcol">
         <div id="canvasContainer"></div>
         <div id="controls">
-            <button type="button" id="zoomin">przybliż</button>
-            <button type="button" id="zoomout">oddal</button>
-            <button type="button" id="modepan">&lt&gt</button>
-            <button type="button" id="moderotate">@</button>
-            <button type="button" id="center">centruj</button>
+            <button class="controlsButton" id="zoomin" style='background-image: url("buttons/zoomin.png");'></button>
+            <button class="controlsButton" id="zoomout" style='background-image: url("buttons/zoomout.png");'></button>
+            <button class="controlsButton" id="modepan" style='background-image: url("buttons/pan.png");'></button>
+            <button class="controlsButton" id="moderotate" style='background-image: url("buttons/rotate.png");'></button>
+            <button class="controlsButton" id="center" style='background-image: url("buttons/center.png");'></button>
         </div>
     </div>
     <div id="moduleFunctionDetails">
