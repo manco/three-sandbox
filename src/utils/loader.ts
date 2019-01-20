@@ -10,7 +10,7 @@ export class PromisingLoader {
             (resolve) => this.loader.load(url, resolve, Lang.noop, Lang.noop)
         ).then((obj:Object3D) => {
             if (obj.children.length > 1) {
-                console.warn(`loadSingleMesh: ${url} resolved to group of Lang: ${obj.children}`)
+                console.warn(`loadSingleMesh: ${url} resolved to group of meshes: ${obj.children}`)
             }
             return obj.children[0] as Mesh
         });
