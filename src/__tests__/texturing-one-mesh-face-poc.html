@@ -1,0 +1,95 @@
+<!doctype html>
+<!--suppress JSUnresolvedLibraryURL -->
+<html>
+<meta charset="utf-8">
+<head>
+    <title>Sandbox</title>
+</head>
+<body>
+<div id="canvasContainer"></div>
+<script src="http://threejs.org/build/three.min.js"></script>
+<script src="http://threejs.org/examples/js/controls/OrbitControls.js"></script>
+<script src="http://threejs.org/examples/js/loaders/OBJLoader.js"></script>
+<script>
+
+    let camera, scene, renderer;
+    var szafka;
+
+    init();
+    animate();
+
+    function init() {
+
+        scene = new THREE.Scene();
+
+        // Camera
+        camera = new THREE.PerspectiveCamera(50, 320 / 240, 1, 3000);
+        camera.position.set(500, 500, 500);
+        camera.lookAt(0, 0, 0);
+
+        let textureLoader = new THREE.TextureLoader();
+
+        let texBGND = textureLoader.load("../../static/textures/wood.jpg");
+        let texRGB = textureLoader.load("../../static/functions/lodowka.jpg");
+
+        const bgnd = new THREE.MeshStandardMaterial({ map: texBGND });
+        const rgb = new THREE.MeshStandardMaterial({ map: texRGB, transparent: true });
+
+        //szafka
+        new THREE.OBJLoader().load("./texturing-poc.obj", (g => {
+            const m = g.children[0];
+            m.castShadow = true;
+            m.receiveShadow = true;
+            m.scale.multiplyScalar(3);
+            m.rotateX(-Math.PI / 2);
+            m.rotateZ(Math.PI / 2);
+            m.position.set(0, 150, 0);
+
+            //if .obj file doesn't bring groups info,
+            // vertexes an be explicitly enumerated and mapped to material indicies
+            // m.geometry.clearGroups();
+            // m.geometry.addGroup(0, 12, 0);
+            // m.geometry.addGroup(12, 6, 1);
+            // m.geometry.addGroup(18, 99, 0);
+
+            m.material = [rgb, bgnd];
+
+            scene.add(m);
+            szafka = m;
+        }));
+
+        // Render
+        renderer = new THREE.WebGLRenderer();
+        renderer.setSize(window.innerWidth, window.innerHeight);
+
+        let canvas = renderer.domElement;
+        document.getElementById('canvasContainer').appendChild(canvas);
+
+        new THREE.OrbitControls( camera, canvas );
+
+        // background
+        scene.background = new THREE.Color(0x000000);
+
+        let spotLight = new THREE.SpotLight(0xffffff, 2),
+            spotLightHelper = new THREE.SpotLightHelper(spotLight);
+        spotLight.add(spotLightHelper);
+        scene.add(spotLight);
+        scene.add(new THREE.AmbientLight());
+
+        // set position of spotLight,
+        // and helper bust be updated when doing that
+        spotLight.position.set(100, 300, -100);
+        spotLightHelper.update()
+
+    }
+
+    function animate() {
+
+        requestAnimationFrame( animate );
+
+        renderer.render( scene, camera );
+
+    }
+</script>
+</body>
+</html>

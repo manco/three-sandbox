@@ -1,5 +1,9 @@
 * po wyborze funkcji ustawiac teksture tylko na przednim face
+* * trzeba zaznaczyc odpowiednia grupe wierzcholkow w .obj
 * pokazac Rafalowi efekt
+
+* physical light ocenic
+
 * zrobić POC sklejania tekstur canvasem (canvastexture)
 
 * tryb do dynamicznego ustawienia oswietlenia i typow materialow
