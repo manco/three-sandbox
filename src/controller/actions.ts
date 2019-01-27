@@ -22,7 +22,7 @@ export class Actions {
 
     changeColor(modules: ModuleType, toColor: TextureType): void {
         this.kitchen.modules.byType(modules)
-            .forEach(m => this.kitchen.setTexture(m, toColor));
+            .forEach(m => this.kitchen.setBackTexture(m, toColor));
     }
 
     selectModuleById(objId: string):void {

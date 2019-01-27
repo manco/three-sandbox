@@ -167,8 +167,12 @@ export class Kitchen extends Observable {
         return this.raycaster.intersectObjects((this.modules.all()).map(_ => _.mesh)).map((i:Intersection) => i.object);
     };
 
-    setTexture(module: Module, type: TextureType): void {
-        module.setTexture(this.textureLibrary.get(type));
+    setFrontTexture(module: Module, type: TextureType): void {
+        module.setFrontTexture(this.textureLibrary.get(type));
+    }
+
+    setBackTexture(module: Module, type: TextureType): void {
+        module.setBackTexture(this.textureLibrary.get(type));
     }
 
     removeAll(): void {

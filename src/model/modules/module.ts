@@ -5,6 +5,7 @@ import {MutateMeshFun} from "../../utils/meshes";
 import {ModuleType} from "./types";
 import {ModuleSubtype} from "./types";
 import {ModuleFunction} from "./module-functions";
+import {BufferGeometry} from "three";
 
 export class ModuleDefinition {
     constructor(
@@ -15,7 +16,8 @@ export class ModuleDefinition {
 }
 
 export class Module {
-    public readonly id: string;
+    public readonly id: string = this.mesh.uuid;
+    private readonly hasFront = (this.mesh.geometry as BufferGeometry).groups.length > 0;
 
     constructor(
         readonly mesh: Mesh,
@@ -25,9 +27,7 @@ export class Module {
         readonly width: number,
         readonly depth: number,
         private readonly rotateFun: MutateMeshFun
-    ) {
-        this.id = mesh.uuid;
-    }
+    ) { }
 
     initRotation(): void {
         this.rotateFun(this.mesh);
@@ -39,14 +39,47 @@ export class Module {
         return cloned;
     }
 
-    setTexture(tex:Texture): void {
-        this.material().map = tex;
-        this.material().needsUpdate = true;
+    setBackTexture(texture:Texture): void {
+        Module.setTexture(this.backMaterial(), texture);
     }
 
-    getTexture(): Texture {
-        return this.material().map;
+    getBackTexture(): Texture {
+        return this.backMaterial().map;
     }
 
-    private material() { return (this.mesh.material as MeshLambertMaterial) }
+    getFrontTexture(): Texture {
+        return this.frontMaterial().map;
+    }
+
+    private backMaterial() {
+        if (this.hasFront) {
+            //TODO material type definition
+            return this.mesh.material[1] as MeshLambertMaterial;
+        }
+        return this.mesh.material as MeshLambertMaterial;
+    }
+
+    private frontMaterial() {
+        if (this.hasFront) {
+            //TODO material type definition
+            return this.mesh.material[0] as MeshLambertMaterial;
+        }
+        throw "module has no front!";
+    }
+
+    setFrontTexture(texture: Texture):void {
+        Module.setTexture(this.frontMaterial(), texture);
+    }
+
+    private static setTexture(material: MeshLambertMaterial, texture: Texture) {
+        material.map = texture;
+        material.needsUpdate = true;
+    }
+
+    //TODO test cases
+    //1. set back material on module with front
+    //2. set back material on module without front
+
+    //3. set front material on module with front
+    //4. set back material on module with front (exception)
 }
