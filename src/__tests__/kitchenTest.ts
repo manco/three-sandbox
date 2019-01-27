@@ -17,7 +17,7 @@ test('kitchen creates floor, wall and wall modules', () => {
 
     //@ts-ignore
     ModulesLibrary.mockImplementation(() => {
-        const mockModuleFun = (t:ModuleType) => Promise.resolve(Modules.module(t));
+        const mockModuleFun = (t:ModuleType) => Modules.module(t);
         return {
             ofType: mockModuleFun,
             createModule: mockModuleFun
@@ -25,18 +25,16 @@ test('kitchen creates floor, wall and wall modules', () => {
     });
 
     const scene = new Scene();
-    const initFinished = new Kitchen(
+    new Kitchen(
         new ModulesLibrary(),
         new TexturesLibrary(),
         scene
     ).initFloorAndWalls(new Dimensions(100, 150, 200), ["A"]);
 
-    return initFinished.then(() => {
+
         expect(scene.getObjectByName("Floor")).toBeDefined();
         expect(scene.getObjectByName("WallA")).toBeDefined();
-        expect(scene.children.filter((m) => m.name === Meshes.DefaultMeshName))
-            .toHaveLength(ModuleTypesAll.length * 2);
-    });
+        expect(scene.children.filter((m) => m.name === Meshes.DefaultMeshName)).toHaveLength(ModuleTypesAll.length * 2);
 });
 
 test('kitchen can change module texture', () => {

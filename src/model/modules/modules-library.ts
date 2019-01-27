@@ -10,41 +10,42 @@ import {ModuleSubtypeToModuleFunction} from "./module-functions";
 export default class ModulesLibrary {
     private readonly loader: PromisingLoader = new PromisingLoader();
     private readonly scale: number = 3;
-    private prototypes: Promise<Map<ModuleType, Module>> = null;
+    private prototypes: Map<ModuleType, Module> = null;
 
     loadPrototypes(definitions: ModuleDefinition[]):void {
         if (this.prototypes === null) {
-            this.prototypes = Promise.all(
+            Promise.all(
                 definitions.map(
-                    (d:ModuleDefinition) =>
-                        this.loader.loadSingleMesh(d.url)
-                            .then((m:Mesh) => {
-                                this.initMesh(m);
-                                const defaultSubtype = ModuleTypeToSubtype.get(d.type)[0];
-                                return new Module(
-                                    m,
-                                    d.type,
-                                    defaultSubtype,
-                                    ModuleSubtypeToModuleFunction.get(defaultSubtype)[0],
-                                    this.scale * Meshes.meshWidthX(m),
-                                    this.scale * Meshes.meshDepthY(m),
-                                    (mm:Mesh):void => { mm.rotateX(-Math.PI / 2); }
-                                );
-                            })
+        (d:ModuleDefinition) =>
+                    this.loader.loadSingleMesh(d.url)
+                        .then((m:Mesh) => {
+                            this.initMesh(m);
+                            const defaultSubtype = ModuleTypeToSubtype.get(d.type)[0];
+                            return new Module(
+                                m,
+                                d.type,
+                                defaultSubtype,
+                                ModuleSubtypeToModuleFunction.get(defaultSubtype)[0],
+                                this.scale * Meshes.meshWidthX(m),
+                                this.scale * Meshes.meshDepthY(m),
+                                (mm:Mesh):void => { mm.rotateX(-Math.PI / 2); }
+                            );
+                        })
                 )
-            ).then(modules => new Map<ModuleType, Module>(modules.map(m => [m.type, m] as [ModuleType, Module])));
+            )
+            .then(modules => new Map<ModuleType, Module>(modules.map(m => [m.type, m] as [ModuleType, Module])))
+            .then(result => this.prototypes = result)
         } else {
             throw "sorry, prototypes already loaded or being loaded";
         }
     }
 
-    createModule(type:ModuleType):Promise<Module> {
-        return this.ofType(type)
-            .then((m:Module) => m.clone());
+    createModule(type:ModuleType): Module {
+        return this.ofType(type).clone();
     }
 
-    ofType(type:ModuleType):Promise<Module> {
-        return this.prototypes.then(modules => modules.get(type));
+    ofType(type:ModuleType):Module {
+        return this.prototypes.get(type);
     }
 
     private initMesh(m:Mesh): void {

@@ -105,9 +105,11 @@ class WallSlot {
         this.modulesByTypes.delete(moduleType);
     }
 }
+
 export class Kitchen extends Observable {
     public readonly modules = new Indexes();
     private readonly raycaster = new Raycaster();
+    private readonly slotWidth = this.moduleLibrary.ofType(ModuleType.STANDING).width;
     private walls: Wall[] = [];
     private floor: Mesh = null;
     constructor(
@@ -121,12 +123,13 @@ export class Kitchen extends Observable {
     initFloorAndWalls(
         dimensions: Dimensions,
         wallNames: string[]
-    ): Promise<void> {
+    ): void {
         this.floor = FloorFactory.create(dimensions.width, dimensions.depth, m => m.rotateX(- Math.PI / 2 ) );
         this.scene.add(this.floor);
         const factories = wallsFactories(dimensions.width, dimensions.depth, dimensions.height);
         wallNames.forEach(name => this.addWall(factories.get(name)()));
-        return this.fillWallsWithModules().then(() => this.notify(new Message("LOADED", dimensions)));
+        this.fillWallsWithModules();
+        this.notify(new Message("LOADED", dimensions));
     }
 
     private addWall(wall:Wall): void {
@@ -134,25 +137,20 @@ export class Kitchen extends Observable {
         this.scene.add(wall.mesh);
     }
 
-    private fillWallsWithModules(): Promise<void> {
-        return this.slotWidthF().then((slotWidth :number)=> {
-            this.walls.forEach(wall => {
-                const wallWidth = Meshes.meshWidthX(wall.mesh);
-                const items = Math.floor(wallWidth / slotWidth);
-                ModuleTypesAll.forEach((type) => this.addModuleToWallSlots(wall, items, type))
-            });
-        })
+    private fillWallsWithModules(): void {
+        this.walls.forEach(wall => {
+            const wallWidth = Meshes.meshWidthX(wall.mesh);
+            const items = Math.floor(wallWidth / this.slotWidth);
+            ModuleTypesAll.forEach((type) => this.addModuleToWallSlots(wall, items, type))
+        });
     }
 
     private addModuleToWallSlots(wall:Wall, count:number, moduleType:ModuleType): void {
         for (let i = 0; i < count; i++) {
-            this.moduleLibrary
-                .createModule(moduleType)
-                .then((m:Module) => {
-                    wall.wallSlots[i].put(m, i, this.scene);
-                    this.modules.add(m);
-                    this.notify(new Message("ADD", m));
-                });
+            const m = this.moduleLibrary.createModule(moduleType);
+            wall.wallSlots[i].put(m, i, this.scene);
+            this.modules.add(m);
+            this.notify(new Message("ADD", m));
         }
     }
 
@@ -184,9 +182,6 @@ export class Kitchen extends Observable {
         this.notify(new Message("REMOVEALL"));
     }
 
-    private slotWidthF(): Promise<number> {
-        return this.moduleLibrary.ofType(ModuleType.STANDING).then((m:Module) => m.width);
-    }
 
     setModuleSubtype(module: Module, moduleSubtype: ModuleSubtype): void {
         module.subtype = moduleSubtype;
