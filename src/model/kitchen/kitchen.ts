@@ -9,8 +9,8 @@ import {Meshes, MutateMeshFun} from "../../utils/meshes";
 import {Module} from "../modules/module";
 import {ModuleTypesAll} from "../modules/types";
 import {ModuleType} from "../modules/types";
-import {TexturesLibrary} from "../textures";
-import {TextureType} from "../textures";
+import {ColorTypeLibrary} from "../colors";
+import {ColorType} from "../colors";
 import {Lang} from "../../utils/lang";
 import {Coords} from "../../utils/lang";
 import {ModuleSubtype} from "../modules/types";
@@ -114,7 +114,7 @@ export class Kitchen extends Observable {
     private floor: Mesh = null;
     constructor(
         private readonly moduleLibrary : ModulesLibrary,
-        private readonly textureLibrary: TexturesLibrary,
+        private readonly colorLibrary: ColorTypeLibrary,
         private readonly scene : Scene
     ) {
         super();
@@ -167,12 +167,12 @@ export class Kitchen extends Observable {
         return this.raycaster.intersectObjects((this.modules.all()).map(_ => _.mesh)).map((i:Intersection) => i.object);
     };
 
-    setFrontTexture(module: Module, type: TextureType): void {
-        module.setFrontTexture(this.textureLibrary.get(type));
+    setFrontTexture(module: Module, type: ColorType): void {
+        module.setFrontTexture(this.colorLibrary.get(type));
     }
 
-    setBackTexture(module: Module, type: TextureType): void {
-        module.setBackTexture(this.textureLibrary.get(type));
+    setColor(module: Module, type: ColorType): void {
+        module.setColor(this.colorLibrary.get(type));
     }
 
     removeAll(): void {

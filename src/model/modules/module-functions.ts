@@ -19,7 +19,7 @@ export const ModuleSubtypeToModuleFunction: Map<ModuleSubtype, ModuleFunction[]>
     [ModuleSubtype.OVEN_TABLETOP, []]
 ]);
 
-export const ModuleFunctionsUrls = new Map<ModuleFunction, string>([
+export const ModuleFunctionsIcons = new Map<ModuleFunction, string>([
     [ ModuleFunction.FRIDGE_1, 'functions/lodowka.jpg'],
     [ ModuleFunction.OVEN_1, 'functions/piekarnik.jpg'],
     [ ModuleFunction.WASHER_1, 'functions/pralka.jpg'],
@@ -28,6 +28,15 @@ export const ModuleFunctionsUrls = new Map<ModuleFunction, string>([
     [ ModuleFunction.SMALL_2_AVG_1_BIG_1, 'functions/szuflady_2p1p1.jpg'],
     [ ModuleFunction.SMALL_2_AVG_3, 'functions/szuflady_2p3.jpg'],
     [ ModuleFunction.AVG_4, 'functions/szuflady_4.jpg'],
+    [ ModuleFunction.CHAMBER_1, 'functions/zlew.jpg'],
+    [ ModuleFunction.CHAMBER_DRAINER, 'functions/zlew.jpg'],
+    [ ModuleFunction.CHAMBER_2, 'functions/zlew.jpg']
+]);
+
+export const ModuleFunctionsTextures = new Map<ModuleFunction, string>([
+    [ ModuleFunction.FRIDGE_1, 'functions/lodowka.jpg'],
+    [ ModuleFunction.OVEN_1, 'functions/piekarnik.jpg'],
+    [ ModuleFunction.WASHER_1, 'functions/pralka.jpg'],
     [ ModuleFunction.CHAMBER_1, 'functions/zlew.jpg'],
     [ ModuleFunction.CHAMBER_DRAINER, 'functions/zlew.jpg'],
     [ ModuleFunction.CHAMBER_2, 'functions/zlew.jpg']

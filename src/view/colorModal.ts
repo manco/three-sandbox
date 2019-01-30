@@ -1,5 +1,4 @@
-import {TextureTypesAll} from "../model/textures";
-import {TexturesUrls} from "../model/textures";
+import {ColorTypeUrls} from "../model/colors";
 import {Events} from "./html/events";
 import {SmartDoc} from "./html/smart-doc";
 import {ModuleType} from "../model/modules/types";
@@ -18,11 +17,11 @@ export class ColorModal {
 
         const modalContent = this.chooseColorModal.querySelector('div[class=\"modal-content\"]');
 
-        TextureTypesAll.forEach( texture => {
+        ColorTypeUrls.forEach(color => {
             const b = doc.createButton("");
             b.className = "textureButton";
-            b.style.backgroundImage = `url(${TexturesUrls.get(texture)})`;
-            Events.onClick(b, () => actions.changeColor(this.context, texture));
+            b.style.backgroundImage = `url(${color.url})`;
+            Events.onClick(b, () => actions.changeColor(this.context, color.type));
             modalContent.appendChild(b);
         });
 

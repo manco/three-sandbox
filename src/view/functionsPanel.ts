@@ -1,7 +1,7 @@
 import {SmartDoc} from "./html/smart-doc";
 import {Module} from "../model/modules/module";
 import {ModuleSubtypeToModuleFunction} from "../model/modules/module-functions";
-import {ModuleFunctionsUrls} from "../model/modules/module-functions";
+import {ModuleFunctionsIcons} from "../model/modules/module-functions";
 import {Events} from "./html/events";
 import {Actions} from "../controller/actions";
 
@@ -30,7 +30,7 @@ export class FunctionsPanel {
     }
 
     private imgInput(mf, module: Module) {
-        const img = this.doc.createImageInput(ModuleFunctionsUrls.get(mf));
+        const img = this.doc.createImageInput(ModuleFunctionsIcons.get(mf));
         img.classList.add("functionDetailsInput");
         if (module.moduleFunction === mf) {
             img.classList.add("selectedFunction");

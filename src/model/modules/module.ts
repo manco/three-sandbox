@@ -39,19 +39,19 @@ export class Module {
         return cloned;
     }
 
-    setBackTexture(texture:Texture): void {
-        Module.setTexture(this.backMaterial(), texture);
+    setColor(texture:Texture): void {
+        Module.setTexture(this.colorMaterial(), texture);
     }
 
-    getBackTexture(): Texture {
-        return this.backMaterial().map;
+    getColor(): Texture {
+        return this.colorMaterial().map;
     }
 
     getFrontTexture(): Texture {
         return this.frontMaterial().map;
     }
 
-    private backMaterial() {
+    private colorMaterial() {
         if (this.hasFront) {
             //TODO material type definition
             return this.mesh.material[1] as MeshLambertMaterial;

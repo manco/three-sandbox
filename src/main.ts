@@ -5,9 +5,7 @@ import {SceneFactory} from "./model/scene";
 import {ModuleSelector} from './model/module-selector';
 import {Page} from "./view/page";
 import {ModuleType} from "./model/modules/types";
-import {TexturesLibrary} from "./model/textures";
-import {TexturesUrls} from "./model/textures";
-import {TextureDefinition} from "./model/textures";
+import {ColorTypeLibrary} from "./model/colors";
 import {KitchenApi} from "./model/kitchen/api";
 import {Actions} from "./controller/actions";
 import {RendererFactory} from "./view/rendererFactory";
@@ -20,14 +18,11 @@ modulesLibrary.loadPrototypes([
     { url: 'models/szafka_gora.obj', type: ModuleType.HANGING }
 ]);
 
-const texturesLibrary = new TexturesLibrary();
-texturesLibrary.loadTextures(
-    Array.from(TexturesUrls.entries()).map(kv => new TextureDefinition(kv[1], kv[0]))
-);
+const colorsLibrary = new ColorTypeLibrary();
 
 const scene = SceneFactory.create();
 
-const kitchen = new Kitchen(modulesLibrary, texturesLibrary, scene);
+const kitchen = new Kitchen(modulesLibrary, colorsLibrary, scene);
 // @ts-ignore
 window.kitchen = kitchen;
 

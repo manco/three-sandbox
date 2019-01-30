@@ -1,6 +1,6 @@
 import {ModuleType} from "../model/modules/types";
 import {ModuleSubtype} from "../model/modules/types";
-import {TextureType} from "../model/textures";
+import {ColorType} from "../model/colors";
 import {Kitchen} from "../model/kitchen/kitchen";
 import {ModuleSelector} from "../model/module-selector";
 import {Coords} from "../utils/lang";
@@ -20,9 +20,9 @@ export class Actions {
         this.kitchen.initFloorAndWalls(dims, wallNames);
     }
 
-    changeColor(modules: ModuleType, toColor: TextureType): void {
+    changeColor(modules: ModuleType, toColor: ColorType): void {
         this.kitchen.modules.byType(modules)
-            .forEach(m => this.kitchen.setBackTexture(m, toColor));
+            .forEach(m => this.kitchen.setColor(m, toColor));
     }
 
     selectModuleById(objId: string):void {
