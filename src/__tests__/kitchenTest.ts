@@ -9,9 +9,13 @@ import {ColorType} from "../model/colors";
 import {Meshes} from "./helpers/meshes";
 import {Modules} from "./helpers/modules";
 import {Dimensions} from "../model/kitchen/kitchen";
+import {ModuleFunction} from "../model/modules/module-functions";
+import {FrontsLibrary} from "../model/modules/module-functions";
 
 jest.mock("../model/modules/modules-library");
 jest.mock("../model/colors");
+jest.mock("../model/modules/module-functions");
+
 
 //@ts-ignore
 ModulesLibrary.mockImplementation(() => {
@@ -29,6 +33,7 @@ test('kitchen creates floor, wall and wall modules', () => {
     new Kitchen(
         new ModulesLibrary(),
         new ColorTypeLibrary(),
+        null,
         scene
     ).initFloorAndWalls(new Dimensions(100, 150, 200), ["A"]);
 
@@ -38,20 +43,32 @@ test('kitchen creates floor, wall and wall modules', () => {
         expect(scene.children.filter((m) => m.name === Meshes.DefaultMeshName)).toHaveLength(ModuleTypesAll.length * 2);
 });
 
+
+const color = new Texture();
+color.name = "color";
+
+const front = new Texture();
+front.name = "front";
+
+//@ts-ignore
+ColorTypeLibrary.mockImplementation(() => {
+    return { get: () => color };
+});
+
+//@ts-ignore
+FrontsLibrary.mockImplementation(() => {
+    return { get: () => front };
+});
+
+
 test('kitchen can change module back texture', () => {
-
-    const texture = new Texture();
-
-    //@ts-ignore
-    ColorTypeLibrary.mockImplementation(() => {
-        return { get: () => texture };
-    });
 
     const module = Modules.module();
 
     const kitchen = new Kitchen(
         new ModulesLibrary(),
         new ColorTypeLibrary(),
+        null,
         null
     );
 
@@ -60,54 +77,36 @@ test('kitchen can change module back texture', () => {
         ColorType.WHITE
     );
 
-    expect(module.getColor()).toBe(texture);
+    expect(module.getColor()).toBe(color);
 });
 
 test('kitchen can change module with front texture of front', () => {
-
-    const texture = new Texture();
-
-    //@ts-ignore
-    ColorTypeLibrary.mockImplementation(() => {
-        return { get: () => texture };
-    });
 
     const module = Modules.moduleWithFront();
 
     const kitchen = new Kitchen(
         new ModulesLibrary(),
         new ColorTypeLibrary(),
+        new FrontsLibrary(),
         null
     );
 
     kitchen.setFrontTexture(
         module,
-        ColorType.WHITE
+        ModuleFunction.BIG_2
     );
 
-    kitchen.setColor(
-        module,
-        ColorType.WHITE
-    );
-
-    expect(module.getFrontTexture()).toBe(texture);
-    expect(module.getColor()).toBe(texture);
+    expect(module.getFrontTexture()).toBe(front);
 });
 
-test('kitchen can change module with front texture of back', () => {
-
-    const texture = new Texture();
-
-    //@ts-ignore
-    ColorTypeLibrary.mockImplementation(() => {
-        return { get: () => texture };
-    });
+test('kitchen can change module-with-front texture of back', () => {
 
     const module = Modules.moduleWithFront();
 
     const kitchen = new Kitchen(
         new ModulesLibrary(),
         new ColorTypeLibrary(),
+        null,
         null
     );
 
@@ -116,5 +115,5 @@ test('kitchen can change module with front texture of back', () => {
         ColorType.WHITE
     );
 
-    expect(module.getColor()).toBe(texture);
+    expect(module.getColor()).toBe(color);
 });

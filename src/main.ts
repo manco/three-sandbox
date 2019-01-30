@@ -10,6 +10,7 @@ import {KitchenApi} from "./model/kitchen/api";
 import {Actions} from "./controller/actions";
 import {RendererFactory} from "./view/rendererFactory";
 import {ControlsFactory} from "./controller/controlsFactory";
+import {FrontsLibrary} from "./model/modules/module-functions";
 
 const modulesLibrary = new ModulesLibrary();
 modulesLibrary.loadPrototypes([
@@ -18,11 +19,9 @@ modulesLibrary.loadPrototypes([
     { url: 'models/szafka_gora.obj', type: ModuleType.HANGING }
 ]);
 
-const colorsLibrary = new ColorTypeLibrary();
-
 const scene = SceneFactory.create();
 
-const kitchen = new Kitchen(modulesLibrary, colorsLibrary, scene);
+const kitchen = new Kitchen(modulesLibrary, new ColorTypeLibrary(), new FrontsLibrary(), scene);
 // @ts-ignore
 window.kitchen = kitchen;
 

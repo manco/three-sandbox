@@ -35,7 +35,11 @@ export class Module {
 
     clone(): Module {
         const cloned = new Module(this.mesh.clone(), this.type, this.subtype, this.moduleFunction, this.width, this.depth, this.rotateFun);
-        cloned.mesh.material = new MeshLambertMaterial();
+        if (this.hasFront) {
+            cloned.mesh.material = [new MeshLambertMaterial(), new MeshLambertMaterial()];
+        } else {
+            cloned.mesh.material = new MeshLambertMaterial();
+        }
         return cloned;
     }
 
@@ -75,11 +79,4 @@ export class Module {
         material.map = texture;
         material.needsUpdate = true;
     }
-
-    //TODO test cases
-    //1. set back material on module with front
-    //2. set back material on module without front
-
-    //3. set front material on module with front
-    //4. set back material on module with front (exception)
 }

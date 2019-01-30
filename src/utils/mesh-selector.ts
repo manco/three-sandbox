@@ -16,6 +16,6 @@ export class MeshSelector {
     }
 
     private static emissive(mesh:Mesh): Color {
-        return (mesh.material as MeshLambertMaterial).emissive;
+        return ((Array.isArray(mesh.material) ? mesh.material[0] : mesh.material)as MeshLambertMaterial).emissive;
     }
 }

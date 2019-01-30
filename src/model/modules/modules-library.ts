@@ -12,6 +12,7 @@ export default class ModulesLibrary {
     private readonly scale: number = 3;
     private prototypes: Map<ModuleType, Module> = null;
 
+    //TODO prototypowac tylko meshe
     loadPrototypes(definitions: ModuleDefinition[]):void {
         if (this.prototypes === null) {
             Promise.all(

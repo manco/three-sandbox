@@ -15,6 +15,7 @@ import {Lang} from "../../utils/lang";
 import {Coords} from "../../utils/lang";
 import {ModuleSubtype} from "../modules/types";
 import {ModuleFunction} from "../modules/module-functions";
+import {FrontsLibrary} from "../modules/module-functions";
 
 class FloorFactory {
     public static create(width:number, depth:number, rotate:MutateMeshFun): Mesh {
@@ -109,12 +110,13 @@ class WallSlot {
 export class Kitchen extends Observable {
     public readonly modules = new Indexes();
     private readonly raycaster = new Raycaster();
-    private readonly slotWidth = this.moduleLibrary.ofType(ModuleType.STANDING).width;
+    private readonly slotWidth = () => this.moduleLibrary.ofType(ModuleType.STANDING).width;
     private walls: Wall[] = [];
     private floor: Mesh = null;
     constructor(
         private readonly moduleLibrary : ModulesLibrary,
         private readonly colorLibrary: ColorTypeLibrary,
+        private readonly frontsLibrary: FrontsLibrary,
         private readonly scene : Scene
     ) {
         super();
@@ -138,9 +140,10 @@ export class Kitchen extends Observable {
     }
 
     private fillWallsWithModules(): void {
+        const slotWidth = this.slotWidth();
         this.walls.forEach(wall => {
             const wallWidth = Meshes.meshWidthX(wall.mesh);
-            const items = Math.floor(wallWidth / this.slotWidth);
+            const items = Math.floor(wallWidth / slotWidth);
             ModuleTypesAll.forEach((type) => this.addModuleToWallSlots(wall, items, type))
         });
     }
@@ -167,14 +170,17 @@ export class Kitchen extends Observable {
         return this.raycaster.intersectObjects((this.modules.all()).map(_ => _.mesh)).map((i:Intersection) => i.object);
     };
 
-    setFrontTexture(module: Module, type: ColorType): void {
-        module.setFrontTexture(this.colorLibrary.get(type));
+    //@deprecated
+    //TODO test setModuleFunction instead
+    setFrontTexture(module: Module, type: ModuleFunction): void {
+        module.setFrontTexture(this.frontsLibrary.get(type));
     }
 
     setColor(module: Module, type: ColorType): void {
         module.setColor(this.colorLibrary.get(type));
     }
 
+    //TODO does it need scene?
     removeAll(): void {
         this.walls.forEach((wall:Wall) => {
             wall.wallSlots.forEach((slot:WallSlot) => slot.removeAll(this.scene));
@@ -194,6 +200,7 @@ export class Kitchen extends Observable {
 
     setModuleFunction(module: Module, moduleFunction: ModuleFunction): void {
         module.moduleFunction = moduleFunction;
+        module.setFrontTexture(this.frontsLibrary.get(moduleFunction));
         this.notify(new Message("MODULE_CHANGED", module));
     }
 }

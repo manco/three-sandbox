@@ -1,4 +1,6 @@
 import {ModuleSubtype} from "./types";
+import {TexturesLibrary} from "../../utils/textures";
+import {TextureDefinition} from "../../utils/textures";
 
 export enum ModuleFunction {
     BIG_2, AVG_2_BIG_1, AVG_4, SMALL_2_AVG_1_BIG_1, SMALL_2_AVG_3, //drawers
@@ -33,11 +35,18 @@ export const ModuleFunctionsIcons = new Map<ModuleFunction, string>([
     [ ModuleFunction.CHAMBER_2, 'functions/zlew.jpg']
 ]);
 
-export const ModuleFunctionsTextures = new Map<ModuleFunction, string>([
-    [ ModuleFunction.FRIDGE_1, 'functions/lodowka.jpg'],
-    [ ModuleFunction.OVEN_1, 'functions/piekarnik.jpg'],
-    [ ModuleFunction.WASHER_1, 'functions/pralka.jpg'],
-    [ ModuleFunction.CHAMBER_1, 'functions/zlew.jpg'],
-    [ ModuleFunction.CHAMBER_DRAINER, 'functions/zlew.jpg'],
-    [ ModuleFunction.CHAMBER_2, 'functions/zlew.jpg']
-]);
+export class FrontsLibrary extends TexturesLibrary<ModuleFunction> {
+    constructor() {
+        super();
+        super.loadTextures(ModuleFunctionTextures);
+    }
+}
+
+const ModuleFunctionTextures = [
+    new TextureDefinition(ModuleFunction.FRIDGE_1, 'functions/lodowka.jpg'),
+    new TextureDefinition(ModuleFunction.OVEN_1, 'functions/piekarnik.jpg'),
+    new TextureDefinition(ModuleFunction.WASHER_1, 'functions/pralka.jpg'),
+    new TextureDefinition(ModuleFunction.CHAMBER_1, 'functions/zlew.jpg'),
+    new TextureDefinition(ModuleFunction.CHAMBER_DRAINER, 'functions/zlew.jpg'),
+    new TextureDefinition(ModuleFunction.CHAMBER_2, 'functions/zlew.jpg')
+];
