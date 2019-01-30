@@ -20,7 +20,7 @@ export default class ModulesLibrary {
         (d:ModuleDefinition) =>
                     this.loader.loadSingleMesh(d.url)
                         .then((m:Mesh) => {
-                            this.initMesh(m);
+                            this.initMesh(m, d.type);
                             const defaultSubtype = ModuleTypeToSubtype.get(d.type)[0];
                             return new Module(
                                 m,
@@ -49,8 +49,10 @@ export default class ModulesLibrary {
         return this.prototypes.get(type);
     }
 
-    private initMesh(m:Mesh): void {
-        m.castShadow = true;
+    private initMesh(m:Mesh, type: ModuleType): void {
+        if (type == ModuleType.STANDING) {
+            m.castShadow = true;
+        }
         m.receiveShadow = true;
         m.scale.multiplyScalar(this.scale);
         m.geometry.computeBoundingBox();
