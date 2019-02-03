@@ -1,0 +1,99 @@
+<!doctype html>
+<!--suppress JSUnresolvedLibraryURL -->
+<html>
+<meta charset="utf-8">
+<head>
+    <title>Sandbox</title>
+</head>
+<body>
+<div id="canvasContainer"></div>
+<script src="http://threejs.org/build/three.min.js"></script>
+<script src="http://threejs.org/examples/js/controls/OrbitControls.js"></script>
+<script src="http://threejs.org/examples/js/loaders/OBJLoader.js"></script>
+<script>
+
+    let camera, scene, renderer;
+
+    const init = () => {
+
+        scene = new THREE.Scene();
+
+        let textureLoader = new THREE.TextureLoader();
+
+        let texBGND = textureLoader.load("../../textures/wood.jpg");
+
+        const bgnd = new THREE.MeshStandardMaterial({ map: texBGND });
+
+        loadAllObjs(bgnd);
+
+        // Camera
+        camera = new THREE.PerspectiveCamera(50, 320 / 240, 1, 3000);
+        camera.position.set(500, 500, 500);
+        camera.lookAt(0, 0, 0);
+
+        // Render
+        renderer = new THREE.WebGLRenderer();
+        renderer.setSize(window.innerWidth, window.innerHeight);
+
+        let canvas = renderer.domElement;
+        document.getElementById('canvasContainer').appendChild(canvas);
+
+        new THREE.OrbitControls( camera, canvas );
+
+        // background
+        scene.background = new THREE.Color(0x000000);
+
+        let spotLight = new THREE.SpotLight(0xffffff, 2),
+            spotLightHelper = new THREE.SpotLightHelper(spotLight);
+        spotLight.add(spotLightHelper);
+        scene.add(spotLight);
+        scene.add(new THREE.AmbientLight());
+
+        // set position of spotLight,
+        // and helper bust be updated when doing that
+        spotLight.position.set(100, 300, -100);
+        spotLightHelper.update()
+
+    };
+
+    const loadAllObjs = (texture) => {
+        const urls = [
+            "./lodówka.obj",
+            "./pralka.obj",
+            "./szuflady_1+1.obj",
+            "./szuflady_2+1+1.obj",
+            "./szuflady_2+1.obj",
+            "./szuflady_2+3.obj",
+            "./szuflady_4.obj",
+            "./zlewozmywak.obj",
+            "./zmywarka.obj"
+        ];
+
+        const loader = new THREE.OBJLoader();
+
+        urls.forEach(url => {
+            loader.load(url, (g => {
+                const m = g.children[0];
+                m.castShadow = true;
+                m.receiveShadow = true;
+                m.scale.multiplyScalar(3);
+                m.rotateX(-Math.PI / 2);
+                m.rotateZ(Math.PI / 2);
+                m.position.set(0, 150, urls.indexOf(url) * 100);
+                m.material = texture;
+                scene.add(m);
+            }));
+        });
+    };
+
+    const animate = () => {
+        requestAnimationFrame( animate );
+        renderer.render( scene, camera );
+    };
+
+    init();
+    animate();
+
+</script>
+</body>
+</html>

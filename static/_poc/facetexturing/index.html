@@ -29,8 +29,8 @@
 
         let textureLoader = new THREE.TextureLoader();
 
-        let texBGND = textureLoader.load("../../static/textures/wood.jpg");
-        let texRGB = textureLoader.load("../../static/functions/lodowka.jpg");
+        let texBGND = textureLoader.load("../../textures/wood.jpg");
+        let texRGB = textureLoader.load("../../functions/lodowka.jpg");
 
         const bgnd = new THREE.MeshStandardMaterial({ map: texBGND });
         const rgb = new THREE.MeshStandardMaterial({ map: texRGB, transparent: true });

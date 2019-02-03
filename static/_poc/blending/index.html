@@ -9,7 +9,6 @@
 <div id="canvasContainer"></div>
 <script src="http://threejs.org/build/three.min.js"></script>
 <script src="http://threejs.org/examples/js/controls/OrbitControls.js"></script>
-<script src="http://threejs.org/examples/js/loaders/OBJLoader.js"></script>
 <script>
 
     let camera, scene, renderer;
@@ -17,9 +16,13 @@
 
     let loader = new THREE.ImageLoader();
 
+    let bgnd, transp;
+
     // load a image resource
-    let bgnd = loader.load('../../static/textures/wood.jpg');
-    let transp = loader.load('./transp.png', () => { init(); animate(); });
+    Promise.all([
+        new Promise(f => loader.load('../../textures/wood.jpg', f)).then(i => bgnd = i),
+        new Promise(f => loader.load('./transp.png', f)).then(i => transp = i)
+    ]).then(() => { init(); animate(); });
 
     function init() {
 
