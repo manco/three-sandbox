@@ -1,0 +1,84 @@
+<!doctype html>
+<!--suppress JSUnresolvedLibraryURL -->
+<html>
+<meta charset="utf-8">
+<head>
+    <title>Sandbox</title>
+</head>
+<body>
+<div id="canvasContainer"></div>
+<script src="http://threejs.org/build/three.min.js"></script>
+<script src="http://threejs.org/examples/js/controls/OrbitControls.js"></script>
+<script src="http://threejs.org/examples/js/loaders/OBJLoader.js"></script>
+<script>
+
+    let camera, scene, renderer;
+    var szafka;
+
+    let loader = new THREE.ImageLoader();
+
+    // load a image resource
+    let bgnd = loader.load('../../../../static/textures/wood.jpg');
+    let transp = loader.load('./transp.png', () => { init(); animate(); });
+
+    function init() {
+
+        scene = new THREE.Scene();
+
+        // Camera
+        camera = new THREE.PerspectiveCamera(50, 320 / 240, 1, 3000);
+        camera.position.set(500, 500, 500);
+        camera.lookAt(0, 0, 0);
+
+        let texCanvas = document.createElementNS( 'http://www.w3.org/1999/xhtml', 'canvas' );
+        texCanvas.width = 200;
+        texCanvas.height = 200;
+
+        let ctx = texCanvas.getContext("2d");
+
+        ctx.drawImage(bgnd, 0, 0);
+        ctx.drawImage(transp, 0, 0);
+
+        let texture = new THREE.CanvasTexture(texCanvas);
+        let material = new THREE.MeshBasicMaterial({ map: texture });
+        let geometry = new THREE.BoxGeometry( 200, 200, 200 );
+        let mesh = new THREE.Mesh( geometry, material );
+        texture.needsUpdate = true;
+        scene.add( mesh );
+        szafka = mesh;
+
+        // Render
+        renderer = new THREE.WebGLRenderer();
+        renderer.setSize(window.innerWidth, window.innerHeight);
+
+        let canvas = renderer.domElement;
+        document.getElementById('canvasContainer').appendChild(canvas);
+
+        new THREE.OrbitControls( camera, canvas );
+
+        // background
+        scene.background = new THREE.Color(0x000000);
+
+        let spotLight = new THREE.SpotLight(0xffffff, 2),
+            spotLightHelper = new THREE.SpotLightHelper(spotLight);
+        spotLight.add(spotLightHelper);
+        scene.add(spotLight);
+        scene.add(new THREE.AmbientLight());
+
+        // set position of spotLight,
+        // and helper bust be updated when doing that
+        spotLight.position.set(100, 300, -100);
+        spotLightHelper.update()
+
+    }
+
+    function animate() {
+
+        requestAnimationFrame( animate );
+
+        renderer.render( scene, camera );
+
+    }
+</script>
+</body>
+</html>
