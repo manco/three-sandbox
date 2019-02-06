@@ -33,16 +33,6 @@ export class Module {
         this.rotateFun(this.mesh);
     }
 
-    clone(): Module {
-        const cloned = new Module(this.mesh.clone(), this.type, this.subtype, this.moduleFunction, this.width, this.depth, this.rotateFun);
-        if (this.hasFront) {
-            cloned.mesh.material = [new MeshLambertMaterial(), new MeshLambertMaterial()];
-        } else {
-            cloned.mesh.material = new MeshLambertMaterial();
-        }
-        return cloned;
-    }
-
     setColor(texture:Texture): void {
         Module.setTexture(this.colorMaterial(), texture);
     }

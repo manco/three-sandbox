@@ -1,8 +1,4 @@
-* pokazac Rafalowi efekt
-
 * konfiguracja rodzajow modulow z pliku json
-
-* zrobić POC sklejania tekstur canvasem (canvastexture)
 
 * tryb do dynamicznego ustawienia oswietlenia i typow materialow
 

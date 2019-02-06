@@ -9,11 +9,11 @@ import {Meshes, MutateMeshFun} from "../../utils/meshes";
 import {Module} from "../modules/module";
 import {ModuleTypesAll} from "../modules/types";
 import {ModuleType} from "../modules/types";
+import {ModuleSubtype} from "../modules/types";
 import {ColorTypeLibrary} from "../colors";
 import {ColorType} from "../colors";
 import {Lang} from "../../utils/lang";
 import {Coords} from "../../utils/lang";
-import {ModuleSubtype} from "../modules/types";
 import {ModuleFunction} from "../modules/module-functions";
 import {FrontsLibrary} from "../modules/module-functions";
 
@@ -110,7 +110,6 @@ class WallSlot {
 export class Kitchen extends Observable {
     public readonly modules = new Indexes();
     private readonly raycaster = new Raycaster();
-    private readonly slotWidth = () => this.moduleLibrary.ofType(ModuleType.STANDING).width;
     private walls: Wall[] = [];
     private floor: Mesh = null;
     constructor(
@@ -140,7 +139,7 @@ export class Kitchen extends Observable {
     }
 
     private fillWallsWithModules(): void {
-        const slotWidth = this.slotWidth();
+        const slotWidth = this.moduleLibrary.slotWidth();
         this.walls.forEach(wall => {
             const wallWidth = Meshes.meshWidthX(wall.mesh);
             const items = Math.floor(wallWidth / slotWidth);
