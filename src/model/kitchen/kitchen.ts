@@ -169,17 +169,10 @@ export class Kitchen extends Observable {
         return this.raycaster.intersectObjects((this.modules.all()).map(_ => _.mesh)).map((i:Intersection) => i.object);
     };
 
-    //@deprecated
-    //TODO test setModuleFunction instead
-    setFrontTexture(module: Module, type: ModuleFunction): void {
-        module.setFrontTexture(this.frontsLibrary.get(type));
-    }
-
     setColor(module: Module, type: ColorType): void {
         module.setColor(this.colorLibrary.get(type));
     }
 
-    //TODO does it need scene?
     removeAll(): void {
         this.walls.forEach((wall:Wall) => {
             wall.wallSlots.forEach((slot:WallSlot) => slot.removeAll(this.scene));

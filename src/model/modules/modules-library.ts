@@ -69,7 +69,7 @@ export default class ModulesLibrary {
         m.geometry.computeBoundingBox();
     }
 
-    slotWidth() {
+    public slotWidth() {
         return this._slotWidth;
     }
 

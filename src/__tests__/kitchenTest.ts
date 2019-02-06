@@ -1,4 +1,5 @@
 import {Kitchen} from "../model/kitchen/kitchen";
+import {Dimensions} from "../model/kitchen/kitchen";
 import {Scene} from "three";
 import {Texture} from "three";
 import ModulesLibrary from "../model/modules/modules-library";
@@ -8,7 +9,6 @@ import {ColorTypeLibrary} from "../model/colors";
 import {ColorType} from "../model/colors";
 import {Meshes} from "./helpers/meshes";
 import {Modules} from "./helpers/modules";
-import {Dimensions} from "../model/kitchen/kitchen";
 import {ModuleFunction} from "../model/modules/module-functions";
 import {FrontsLibrary} from "../model/modules/module-functions";
 
@@ -19,10 +19,9 @@ jest.mock("../model/modules/module-functions");
 
 //@ts-ignore
 ModulesLibrary.mockImplementation(() => {
-    const mockModuleFun = (t:ModuleType) => Modules.module(t);
     return {
-        ofType: mockModuleFun,
-        createModule: mockModuleFun
+        slotWidth: () => 50,
+        createModule: (t: ModuleType) => Modules.module(t)
     };
 });
 
@@ -91,7 +90,7 @@ test('kitchen can change module with front texture of front', () => {
         null
     );
 
-    kitchen.setFrontTexture(
+    kitchen.setModuleFunction(
         module,
         ModuleFunction.BIG_2
     );
