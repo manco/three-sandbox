@@ -14,14 +14,16 @@
     let camera, scene, renderer;
     var szafka;
 
-    let loader = new THREE.ImageLoader();
+    const loader = new THREE.TextureLoader();
 
     let bgnd, transp;
 
     // load a image resource
     Promise.all([
-        new Promise(f => loader.load('../../textures/wood.jpg', f)).then(i => bgnd = i),
-        new Promise(f => loader.load('./transp.png', f)).then(i => transp = i)
+        new Promise(f => {
+            loader.load('../../textures/wood.jpg', f)
+        }).then(i => bgnd = i.image),
+        new Promise(f => loader.load('./transp.png', f)).then(i => transp = i.image)
     ]).then(() => { init(); animate(); });
 
     function init() {
