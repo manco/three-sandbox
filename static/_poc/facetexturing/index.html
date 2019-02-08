@@ -30,7 +30,7 @@
         let textureLoader = new THREE.TextureLoader();
 
         let texBGND = textureLoader.load("../../textures/wood.jpg");
-        let texRGB = textureLoader.load("../../functions/lodowka.jpg");
+        let texRGB = textureLoader.load("../../functions/lodowka.png");
 
         const bgnd = new THREE.MeshStandardMaterial({ map: texBGND });
         const rgb = new THREE.MeshStandardMaterial({ map: texRGB, transparent: true });
