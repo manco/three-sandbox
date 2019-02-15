@@ -21,7 +21,8 @@ modulesLibrary.loadPrototypes([
 
 const scene = SceneFactory.create();
 
-const kitchen = new Kitchen(modulesLibrary, new ColorTypeLibrary(), new FrontsLibrary(), scene);
+const colorTypeLibrary = new ColorTypeLibrary();
+const kitchen = new Kitchen(modulesLibrary, colorTypeLibrary, new FrontsLibrary(colorTypeLibrary), scene);
 // @ts-ignore
 window.kitchen = kitchen;
 

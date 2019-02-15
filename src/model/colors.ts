@@ -12,6 +12,8 @@ export const ColorTypeUrls = [
     new TextureDefinition(ColorType.WOOD, 'textures/wood.jpg'),
 ];
 
+export const ColorTypeAll = ColorTypeUrls.map(def => def.type);
+
 export class ColorTypeLibrary extends TexturesLibrary<ColorType> {
     constructor() {
         super();

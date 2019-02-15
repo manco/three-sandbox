@@ -7,6 +7,7 @@ import {ModuleDefinition} from "./module";
 import {ModuleTypeToSubtype} from "./types";
 import {ModuleType} from "./types";
 import {ModuleSubtypeToModuleFunction} from "./module-functions";
+import {ColorType} from "../colors";
 
 export default class ModulesLibrary {
     private static readonly Scale: number = 3;
@@ -50,6 +51,7 @@ export default class ModulesLibrary {
             type,
             defaultSubtype,
             ModuleSubtypeToModuleFunction.get(defaultSubtype)[0],
+            ColorType.WHITE,
             ModulesLibrary.Scale * Meshes.meshWidthX(mesh),
             ModulesLibrary.Scale * Meshes.meshDepthY(mesh),
             (mm:Mesh):void => { mm.rotateX(-Math.PI / 2); }

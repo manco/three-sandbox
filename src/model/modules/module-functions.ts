@@ -1,6 +1,11 @@
 import {ModuleSubtype} from "./types";
 import {TexturesLibrary} from "../../utils/textures";
 import {TextureDefinition} from "../../utils/textures";
+import {ColorType} from "../colors";
+import {ColorTypeLibrary} from "../colors";
+import {ColorTypeAll} from "../colors";
+import {Texture} from "three";
+import {CanvasTexture} from "three";
 
 export enum ModuleFunction {
     BIG_2, AVG_2_BIG_1, AVG_4, SMALL_2_AVG_1_BIG_1, SMALL_2_AVG_3, //drawers
@@ -35,7 +40,54 @@ export const ModuleFunctionsIcons = new Map<ModuleFunction, string>([
     [ ModuleFunction.CHAMBER_2, 'functions/zlewozmywak.png']
 ]);
 
-export class FrontsLibrary extends TexturesLibrary<ModuleFunction> {
+export class FrontsLibrary {
+
+    //equivalent for Map<[ModuleFunction, ColorType], Texture>
+    private readonly textures = new Map<ModuleFunction, Map<ColorType, Texture>>();
+
+    constructor(colorsLibrary: ColorTypeLibrary) {
+        const functionsLibrary = new ModuleFunctionLibrary();
+
+
+        Promise.all(
+            [colorsLibrary.loadingPromise(), functionsLibrary.loadingPromise()]
+        ).then(() => {
+            ModuleFunctionTexturesAll.forEach(fun => {
+                const inner = new Map<ColorType, Texture>();
+                ColorTypeAll.forEach( color => {
+                    const texCanvas = document.createElementNS( 'http://www.w3.org/1999/xhtml', 'canvas' ) as HTMLCanvasElement;
+                    const ctx = texCanvas.getContext("2d");
+                    const blended =
+                        FrontsLibrary.blendTextures(
+                            colorsLibrary.get(color).image as HTMLImageElement,
+                            functionsLibrary.get(fun).image as HTMLImageElement,
+                            ctx);
+                    inner.set(color, blended);
+                });
+                this.textures.set(fun, inner);
+            });
+        });
+
+
+    }
+
+    private static blendTextures(colorTex, functionTex, ctx): Texture {
+
+        ctx.canvas.width = functionTex.width;
+        ctx.canvas.height = functionTex.height;
+        ctx.drawImage(colorTex, 0, 0, ctx.canvas.width, ctx.canvas.height);
+        ctx.drawImage(functionTex, 0, 0, ctx.canvas.width, ctx.canvas.height);
+        const texture = new CanvasTexture(ctx.canvas);
+        texture.needsUpdate = true;
+        return texture;
+    }
+
+    get(fun: ModuleFunction, color: ColorType): Texture | undefined {
+        return this.textures.get(fun).get(color);
+    }
+}
+
+class ModuleFunctionLibrary extends TexturesLibrary<ModuleFunction> {
     constructor() {
         super();
         super.loadTextures(ModuleFunctionTextures);
@@ -50,3 +102,5 @@ const ModuleFunctionTextures = [
     new TextureDefinition(ModuleFunction.CHAMBER_DRAINER, 'functions/zlewozmywak.png'),
     new TextureDefinition(ModuleFunction.CHAMBER_2, 'functions/zlewozmywak.png')
 ];
+
+const ModuleFunctionTexturesAll = ModuleFunctionTextures.map(def => def.type);

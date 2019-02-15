@@ -45,10 +45,10 @@
         ctx.drawImage(transp, 0, 0);
 
         let texture = new THREE.CanvasTexture(texCanvas);
+        texture.needsUpdate = true;
         let material = new THREE.MeshBasicMaterial({ map: texture });
         let geometry = new THREE.BoxGeometry( 200, 200, 200 );
         let mesh = new THREE.Mesh( geometry, material );
-        texture.needsUpdate = true;
         scene.add( mesh );
         szafka = mesh;
 

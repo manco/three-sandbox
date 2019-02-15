@@ -5,6 +5,7 @@ import {MutateMeshFun} from "../../utils/meshes";
 import {ModuleType} from "./types";
 import {ModuleSubtype} from "./types";
 import {ModuleFunction} from "./module-functions";
+import {ColorType} from "../colors";
 
 export class ModuleDefinition {
     constructor(
@@ -24,6 +25,7 @@ export class Module {
         readonly type: ModuleType,
         public subtype: ModuleSubtype,
         public moduleFunction: ModuleFunction,
+        public color: ColorType,
         readonly width: number,
         readonly depth: number,
         private readonly rotateFun: MutateMeshFun

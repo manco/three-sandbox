@@ -40,7 +40,6 @@ export class Actions {
 
     setModuleFunction(module:Module, moduleFunction: ModuleFunction): void {
         this.kitchen.setModuleFunction(module, moduleFunction);
-        console.log(`setModuleFunction: ${module}, ${moduleFunction}`);
     }
 }
 

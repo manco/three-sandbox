@@ -170,6 +170,7 @@ export class Kitchen extends Observable {
     };
 
     setColor(module: Module, type: ColorType): void {
+        module.color = type;
         module.setColor(this.colorLibrary.get(type));
     }
 
@@ -192,7 +193,7 @@ export class Kitchen extends Observable {
 
     setModuleFunction(module: Module, moduleFunction: ModuleFunction): void {
         module.moduleFunction = moduleFunction;
-        module.setFrontTexture(this.frontsLibrary.get(moduleFunction));
+        module.setFrontTexture(this.frontsLibrary.get(moduleFunction, module.color));
         this.notify(new Message("MODULE_CHANGED", module));
     }
 }
