@@ -28,8 +28,8 @@
     "webpack-dev-server": "^3.1.14"
   },
   "dependencies": {
-    "@types/three": "^0.92.25",
+    "@types/three": "0.93.19",
     "express": "^4.16.3",
-    "three": "^0.99.0"
+    "three": "0.101.1"
   }
 }
