@@ -19,6 +19,7 @@ export class Module {
     public readonly id: string = this.mesh.uuid;
     private readonly colorMaterial;
     private readonly frontMaterial;
+    private readonly hasFront = Array.isArray(this.mesh.material);
 
     constructor(
         readonly mesh: Mesh,
@@ -30,11 +31,11 @@ export class Module {
         readonly depth: number,
         private readonly rotateFun: MutateMeshFun
     ) {
-        if (Array.isArray(mesh.material)) {
+        if (this.hasFront) {
             this.colorMaterial = mesh.material[1] as MeshLambertMaterial;
             this.frontMaterial = mesh.material[0] as MeshLambertMaterial;
         } else {
-            this.colorMaterial = this.frontMaterial = mesh.material as MeshLambertMaterial;
+            this.colorMaterial = mesh.material as MeshLambertMaterial;
         }
     }
 
@@ -55,7 +56,10 @@ export class Module {
     }
 
     setFrontTexture(texture: Texture):void {
-        Module.setTexture(this.frontMaterial, texture);
+        if (this.hasFront) {
+            texture = texture === undefined ? this.getColor() : texture;
+            Module.setTexture(this.frontMaterial, texture);
+        }
     }
 
     private static setTexture(material: MeshLambertMaterial, texture: Texture) {

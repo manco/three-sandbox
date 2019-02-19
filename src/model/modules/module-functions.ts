@@ -83,7 +83,11 @@ export class FrontsLibrary {
     }
 
     get(fun: ModuleFunction, color: ColorType): Texture | undefined {
-        return this.textures.get(fun).get(color);
+        const keyPart = this.textures.get(fun);
+        if (keyPart === undefined) {
+            return undefined;
+        }
+        return keyPart.get(color);
     }
 }
 

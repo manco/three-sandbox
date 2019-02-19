@@ -41,7 +41,7 @@ export default class ModulesLibrary {
     createModule(type:ModuleType): Module {
         const mesh = this.ofType(type).clone();
         if (ModulesLibrary.hasFront(mesh)) {
-            mesh.material = [new MeshLambertMaterial(), new MeshLambertMaterial()];
+            mesh.material = [new MeshLambertMaterial(), new MeshLambertMaterial()]; //TODO make it foo(mesh.material)
         } else {
             mesh.material = new MeshLambertMaterial();
         }

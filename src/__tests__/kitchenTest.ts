@@ -67,7 +67,7 @@ test('kitchen can change module back texture', () => {
     const kitchen = new Kitchen(
         new ModulesLibrary(),
         new ColorTypeLibrary(),
-        null,
+        new FrontsLibrary(null),
         null
     );
 
@@ -105,7 +105,7 @@ test('kitchen can change module-with-front texture of back', () => {
     const kitchen = new Kitchen(
         new ModulesLibrary(),
         new ColorTypeLibrary(),
-        null,
+        new FrontsLibrary(null),
         null
     );
 

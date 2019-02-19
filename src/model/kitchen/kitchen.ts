@@ -172,6 +172,7 @@ export class Kitchen extends Observable {
     setColor(module: Module, type: ColorType): void {
         module.color = type;
         module.setColor(this.colorLibrary.get(type));
+        module.setFrontTexture(this.frontsLibrary.get(module.moduleFunction, type));
     }
 
     removeAll(): void {
