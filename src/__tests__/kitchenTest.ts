@@ -2,7 +2,7 @@ import {Kitchen} from "../model/kitchen/kitchen";
 import {Dimensions} from "../model/kitchen/kitchen";
 import {Scene} from "three";
 import {Texture} from "three";
-import ModulesLibrary from "../model/modules/modules-library";
+import ModulesFactory from "../model/modules/modules-factory";
 import {ModuleType} from "../model/modules/types";
 import {ModuleTypesAll} from "../model/modules/types";
 import {ColorTypeLibrary} from "../model/colors";
@@ -12,13 +12,13 @@ import {Modules} from "./helpers/modules";
 import {ModuleFunction} from "../model/modules/module-functions";
 import {FrontsLibrary} from "../model/modules/module-functions";
 
-jest.mock("../model/modules/modules-library");
+jest.mock("../model/modules/modules-factory");
 jest.mock("../model/colors");
 jest.mock("../model/modules/module-functions");
 
 
 //@ts-ignore
-ModulesLibrary.mockImplementation(() => {
+ModulesFactory.mockImplementation(() => {
     return {
         slotWidth: () => 50,
         createModule: (t: ModuleType) => Modules.module(t)
@@ -30,7 +30,7 @@ test('kitchen creates floor, wall and wall modules', () => {
 
     const scene = new Scene();
     new Kitchen(
-        new ModulesLibrary(),
+        new ModulesFactory(null),
         new ColorTypeLibrary(),
         null,
         scene
@@ -65,7 +65,7 @@ test('kitchen can change module back texture', () => {
     const module = Modules.module();
 
     const kitchen = new Kitchen(
-        new ModulesLibrary(),
+        new ModulesFactory(null),
         new ColorTypeLibrary(),
         new FrontsLibrary(null),
         null
@@ -84,7 +84,7 @@ test('kitchen can change module with front texture of front', () => {
     const module = Modules.moduleWithFront();
 
     const kitchen = new Kitchen(
-        new ModulesLibrary(),
+        new ModulesFactory(null),
         new ColorTypeLibrary(),
         new FrontsLibrary(null),
         null
@@ -103,7 +103,7 @@ test('kitchen can change module-with-front texture of back', () => {
     const module = Modules.moduleWithFront();
 
     const kitchen = new Kitchen(
-        new ModulesLibrary(),
+        new ModulesFactory(null),
         new ColorTypeLibrary(),
         new FrontsLibrary(null),
         null

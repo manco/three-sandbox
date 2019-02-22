@@ -1,23 +1,19 @@
-import ModulesLibrary from './model/modules/modules-library'
+import ModulesFactory from './model/modules/modules-factory'
 import {Kitchen} from './model/kitchen/kitchen'
 import {CameraFactory} from "./model/cameraFactory";
 import {SceneFactory} from "./model/scene";
 import {ModuleSelector} from './model/module-selector';
 import {Page} from "./view/page";
-import {ModuleType} from "./model/modules/types";
 import {ColorTypeLibrary} from "./model/colors";
 import {KitchenApi} from "./model/kitchen/api";
 import {Actions} from "./controller/actions";
 import {RendererFactory} from "./view/rendererFactory";
 import {ControlsFactory} from "./controller/controlsFactory";
 import {FrontsLibrary} from "./model/modules/module-functions";
+import {MeshFactory} from "./utils/meshes";
 
-const modulesLibrary = new ModulesLibrary();
-modulesLibrary.loadPrototypes([
-    { url: 'models/szafka_dol.obj', type: ModuleType.STANDING },
-    { url: 'models/blat.obj', type: ModuleType.TABLETOP },
-    { url: 'models/szafka_gora.obj', type: ModuleType.HANGING }
-]);
+const meshFactory = new MeshFactory();
+const modulesLibrary = new ModulesFactory(meshFactory);
 
 const scene = SceneFactory.create();
 

@@ -1,4 +1,4 @@
-import ModulesLibrary from '../modules/modules-library'
+import ModulesFactory from '../modules/modules-factory'
 import {Message, Observable} from "../../utils/observable";
 import {DoubleSide, ExtrudeBufferGeometry, Mesh, MeshLambertMaterial, PlaneBufferGeometry, Scene, Shape, Vector3} from "three";
 import {Camera} from "three";
@@ -113,7 +113,7 @@ export class Kitchen extends Observable {
     private walls: Wall[] = [];
     private floor: Mesh = null;
     constructor(
-        private readonly moduleLibrary : ModulesLibrary,
+        private readonly moduleLibrary : ModulesFactory,
         private readonly colorLibrary: ColorTypeLibrary,
         private readonly frontsLibrary: FrontsLibrary,
         private readonly scene : Scene
