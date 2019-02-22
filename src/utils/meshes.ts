@@ -54,7 +54,12 @@ export class MeshFactory {
 const MeshMetaData = new Map([
     ['standing', 'models/szafka_dol.obj'],
     ['tabletop', 'models/blat.obj'],
-    ['hanging', 'models/szafka_gora.obj']
+    ['hanging', 'models/szafka_gora.obj'],
+    ['standing_11', 'models/szuflady_1+1.obj'],
+    ['standing_211', 'models/szuflady_2+1+1.obj'],
+    ['standing_21', 'models/szuflady_2+1.obj'],
+    ['standing_23', 'models/szuflady_2+3.obj'],
+    ['standing_4', 'models/szuflady_4.obj']
 ]);
 
 export interface MutateMeshFun {
