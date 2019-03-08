@@ -7,6 +7,27 @@ import {ColorTypeAll} from "../colors";
 import {Texture} from "three";
 import {CanvasTexture} from "three";
 
+/*
+
+[
+    {
+        'type':'standing',
+        'subtypes':[
+            {
+                'subtype':'drawers',
+                'functions': [
+                    {
+                        'fun':'1p1',
+                        'mesh': 'models/szuflady_1+1.obj',
+                        'icon': 'functions/szuflady_1p1.jpg'
+                    }
+                ]
+            }
+        ]
+    }
+
+
+ */
 export enum ModuleFunction {
     BIG_2, AVG_2_BIG_1, AVG_4, SMALL_2_AVG_1_BIG_1, SMALL_2_AVG_3, //drawers
     CHAMBER_1, CHAMBER_DRAINER, CHAMBER_2, //sink

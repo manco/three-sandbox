@@ -1,3 +1,8 @@
+* plan na dynamiczne meshe:
+* * mesh zawsze skojarzony z function
+* * kazdy typ ma co najmniej 1 podtyp, kazdy podtyp co najmniej 1 funkcje
+* * zweryfikowac kolejnosc nakladania translacji / rotacji. Moze da sie initRotation dac na poczatek a reszte zgrupowac (pod wallem?)
+
 * konfiguracja rodzajow modulow z pliku json
 
 * tryb do dynamicznego ustawienia oswietlenia i typow materialow
