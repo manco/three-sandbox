@@ -6,20 +6,13 @@ import {ModuleType} from "./types";
 import {ModuleSubtype} from "./types";
 import {ModuleFunction} from "./module-functions";
 import {ColorType} from "../colors";
-
-export class ModuleDefinition {
-    constructor(
-        readonly url: string,
-        readonly type: ModuleType
-    ) {
-    }
-}
+import {Meshes} from "../../utils/meshes";
 
 export class Module {
     public readonly id: string = this.mesh.uuid;
     private readonly colorMaterial;
     private readonly frontMaterial;
-    private readonly hasFront = Array.isArray(this.mesh.material);
+    private readonly hasFront = Meshes.hasFront(this.mesh);
 
     constructor(
         readonly mesh: Mesh,

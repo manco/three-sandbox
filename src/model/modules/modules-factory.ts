@@ -1,11 +1,10 @@
 import {Meshes} from "../../utils/meshes";
-import {Mesh} from "three";
-import {MeshLambertMaterial} from "three";
 import {Module} from "./module";
 import {ModuleTypeToSubtype} from "./types";
 import {ModuleType} from "./types";
 import {ModuleSubtypeToModuleFunction} from "./module-functions";
 import {ColorType} from "../colors";
+import {Mesh} from "three";
 
 export default class ModulesFactory {
     private _slotWidth: number = null;
@@ -19,12 +18,7 @@ export default class ModulesFactory {
     }
 
     createModule(type:ModuleType): Module {
-        const mesh = this.meshFactory.ofType(ModuleTypeToMesh.get(type)).clone();
-        if (ModulesFactory.hasFront(mesh)) {
-            mesh.material = [new MeshLambertMaterial(), new MeshLambertMaterial()]; //TODO make it foo(mesh.material)
-        } else {
-            mesh.material = new MeshLambertMaterial();
-        }
+        const mesh = this.meshFactory.create(ModuleTypeToMesh.get(type));
         const defaultSubtype = ModuleTypeToSubtype.get(type)[0];
         return new Module(
             mesh,
@@ -42,9 +36,7 @@ export default class ModulesFactory {
         return this._slotWidth;
     }
 
-    private static hasFront(mesh: Mesh) {
-        return Array.isArray(mesh.material);
-    }
+
 }
 
 const ModuleTypeToMesh = new Map([
