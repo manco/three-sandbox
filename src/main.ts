@@ -10,7 +10,7 @@ import {Actions} from "./controller/actions";
 import {RendererFactory} from "./view/rendererFactory";
 import {ControlsFactory} from "./controller/controlsFactory";
 import {FrontsLibrary} from "./model/modules/module-functions";
-import {MeshFactory} from "./utils/meshes";
+import {MeshFactory} from "./utils/meshes-factory";
 
 const meshFactory = new MeshFactory();
 const modulesLibrary = new ModulesFactory(meshFactory);

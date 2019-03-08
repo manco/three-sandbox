@@ -5,12 +5,15 @@ import {ModuleType} from "./types";
 import {ModuleSubtypeToModuleFunction} from "./module-functions";
 import {ColorType} from "../colors";
 import {Mesh} from "three";
+import {MeshFactory} from "../../utils/meshes-factory";
 
 export default class ModulesFactory {
-    private _slotWidth: number = null;
+    private _slotWidth: number;
 
-    constructor(private readonly meshFactory) {
-        this.meshFactory.loadPrototypes().then(
+    constructor(private readonly meshFactory: MeshFactory, defaultSlotWidth?: number) {
+        this._slotWidth = defaultSlotWidth;
+        const loading: Promise<void> = this.meshFactory.loadPrototypes();
+        loading.then(
             _ => {
                 this._slotWidth = Meshes.meshWidthX(this.meshFactory.ofType('standing'));
             }

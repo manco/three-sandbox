@@ -3,43 +3,48 @@ import {Dimensions} from "../model/kitchen/kitchen";
 import {Scene} from "three";
 import {Texture} from "three";
 import ModulesFactory from "../model/modules/modules-factory";
-import {ModuleType} from "../model/modules/types";
 import {ModuleTypesAll} from "../model/modules/types";
 import {ColorTypeLibrary} from "../model/colors";
 import {ColorType} from "../model/colors";
 import {Meshes} from "./helpers/meshes";
+import {Meshes as M} from "../utils/meshes";
 import {Modules} from "./helpers/modules";
 import {ModuleFunction} from "../model/modules/module-functions";
 import {FrontsLibrary} from "../model/modules/module-functions";
+import {MeshFactory} from "../utils/meshes-factory";
 
-jest.mock("../model/modules/modules-factory");
 jest.mock("../model/colors");
 jest.mock("../model/modules/module-functions");
-
+jest.mock("../utils/meshes-factory");
 
 //@ts-ignore
-ModulesFactory.mockImplementation(() => {
+MeshFactory.mockImplementation(() => {
     return {
-        slotWidth: () => 50,
-        createModule: (t: ModuleType) => Modules.module(t)
+        loadPrototypes: () => Promise.resolve(),
+        ofType: () => Meshes.mesh(),
+        create: () => Meshes.mesh()
     };
 });
 
-test('kitchen creates floor, wall and wall modules', () => {
+const slotWidth = M.meshWidthX(Meshes.mesh());
 
+const modulesFactory = new ModulesFactory(new MeshFactory(), slotWidth);
+
+test('kitchen creates floor, wall and wall modules', () => {
 
     const scene = new Scene();
     new Kitchen(
-        new ModulesFactory(null),
-        new ColorTypeLibrary(),
+        modulesFactory,
+        null,
         null,
         scene
-    ).initFloorAndWalls(new Dimensions(100, 150, 200), ["A"]);
+    ).initFloorAndWalls(new Dimensions(slotWidth * 4, 150, 200), ["A"]);
 
 
         expect(scene.getObjectByName("Floor")).toBeDefined();
         expect(scene.getObjectByName("WallA")).toBeDefined();
-        expect(scene.children.filter((m) => m.name === Meshes.DefaultMeshName)).toHaveLength(ModuleTypesAll.length * 2);
+        expect(scene.children.filter((m) => m.name === Meshes.DefaultMeshName)).toHaveLength(ModuleTypesAll.length * 4);
+
 });
 
 
@@ -65,7 +70,7 @@ test('kitchen can change module back texture', () => {
     const module = Modules.module();
 
     const kitchen = new Kitchen(
-        new ModulesFactory(null),
+        modulesFactory,
         new ColorTypeLibrary(),
         new FrontsLibrary(null),
         null
@@ -84,7 +89,7 @@ test('kitchen can change module with front texture of front', () => {
     const module = Modules.moduleWithFront();
 
     const kitchen = new Kitchen(
-        new ModulesFactory(null),
+        modulesFactory,
         new ColorTypeLibrary(),
         new FrontsLibrary(null),
         null
@@ -103,7 +108,7 @@ test('kitchen can change module-with-front texture of back', () => {
     const module = Modules.moduleWithFront();
 
     const kitchen = new Kitchen(
-        new ModulesFactory(null),
+        modulesFactory,
         new ColorTypeLibrary(),
         new FrontsLibrary(null),
         null
