@@ -12,8 +12,8 @@ export class Module {
     private readonly colorMaterial;
     private readonly frontMaterial;
     private readonly hasFront = Meshes.hasFront(this.mesh);
-    readonly width: number = Meshes.meshWidthX(this.mesh);
-    readonly depth: number = Meshes.meshDepthY(this.mesh);
+    public readonly width: number = Meshes.meshWidthX(this.mesh);
+    public readonly depth: number = Meshes.meshDepthY(this.mesh);
     constructor(
         readonly mesh: Mesh,
         readonly type: ModuleType,

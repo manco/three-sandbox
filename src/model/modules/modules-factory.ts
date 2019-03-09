@@ -5,6 +5,7 @@ import {ModuleType} from "./types";
 import {ModuleSubtypeToModuleFunction} from "./module-functions";
 import {ColorType} from "../colors";
 import {MeshFactory} from "../../utils/meshes-factory";
+import {ModuleFunction} from "./module-functions";
 
 export default class ModulesFactory {
     private _slotWidth: number;
@@ -13,20 +14,21 @@ export default class ModulesFactory {
         this._slotWidth = defaultSlotWidth;
         const loading: Promise<void> = this.meshFactory.loadPrototypes();
         loading.then(
-            _ => {
+            () => {
                 this._slotWidth = Meshes.meshWidthX(this.meshFactory.ofType('standing'));
             }
         )
     }
 
     createModule(type:ModuleType): Module {
-        const mesh = this.meshFactory.create(ModuleTypeToMesh.get(type));
         const defaultSubtype = ModuleTypeToSubtype.get(type)[0];
+        const defaultFunction = ModuleSubtypeToModuleFunction.get(defaultSubtype)[0];
+        const mesh = this.meshFactory.create(ModuleFunctionToMesh.get(defaultFunction));
         return new Module(
             mesh,
             type,
             defaultSubtype,
-            ModuleSubtypeToModuleFunction.get(defaultSubtype)[0],
+            defaultFunction,
             ColorType.WHITE
         );
     }
@@ -34,13 +36,24 @@ export default class ModulesFactory {
     public slotWidth() {
         return this._slotWidth;
     }
-
-
 }
 
-const ModuleTypeToMesh = new Map([
-    [ModuleType.STANDING, 'standing'],
-    [ModuleType.TABLETOP, 'tabletop'],
-    [ModuleType.HANGING, 'hanging']
+const ModuleFunctionToMesh = new Map([
+    [ModuleFunction.SHELVES, 'hanging'],
+
+    [ModuleFunction.TABLETOP, 'tabletop'],
+    [ModuleFunction.CHAMBER_1, 'tabletop'],
+    [ModuleFunction.CHAMBER_DRAINER, 'tabletop'],
+    [ModuleFunction.CHAMBER_2, 'tabletop'], //sink
+
+    [ModuleFunction.NO_DRAWERS, 'standing'],
+    [ModuleFunction.BIG_2, 'standing_11'],
+    [ModuleFunction.AVG_2_BIG_1, 'standing_21'],
+    [ModuleFunction.AVG_4, 'standing_4'],
+    [ModuleFunction.SMALL_2_AVG_1_BIG_1, 'standing_211'],
+    [ModuleFunction.SMALL_2_AVG_3, 'standing_23'], //drawers
+    [ModuleFunction.OVEN_1, 'standing'], //oven
+    [ModuleFunction.WASHER_1, 'standing'], //washer
+    [ModuleFunction.FRIDGE_1 , 'standing']//fridge
 ]);
 

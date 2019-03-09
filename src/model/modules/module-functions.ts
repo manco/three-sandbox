@@ -28,29 +28,63 @@ import {CanvasTexture} from "three";
 
 
  */
+
+/*
+
+[
+    {
+        'type':'standing',
+        'subtypes':[
+            {
+                'subtype':'drawers',
+                'functions': [
+                    {
+                        'fun':'1p1',
+                        'mesh': 'models/szuflady_1+1.obj',
+                        'icon': 'functions/szuflady_1p1.jpg'
+                    }
+                ]
+            }
+        ]
+    }
+
+
+ */
 export enum ModuleFunction {
-    BIG_2, AVG_2_BIG_1, AVG_4, SMALL_2_AVG_1_BIG_1, SMALL_2_AVG_3, //drawers
-    CHAMBER_1, CHAMBER_DRAINER, CHAMBER_2, //sink
-    OVEN_1, //oven
-    WASHER_1, //washer
+    SHELVES,
+
+    TABLETOP,
+    CHAMBER_1,
+    CHAMBER_DRAINER,
+    CHAMBER_2,
+
+    NO_DRAWERS,
+    BIG_2,
+    AVG_2_BIG_1,
+    AVG_4,
+    SMALL_2_AVG_1_BIG_1,
+    SMALL_2_AVG_3,
+    OVEN_1,
+    WASHER_1,
     FRIDGE_1 //fridge
 }
 
 export const ModuleSubtypeToModuleFunction: Map<ModuleSubtype, ModuleFunction[]> = new Map([
     [ModuleSubtype.SINK, [ModuleFunction.CHAMBER_1, ModuleFunction.CHAMBER_DRAINER, ModuleFunction.CHAMBER_2]],
-    [ModuleSubtype.DRAWERS, [ModuleFunction.BIG_2, ModuleFunction.AVG_2_BIG_1, ModuleFunction.AVG_4, ModuleFunction.SMALL_2_AVG_1_BIG_1, ModuleFunction.SMALL_2_AVG_3]],
+    [ModuleSubtype.DRAWERS, [ModuleFunction.NO_DRAWERS, ModuleFunction.BIG_2, ModuleFunction.AVG_2_BIG_1, ModuleFunction.AVG_4, ModuleFunction.SMALL_2_AVG_1_BIG_1, ModuleFunction.SMALL_2_AVG_3]],
     [ModuleSubtype.OVEN,   [ModuleFunction.OVEN_1]],
     [ModuleSubtype.WASHER, [ModuleFunction.WASHER_1]],
     [ModuleSubtype.FRIDGE, [ModuleFunction.FRIDGE_1]],
-    [ModuleSubtype.SHELVES, []],
-    [ModuleSubtype.TABLETOP, []],
-    [ModuleSubtype.OVEN_TABLETOP, []]
+    [ModuleSubtype.SHELVES, [ModuleFunction.SHELVES]],
+    [ModuleSubtype.TABLETOP, [ModuleFunction.TABLETOP]],
+    [ModuleSubtype.OVEN_TABLETOP, [ModuleFunction.TABLETOP]]
 ]);
 
 export const ModuleFunctionsIcons = new Map<ModuleFunction, string>([
     [ ModuleFunction.FRIDGE_1, 'functions/lodowka.png'],
     [ ModuleFunction.OVEN_1, 'functions/piekarnik.png'],
     [ ModuleFunction.WASHER_1, 'functions/pralka.png'],
+    [ ModuleFunction.NO_DRAWERS, 'functions/bez_szuflad.jpg'],
     [ ModuleFunction.BIG_2, 'functions/szuflady_1p1.jpg'],
     [ ModuleFunction.AVG_2_BIG_1, 'functions/szuflady_2p1.jpg'],
     [ ModuleFunction.SMALL_2_AVG_1_BIG_1, 'functions/szuflady_2p1p1.jpg'],
