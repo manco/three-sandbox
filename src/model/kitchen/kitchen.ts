@@ -38,8 +38,8 @@ class Wall {
 
     constructor(
         readonly name:string,
-        readonly width:number,
-        readonly height:number,
+        width:number,
+        height:number,
         readonly translateMesh:MutateMeshFun = Lang.noop,
         readonly rotateMesh:MutateMeshFun = Lang.noop
     ) {

@@ -1,12 +1,11 @@
 import {Mesh} from "three";
 import {MeshLambertMaterial} from "three";
 import {Texture} from "three";
-import {MutateMeshFun} from "../../utils/meshes";
+import {Meshes} from "../../utils/meshes";
 import {ModuleType} from "./types";
 import {ModuleSubtype} from "./types";
 import {ModuleFunction} from "./module-functions";
 import {ColorType} from "../colors";
-import {Meshes} from "../../utils/meshes";
 
 export class Module {
     public readonly id: string = this.mesh.uuid;
