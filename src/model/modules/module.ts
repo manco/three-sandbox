@@ -13,16 +13,14 @@ export class Module {
     private readonly colorMaterial;
     private readonly frontMaterial;
     private readonly hasFront = Meshes.hasFront(this.mesh);
-
+    readonly width: number = Meshes.meshWidthX(this.mesh);
+    readonly depth: number = Meshes.meshDepthY(this.mesh);
     constructor(
         readonly mesh: Mesh,
         readonly type: ModuleType,
         public subtype: ModuleSubtype,
         public moduleFunction: ModuleFunction,
-        public color: ColorType,
-        readonly width: number,
-        readonly depth: number,
-        private readonly rotateFun: MutateMeshFun
+        public color: ColorType
     ) {
         if (this.hasFront) {
             this.colorMaterial = mesh.material[1] as MeshLambertMaterial;
@@ -33,7 +31,7 @@ export class Module {
     }
 
     initRotation(): void {
-        this.rotateFun(this.mesh);
+        this.mesh.rotateX(-Math.PI / 2);
     }
 
     setColor(texture:Texture): void {

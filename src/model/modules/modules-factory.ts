@@ -4,7 +4,6 @@ import {ModuleTypeToSubtype} from "./types";
 import {ModuleType} from "./types";
 import {ModuleSubtypeToModuleFunction} from "./module-functions";
 import {ColorType} from "../colors";
-import {Mesh} from "three";
 import {MeshFactory} from "../../utils/meshes-factory";
 
 export default class ModulesFactory {
@@ -28,10 +27,7 @@ export default class ModulesFactory {
             type,
             defaultSubtype,
             ModuleSubtypeToModuleFunction.get(defaultSubtype)[0],
-            ColorType.WHITE,
-            this._slotWidth,
-            Meshes.meshDepthY(mesh),
-            (mm:Mesh):void => { mm.rotateX(-Math.PI / 2); }
+            ColorType.WHITE
         );
     }
 

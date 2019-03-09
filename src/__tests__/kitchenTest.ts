@@ -21,12 +21,12 @@ jest.mock("../utils/meshes-factory");
 MeshFactory.mockImplementation(() => {
     return {
         loadPrototypes: () => Promise.resolve(),
-        ofType: () => Meshes.mesh(),
-        create: () => Meshes.mesh()
+        ofType: () => Meshes.box(),
+        create: () => Meshes.box()
     };
 });
 
-const slotWidth = M.meshWidthX(Meshes.mesh());
+const slotWidth = M.meshWidthX(Meshes.box());
 
 const modulesFactory = new ModulesFactory(new MeshFactory(), slotWidth);
 
@@ -38,12 +38,17 @@ test('kitchen creates floor, wall and wall modules', () => {
         null,
         null,
         scene
-    ).initFloorAndWalls(new Dimensions(slotWidth * 4, 150, 200), ["A"]);
+    ).initFloorAndWalls(new Dimensions(slotWidth * 4, 1000, 1000), ["A"]);
 
+        const modules = scene.children.filter((m) => m.name === Meshes.DefaultMeshName);
+        expect(modules).toHaveLength(ModuleTypesAll.length * 4);
 
         expect(scene.getObjectByName("Floor")).toBeDefined();
         expect(scene.getObjectByName("WallA")).toBeDefined();
-        expect(scene.children.filter((m) => m.name === Meshes.DefaultMeshName)).toHaveLength(ModuleTypesAll.length * 4);
+
+
+        expect(modules.map(m => m.position.x)).toEqual([-150, -50, 50, 150, -150, -50, 50, 150, -150, -50, 50, 150]);
+        expect(modules.map(m => m.position.z)).toEqual([-341, -341, -341, -341, -341, -341, -341, -341, -341, -341, -341, -341]);
 
 });
 
