@@ -96,14 +96,8 @@ class WallSlot {
         scene.add(module.mesh);
     }
 
-    removeAll(scene:Scene): void {
-        Array.from(this.modulesByTypes.keys()).forEach((t) => this.remove(t, scene));
-    }
-
-    private remove(moduleType:ModuleType, scene:Scene): void {
-        const module = this.modulesByTypes.get(moduleType);
-        scene.remove(module.mesh);
-        this.modulesByTypes.delete(moduleType);
+    removeAll(): void {
+        Array.from(this.modulesByTypes.keys()).forEach(t => this.modulesByTypes.delete(t));
     }
 }
 
@@ -177,12 +171,14 @@ export class Kitchen extends Observable {
 
     removeAll(): void {
         this.walls.forEach((wall:Wall) => {
-            wall.wallSlots.forEach((slot:WallSlot) => slot.removeAll(this.scene));
+            wall.wallSlots.forEach((slot:WallSlot) => slot.removeAll());
             this.scene.remove(wall.mesh);
         });
         this.walls = [];
+        this.scene.remove(...this.modules.all().map(m => m.mesh));
         this.modules.clear();
         this.scene.remove(this.floor);
+        this.floor = null;
         this.notify(new Message("REMOVEALL"));
     }
 

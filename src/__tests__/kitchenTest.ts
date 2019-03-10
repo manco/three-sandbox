@@ -40,18 +40,29 @@ test('kitchen creates floor, wall and wall modules', () => {
         scene
     ).initFloorAndWalls(new Dimensions(slotWidth * 4, 1000, 1000), ["A"]);
 
-        const modules = scene.children.filter((m) => m.name === Meshes.DefaultMeshName);
-        expect(modules).toHaveLength(ModuleTypesAll.length * 4);
+    const modules = scene.children.filter((m) => m.name === Meshes.DefaultMeshName);
+    expect(modules).toHaveLength(ModuleTypesAll.length * 4);
 
-        expect(scene.getObjectByName("Floor")).toBeDefined();
-        expect(scene.getObjectByName("WallA")).toBeDefined();
-
-
-        expect(modules.map(m => m.position.x)).toEqual([-150, -50, 50, 150, -150, -50, 50, 150, -150, -50, 50, 150]);
-        expect(modules.map(m => m.position.z)).toEqual([-341, -341, -341, -341, -341, -341, -341, -341, -341, -341, -341, -341]);
-
+    expect(scene.getObjectByName("Floor")).toBeDefined();
+    expect(scene.getObjectByName("WallA")).toBeDefined();
 });
 
+test('kitchen can remove everything from scene and indexes', () => {
+
+    const scene = new Scene();
+    const kitchen = new Kitchen(
+        modulesFactory,
+        null,
+        null,
+        scene
+    );
+
+    kitchen.initFloorAndWalls(new Dimensions(slotWidth * 4, 1000, 1000), ["A"]);
+    kitchen.removeAll();
+
+    expect(scene.children).toHaveLength(0);
+    expect(kitchen.modules.all()).toHaveLength(0);
+});
 
 const color = new Texture();
 color.name = "color";
