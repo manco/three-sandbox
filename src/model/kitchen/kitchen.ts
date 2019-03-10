@@ -14,8 +14,10 @@ import {ColorTypeLibrary} from "../colors";
 import {ColorType} from "../colors";
 import {Lang} from "../../utils/lang";
 import {Coords} from "../../utils/lang";
+import {MultiMaps} from "../../utils/lang";
 import {ModuleFunction} from "../modules/module-functions";
 import {FrontsLibrary} from "../modules/module-functions";
+import {Maps} from "../../utils/lang";
 
 class FloorFactory {
     public static create(width:number, depth:number, rotate:MutateMeshFun): Mesh {
@@ -34,7 +36,7 @@ class FloorFactory {
 
 class Wall {
     readonly mesh: Mesh;
-    readonly wallSlots: WallSlot[] = Array.from(new Array(50), () => new WallSlot(this));
+    private readonly wallSlots = new Map<number, Map<ModuleType, Module>>();
 
     constructor(
         readonly name:string,
@@ -47,6 +49,22 @@ class Wall {
         this.translateMesh(this.mesh);
         this.rotateMesh(this.mesh);
         this.mesh.geometry.computeBoundingBox();
+    }
+
+    put(module:Module, index:number, scene:Scene): void {
+        const slotModulesByType = Maps.getOrDefault(this.wallSlots, index, new Map());
+        if (slotModulesByType.has(module.type)) {
+            throw "module already set in this slot"
+        }
+        slotModulesByType.set(module.type, module);
+
+        this.translateMesh(module.mesh);
+        module.initRotation();
+        this.rotateMesh(module.mesh);
+        module.mesh.translateX(module.width/2 - this.mesh.geometry.boundingBox.max.x);
+        module.mesh.translateX(index * module.width);
+        module.mesh.translateY(- module.depth/2 - this.mesh.geometry.boundingBox.max.z);
+        scene.add(module.mesh);
     }
 
     private static createMesh(name:string, width:number, height:number): Mesh {
@@ -74,30 +92,6 @@ class Wall {
         mesh.name = "Wall" + name;
         mesh.receiveShadow = true;
         return mesh;
-    }
-}
-
-class WallSlot {
-    private readonly modulesByTypes: Map<ModuleType, Module> = new Map();
-    constructor(private readonly wall:Wall) {}
-
-    put(module:Module, index:number, scene:Scene): void {
-        if (this.modulesByTypes.has(module.type)) {
-            throw "module already set in this slot"
-        }
-        this.modulesByTypes.set(module.type, module);
-
-        this.wall.translateMesh(module.mesh);
-        module.initRotation();
-        this.wall.rotateMesh(module.mesh);
-        module.mesh.translateX(module.width/2 - this.wall.mesh.geometry.boundingBox.max.x);
-        module.mesh.translateX(index * module.width);
-        module.mesh.translateY(- module.depth/2 - this.wall.mesh.geometry.boundingBox.max.z);
-        scene.add(module.mesh);
-    }
-
-    removeAll(): void {
-        Array.from(this.modulesByTypes.keys()).forEach(t => this.modulesByTypes.delete(t));
     }
 }
 
@@ -144,7 +138,7 @@ export class Kitchen extends Observable {
     private addModuleToWallSlots(wall:Wall, count:number, moduleType:ModuleType): void {
         for (let i = 0; i < count; i++) {
             const m = this.moduleLibrary.createModule(moduleType);
-            wall.wallSlots[i].put(m, i, this.scene);
+            wall.put(m, i, this.scene);
             this.modules.add(m);
             this.notify(new Message("ADD", m));
         }
@@ -170,10 +164,7 @@ export class Kitchen extends Observable {
     }
 
     removeAll(): void {
-        this.walls.forEach((wall:Wall) => {
-            wall.wallSlots.forEach((slot:WallSlot) => slot.removeAll());
-            this.scene.remove(wall.mesh);
-        });
+        this.walls.forEach(wall => this.scene.remove(wall.mesh));
         this.walls = [];
         this.scene.remove(...this.modules.all().map(m => m.mesh));
         this.modules.clear();
@@ -245,12 +236,7 @@ export class Indexes {
 
     add(module: Module) {
         this._byId.set(module.id, module);
-
-        if (this._byType.has(module.type)) {
-            this.byType(module.type).push(module);
-        } else {
-            this._byType.set(module.type, [module]);
-        }
+        MultiMaps.set(this._byType, module.type, module);
     }
 
     clear() {
