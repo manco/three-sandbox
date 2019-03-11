@@ -68,6 +68,7 @@ export enum ModuleFunction {
     WASHER_1,
     FRIDGE_1 //fridge
 }
+//TODO reverse index
 
 export const ModuleSubtypeToModuleFunction: Map<ModuleSubtype, ModuleFunction[]> = new Map([
     [ModuleSubtype.SINK, [ModuleFunction.CHAMBER_1, ModuleFunction.CHAMBER_DRAINER, ModuleFunction.CHAMBER_2]],

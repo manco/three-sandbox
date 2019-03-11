@@ -12,7 +12,7 @@ export class Modules {
         return this.dummyModule(mesh, type);
     }
 
-    static moduleWithFront(type: ModuleType = null, mesh: Mesh = Meshes.box()):Module {
+    static moduleWithFront(mesh: Mesh = Meshes.box(), type: ModuleType = null):Module {
         mesh.material = [new MeshLambertMaterial(), new MeshLambertMaterial()];
         const g = mesh.geometry as BufferGeometry;
         g.clearGroups();

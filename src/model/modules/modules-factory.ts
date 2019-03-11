@@ -2,10 +2,11 @@ import {Meshes} from "../../utils/meshes";
 import {Module} from "./module";
 import {ModuleTypeToSubtype} from "./types";
 import {ModuleType} from "./types";
+import {ModuleSubtype} from "./types";
 import {ModuleSubtypeToModuleFunction} from "./module-functions";
+import {ModuleFunction} from "./module-functions";
 import {ColorType} from "../colors";
 import {MeshFactory} from "../../utils/meshes-factory";
-import {ModuleFunction} from "./module-functions";
 
 export default class ModulesFactory {
     private _slotWidth: number;
@@ -20,16 +21,21 @@ export default class ModulesFactory {
         )
     }
 
-    createModule(type:ModuleType): Module {
+    createForType(type:ModuleType): Module {
         const defaultSubtype = ModuleTypeToSubtype.get(type)[0];
         const defaultFunction = ModuleSubtypeToModuleFunction.get(defaultSubtype)[0];
-        const mesh = this.meshFactory.create(ModuleFunctionToMesh.get(defaultFunction));
+        return this.createForTypes(type, defaultSubtype, defaultFunction);
+    }
+
+    //types need to be consistent
+    createForTypes(type:ModuleType, subtype: ModuleSubtype, fun:ModuleFunction, color: ColorType = ColorType.WHITE): Module {
+        const mesh = this.meshFactory.create(ModuleFunctionToMesh.get(fun));
         return new Module(
             mesh,
             type,
-            defaultSubtype,
-            defaultFunction,
-            ColorType.WHITE
+            subtype,
+            fun,
+            color
         );
     }
 

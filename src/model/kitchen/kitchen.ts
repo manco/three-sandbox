@@ -5,7 +5,7 @@ import {Camera} from "three";
 import {Raycaster} from "three";
 import {Intersection} from "three";
 import {Object3D} from "three";
-import {Meshes, MutateMeshFun} from "../../utils/meshes";
+import {MutateMeshFun} from "../../utils/meshes";
 import {Module} from "../modules/module";
 import {ModuleTypesAll} from "../modules/types";
 import {ModuleType} from "../modules/types";
@@ -17,7 +17,6 @@ import {Coords} from "../../utils/lang";
 import {MultiMaps} from "../../utils/lang";
 import {ModuleFunction} from "../modules/module-functions";
 import {FrontsLibrary} from "../modules/module-functions";
-import {Maps} from "../../utils/lang";
 
 class FloorFactory {
     public static create(width:number, depth:number, rotate:MutateMeshFun): Mesh {
@@ -36,11 +35,10 @@ class FloorFactory {
 
 class Wall {
     readonly mesh: Mesh;
-    private readonly wallSlots = new Map<number, Map<ModuleType, Module>>();
 
     constructor(
         readonly name:string,
-        width:number,
+        public readonly width:number,
         height:number,
         readonly translateMesh:MutateMeshFun = Lang.noop,
         readonly rotateMesh:MutateMeshFun = Lang.noop
@@ -52,12 +50,6 @@ class Wall {
     }
 
     put(module:Module, index:number, scene:Scene): void {
-        const slotModulesByType = Maps.getOrDefault(this.wallSlots, index, new Map());
-        if (slotModulesByType.has(module.type)) {
-            throw "module already set in this slot"
-        }
-        slotModulesByType.set(module.type, module);
-
         this.translateMesh(module.mesh);
         module.initRotation();
         this.rotateMesh(module.mesh);
@@ -97,6 +89,8 @@ class Wall {
 
 export class Kitchen extends Observable {
     public readonly modules = new Indexes();
+    public readonly revIndexes = new ReverseIndexes();
+
     private readonly raycaster = new Raycaster();
     private walls: Wall[] = [];
     private floor: Mesh = null;
@@ -129,19 +123,23 @@ export class Kitchen extends Observable {
     private fillWallsWithModules(): void {
         const slotWidth = this.moduleLibrary.slotWidth();
         this.walls.forEach(wall => {
-            const wallWidth = Meshes.meshWidthX(wall.mesh);
-            const items = Math.floor(wallWidth / slotWidth);
+            const items = Math.floor(wall.width / slotWidth);
             ModuleTypesAll.forEach((type) => this.addModuleToWallSlots(wall, items, type))
         });
     }
 
     private addModuleToWallSlots(wall:Wall, count:number, moduleType:ModuleType): void {
         for (let i = 0; i < count; i++) {
-            const m = this.moduleLibrary.createModule(moduleType);
-            wall.put(m, i, this.scene);
-            this.modules.add(m);
-            this.notify(new Message("ADD", m));
+            const m = this.moduleLibrary.createForType(moduleType);
+            this.addModule(wall, m, i);
         }
+    }
+
+    private addModule(wall: Wall, m: Module, i: number) {
+        wall.put(m, i, this.scene);
+        this.modules.add(m);
+        this.revIndexes.add(m, wall, i);
+        this.notify(new Message("ADD", m));
     }
 
     byRaycast(camera: Camera, xy:Coords):Module | null {
@@ -168,11 +166,18 @@ export class Kitchen extends Observable {
         this.walls = [];
         this.scene.remove(...this.modules.all().map(m => m.mesh));
         this.modules.clear();
+        this.revIndexes.clear();
         this.scene.remove(this.floor);
         this.floor = null;
         this.notify(new Message("REMOVEALL"));
     }
 
+    public remove(module:Module): void {
+        this.modules.remove(module);
+        this.revIndexes.remove(module);
+        this.scene.remove(module.mesh);
+        this.notify(new Message("REMOVE", module.id));
+    }
 
     setModuleSubtype(module: Module, moduleSubtype: ModuleSubtype): void {
         module.subtype = moduleSubtype;
@@ -180,8 +185,11 @@ export class Kitchen extends Observable {
     }
 
     setModuleFunction(module: Module, moduleFunction: ModuleFunction): void {
-        module.moduleFunction = moduleFunction;
-        module.setFrontTexture(this.frontsLibrary.get(moduleFunction, module.color));
+        const [wall, index] = this.revIndexes.slotFor(module);
+        this.remove(module);
+        const newModule = this.moduleLibrary.createForTypes(module.type, module.subtype, moduleFunction, module.color);
+        this.setColor(newModule, newModule.color);
+        this.addModule(wall, newModule, index);
         this.notify(new Message("MODULE_CHANGED", module));
     }
 }
@@ -239,9 +247,33 @@ export class Indexes {
         MultiMaps.set(this._byType, module.type, module);
     }
 
+    remove(module:Module) {
+        this._byId.delete(module.id);
+        MultiMaps.remove(this._byType, module.type, module);
+    }
+
     clear() {
         this._byId.clear();
         this._byType.clear();
     }
+}
 
+export class ReverseIndexes {
+    private readonly _slotsByModule: Map<Module, [Wall, number]> = new Map();
+
+    add(module: Module, wall: Wall, index: number) {
+        this._slotsByModule.set(module, [wall, index]);
+    }
+
+    slotFor(module: Module):[Wall, number] {
+        return this._slotsByModule.get(module);
+    }
+
+    clear() {
+        this._slotsByModule.clear();
+    }
+
+    remove(module:Module) {
+        this._slotsByModule.delete(module);
+    }
 }
