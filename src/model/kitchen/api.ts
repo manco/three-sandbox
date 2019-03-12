@@ -32,6 +32,10 @@ export class KitchenApi {
         this.observeSelector("DESELECTED", fun);
     }
 
+    onModuleRemoved(fun: Observer<Module>) {
+        this.observeKitchen("REMOVE", fun);
+    }
+
     onModuleChanged(fun: Observer<Module>) {
         this.observeKitchen("MODULE_CHANGED", fun);
     }

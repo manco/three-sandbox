@@ -32,6 +32,8 @@ export class Page {
 
         kitchenApi.onAddModule(msg => this.guiPanel.addModuleToModuleList(msg.obj));
 
+        kitchenApi.onModuleRemoved(msg => this.guiPanel.remove(msg.obj));
+
         kitchenApi.onRemoveAll(() => this.guiPanel.clear());
 
         kitchenApi.onModuleChanged(msg => {

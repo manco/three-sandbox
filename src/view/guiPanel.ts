@@ -93,7 +93,11 @@ export class GuiPanel {
         };
     }
 
-    clear() {
+    public remove(module: Module) {
+        this.doc.getElementById(module.id).remove()
+    }
+
+    public clear() {
         Array.from(this.modulesLists.values()).forEach(ml => ml.innerHTML = '');
     }
 }

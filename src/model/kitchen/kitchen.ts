@@ -176,7 +176,7 @@ export class Kitchen extends Observable {
         this.modules.remove(module);
         this.revIndexes.remove(module);
         this.scene.remove(module.mesh);
-        this.notify(new Message("REMOVE", module.id));
+        this.notify(new Message("REMOVE", module));
     }
 
     setModuleSubtype(module: Module, moduleSubtype: ModuleSubtype): void {
