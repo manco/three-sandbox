@@ -48,7 +48,6 @@ class Wall {
         this.rotateMesh(this.mesh);
         this.mesh.geometry.computeBoundingBox();
     }
-
     put(module:Module, index:number, scene:Scene): void {
         this.translateMesh(module.mesh);
         module.initRotation();
@@ -139,7 +138,7 @@ export class Kitchen extends Observable {
         wall.put(m, i, this.scene);
         this.modules.add(m);
         this.revIndexes.add(m, wall, i);
-        this.notify(new Message("ADD", m));
+        this.notify(new Message("ADD", [m, (wall.name.charCodeAt(0)*1000)+i]));
     }
 
     byRaycast(camera: Camera, xy:Coords):Module | null {

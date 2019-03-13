@@ -32,8 +32,8 @@ export class GuiPanel {
         );
     }
 
-    public addModuleToModuleList(module: Module) {
-        const li = this.doc.createLi(`${module.id}`);
+    public addModuleToModuleList([module, index]: [Module, number]) {
+        const li = this.doc.createLi(`${module.id}`, index);
 
         const options = ModuleTypeToSubtype.get(module.type)
             .map(stype => {
@@ -54,7 +54,11 @@ export class GuiPanel {
         li.appendChild(selectBox);
 
         Events.onClick(li, () => this.actions.selectModuleById(li.id));
-        this.getModulesList(module.type).appendChild(li);
+        const modulesList = this.getModulesList(module.type);
+        const firstHigher = Array.from(modulesList.children).find(e => (e as HTMLLIElement).value >= li.value);
+
+        if (firstHigher === undefined) modulesList.appendChild(li);
+        else modulesList.insertBefore(li, firstHigher);
     }
 
     private guiCheckboxesValues(): string[] {

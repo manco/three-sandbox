@@ -24,9 +24,10 @@ export class SmartDoc {
         return ul;
     }
 
-    createLi(id: string) {
+    createLi(id: string, index:number) {
         const li = this.doc.createElement("li") as HTMLLIElement;
         li.id = id;
+        li.value = index;
         return li;
     }
 

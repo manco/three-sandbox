@@ -12,7 +12,7 @@ export class KitchenApi {
         private readonly moduleSelector: ModuleSelector
     ) {}
 
-    onAddModule(fun: Observer<Module>) {
+    onAddModule(fun: Observer<[Module, number]>) {
         this.observeKitchen("ADD", fun);
     }
 
