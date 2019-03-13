@@ -39,6 +39,7 @@ export class Page {
         kitchenApi.onModuleChanged(msg => {
             this.functionsPanel.clear();
             this.functionsPanel.fillFunctionsList(msg.obj);
+            actions.selectModuleById(msg.obj.id);
         });
 
         kitchenApi.onLoad((msg) => controls.setTarget(new Vector3(0, msg.obj.height / 2, 0)));

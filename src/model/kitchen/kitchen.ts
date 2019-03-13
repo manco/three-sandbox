@@ -172,11 +172,13 @@ export class Kitchen extends Observable {
         this.notify(new Message("REMOVEALL"));
     }
 
-    public remove(module:Module): void {
+    private remove(module:Module): [Wall, number] {
         this.modules.remove(module);
+        const removedFromSlot = this.revIndexes.slotFor(module);
         this.revIndexes.remove(module);
         this.scene.remove(module.mesh);
         this.notify(new Message("REMOVE", module));
+        return removedFromSlot;
     }
 
     setModuleSubtype(module: Module, moduleSubtype: ModuleSubtype): void {
@@ -185,12 +187,11 @@ export class Kitchen extends Observable {
     }
 
     setModuleFunction(module: Module, moduleFunction: ModuleFunction): void {
-        const [wall, index] = this.revIndexes.slotFor(module);
-        this.remove(module);
+        const [wall, index] = this.remove(module);
         const newModule = this.moduleLibrary.createForTypes(module.type, module.subtype, moduleFunction, module.color);
         this.setColor(newModule, newModule.color);
         this.addModule(wall, newModule, index);
-        this.notify(new Message("MODULE_CHANGED", module));
+        this.notify(new Message("MODULE_CHANGED", newModule));
     }
 }
 
