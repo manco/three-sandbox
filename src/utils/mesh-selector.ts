@@ -7,15 +7,19 @@ export class MeshSelector {
 
     select(mesh: Mesh):void {
         if (this.selected !== null) {
-            MeshSelector.emissive(this.selected).setHex(this.previousSelectedEmissiveColor);
+            MeshSelector.emissive(this.selected).forEach(c => c.setHex(this.previousSelectedEmissiveColor));
             this.selected = null;
         }
-            this.previousSelectedEmissiveColor = MeshSelector.emissive(mesh).getHex();
+            this.previousSelectedEmissiveColor = MeshSelector.emissive(mesh)[0].getHex();
             this.selected = mesh;
-            MeshSelector.emissive(this.selected).setHex(this.SelectionColor);
+            MeshSelector.emissive(this.selected).forEach(c => c.setHex(this.SelectionColor));
     }
 
-    private static emissive(mesh:Mesh): Color {
-        return ((Array.isArray(mesh.material) ? mesh.material[0] : mesh.material)as MeshLambertMaterial).emissive;
+    private static emissive(mesh:Mesh): Color[] {
+        return MeshSelector.emissiveArray(Array.isArray(mesh.material) ? mesh.material : [mesh.material])
+    }
+
+    private static emissiveArray(materials): Color[] {
+        return materials.map(m=>(m as MeshLambertMaterial).emissive);
     }
 }
