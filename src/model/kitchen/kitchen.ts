@@ -17,6 +17,7 @@ import {Coords} from "../../utils/lang";
 import {MultiMaps} from "../../utils/lang";
 import {ModuleFunction} from "../modules/module-functions";
 import {FrontsLibrary} from "../modules/module-functions";
+import {ModuleSubtypeToModuleFunction} from "../modules/module-functions";
 
 class FloorFactory {
     public static create(width:number, depth:number, rotate:MutateMeshFun): Mesh {
@@ -182,7 +183,7 @@ export class Kitchen extends Observable {
 
     setModuleSubtype(module: Module, moduleSubtype: ModuleSubtype): void {
         module.subtype = moduleSubtype;
-        this.notify(new Message("MODULE_CHANGED", module));
+        this.setModuleFunction(module, ModuleSubtypeToModuleFunction.get(moduleSubtype)[0]);
     }
 
     setModuleFunction(module: Module, moduleFunction: ModuleFunction): void {

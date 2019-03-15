@@ -7,6 +7,7 @@ import {Coords} from "../utils/lang";
 import {Camera} from "three";
 import {Module} from "../model/modules/module";
 import {ModuleFunction} from "../model/modules/module-functions";
+import {ModuleSubtypeToModuleFunction} from "../model/modules/module-functions";
 
 export class Actions {
     constructor(
