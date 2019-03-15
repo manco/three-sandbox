@@ -48,6 +48,7 @@ export class Page {
             const objElement = this.doc.getElementById(msg.obj.id);
             if (objElement !== null) {
                 objElement.className = "selectedModule";
+                objElement.scrollIntoView()
             }
             this.functionsPanel.fillFunctionsList(msg.obj);
         });
