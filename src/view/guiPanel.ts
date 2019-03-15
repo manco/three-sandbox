@@ -39,7 +39,8 @@ export class GuiPanel {
             .map(stype => {
                 return {
                     value: `${stype}`,
-                    text: Labels.ModuleSubtypesLabels.get(stype)
+                    text: Labels.ModuleSubtypesLabels.get(stype),
+                    isSelected: module.subtype == stype
                 }
             });
 
