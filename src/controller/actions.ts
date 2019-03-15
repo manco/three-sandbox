@@ -7,7 +7,6 @@ import {Coords} from "../utils/lang";
 import {Camera} from "three";
 import {Module} from "../model/modules/module";
 import {ModuleFunction} from "../model/modules/module-functions";
-import {ModuleSubtypeToModuleFunction} from "../model/modules/module-functions";
 
 export class Actions {
     constructor(
@@ -36,6 +35,10 @@ export class Actions {
     }
 
     setModuleSubtype(module: Module, moduleSubtype: ModuleSubtype): void {
+        if (moduleSubtype == ModuleSubtype.SINK) {
+            //kitchen.getModuleBySlotAndTypefind by slot and type
+        }
+        // if zlewozmywak then set zlewozmywak on bounded module (tabletop <-> standing)
         this.kitchen.setModuleSubtype(module, moduleSubtype);
     }
 

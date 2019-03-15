@@ -10,6 +10,7 @@ export class Labels {
         [ModuleSubtype.OVEN, "piekarnik"],
         [ModuleSubtype.OVEN_TABLETOP, "palniki"],
         [ModuleSubtype.WASHER, "pralka"],
+        [ModuleSubtype.DISHWASHER, "zmywarka"],
         [ModuleSubtype.FRIDGE, "lodówka"]
     ]);
 

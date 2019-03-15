@@ -66,6 +66,7 @@ export enum ModuleFunction {
     SMALL_2_AVG_3,
     OVEN_1,
     WASHER_1,
+    DISHWASHER_1,
     FRIDGE_1 //fridge
 }
 //TODO reverse index
@@ -75,6 +76,7 @@ export const ModuleSubtypeToModuleFunction: Map<ModuleSubtype, ModuleFunction[]>
     [ModuleSubtype.DRAWERS, [ModuleFunction.NO_DRAWERS, ModuleFunction.BIG_2, ModuleFunction.AVG_2_BIG_1, ModuleFunction.AVG_4, ModuleFunction.SMALL_2_AVG_1_BIG_1, ModuleFunction.SMALL_2_AVG_3]],
     [ModuleSubtype.OVEN,   [ModuleFunction.OVEN_1]],
     [ModuleSubtype.WASHER, [ModuleFunction.WASHER_1]],
+    [ModuleSubtype.DISHWASHER, [ModuleFunction.DISHWASHER_1]],
     [ModuleSubtype.FRIDGE, [ModuleFunction.FRIDGE_1]],
     [ModuleSubtype.SHELVES, [ModuleFunction.SHELVES]],
     [ModuleSubtype.TABLETOP, [ModuleFunction.TABLETOP]],
@@ -85,6 +87,7 @@ export const ModuleFunctionsIcons = new Map<ModuleFunction, string>([
     [ ModuleFunction.FRIDGE_1, 'functions/lodowka.png'],
     [ ModuleFunction.OVEN_1, 'functions/piekarnik.png'],
     [ ModuleFunction.WASHER_1, 'functions/pralka.png'],
+    [ ModuleFunction.DISHWASHER_1, 'functions/zmywarka.png'],
     [ ModuleFunction.NO_DRAWERS, 'functions/bez_szuflad.jpg'],
     [ ModuleFunction.BIG_2, 'functions/szuflady_1p1.jpg'],
     [ ModuleFunction.AVG_2_BIG_1, 'functions/szuflady_2p1.jpg'],
@@ -158,6 +161,7 @@ const ModuleFunctionTextures = [
     new TextureDefinition(ModuleFunction.FRIDGE_1, 'functions/lodowka.png'),
     new TextureDefinition(ModuleFunction.OVEN_1, 'functions/piekarnik.png'),
     new TextureDefinition(ModuleFunction.WASHER_1, 'functions/pralka.png'),
+    new TextureDefinition(ModuleFunction.DISHWASHER_1, 'functions/zmywarka.png'),
     new TextureDefinition(ModuleFunction.CHAMBER_1, 'functions/zlewozmywak.png'),
     new TextureDefinition(ModuleFunction.CHAMBER_DRAINER, 'functions/zlewozmywak.png'),
     new TextureDefinition(ModuleFunction.CHAMBER_2, 'functions/zlewozmywak.png')

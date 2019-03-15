@@ -60,6 +60,7 @@ const ModuleFunctionToMesh = new Map([
     [ModuleFunction.SMALL_2_AVG_3, 'standing_23'], //drawers
     [ModuleFunction.OVEN_1, 'standing'], //oven
     [ModuleFunction.WASHER_1, 'standing'], //washer
+    [ModuleFunction.DISHWASHER_1, 'standing'], //dishwasher,
     [ModuleFunction.FRIDGE_1 , 'standing']//fridge
 ]);
 
