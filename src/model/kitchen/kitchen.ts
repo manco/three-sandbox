@@ -18,6 +18,7 @@ import {MultiMaps} from "../../utils/lang";
 import {ModuleFunction} from "../modules/module-functions";
 import {FrontsLibrary} from "../modules/module-functions";
 import {ModuleSubtypeToModuleFunction} from "../modules/module-functions";
+import {Maps} from "../../utils/lang";
 
 class FloorFactory {
     public static create(width:number, depth:number, rotate:MutateMeshFun): Mesh {
@@ -137,7 +138,7 @@ export class Kitchen extends Observable {
 
     private addModule(wall: Wall, m: Module, i: number) {
         wall.put(m, i, this.scene);
-        this.modules.add(m);
+        this.modules.add(m, [wall, i]);
         this.revIndexes.add(m, wall, i);
         this.notify(new Message("ADD", [m, (wall.name.charCodeAt(0)*1000)+i]));
     }
@@ -173,8 +174,8 @@ export class Kitchen extends Observable {
     }
 
     private remove(module:Module): [Wall, number] {
-        this.modules.remove(module);
         const removedFromSlot = this.revIndexes.slotFor(module);
+        this.modules.remove(module, removedFromSlot);
         this.revIndexes.remove(module);
         this.scene.remove(module.mesh);
         this.notify(new Message("REMOVE", module));
@@ -236,6 +237,7 @@ export class Dimensions {
 export class Indexes {
     private readonly _byId: Map<string, Module> = new Map();
     private readonly _byType: Map<ModuleType, Module[]> = new Map();
+    private readonly _bySlot: Map<Wall, Map<number, Map<ModuleType, Module>>> = new Map();
 
     all(): Module[] { return Array.from(this._byId.values()); }
 
@@ -243,19 +245,30 @@ export class Indexes {
 
     byType(type: ModuleType): Module[] { return this._byType.get(type); }
 
-    add(module: Module) {
+    bySlot([wall, index]: [Wall, number]): Map<ModuleType, Module> {
+        return Maps.getOrDefault(this.byWall(wall), index, new Map());
+    }
+
+    private byWall(wall: Wall) {
+        return Maps.getOrDefault(this._bySlot, wall, new Map());
+    }
+
+    add(module: Module, slot: [Wall, number]) {
         this._byId.set(module.id, module);
+        this.bySlot(slot).set(module.type, module);
         MultiMaps.set(this._byType, module.type, module);
     }
 
-    remove(module:Module) {
+    remove(module:Module, slot: [Wall, number]) {
         this._byId.delete(module.id);
+        this.bySlot(slot).delete(module.type);
         MultiMaps.remove(this._byType, module.type, module);
     }
 
     clear() {
         this._byId.clear();
         this._byType.clear();
+        this._bySlot.clear();
     }
 }
 

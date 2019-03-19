@@ -7,6 +7,7 @@ import {Coords} from "../utils/lang";
 import {Camera} from "three";
 import {Module} from "../model/modules/module";
 import {ModuleFunction} from "../model/modules/module-functions";
+import {BoundedSubtypes} from "../model/modules/types";
 
 export class Actions {
     constructor(
@@ -34,12 +35,21 @@ export class Actions {
         this.moduleSelector.selectModule(module);
     }
 
-    setModuleSubtype(module: Module, moduleSubtype: ModuleSubtype): void {
-        if (moduleSubtype == ModuleSubtype.SINK) {
-            //kitchen.getModuleBySlotAndTypefind by slot and type
+    setModuleSubtype(module: Module, newSubtype: ModuleSubtype): void {
+        //propagate to bounded module first
+        const boundedSubtype = BoundedSubtypes.get(newSubtype);
+        if (boundedSubtype !== undefined) {
+            const slot = this.kitchen.revIndexes.slotFor(module);
+            const boundedModule = this.kitchen.modules.bySlot(slot)
+                .get(
+                    //FIXME this is lame. Types NEED tree structure MUST HAVE
+                    module.type === ModuleType.TABLETOP ? ModuleType.STANDING : ModuleType.TABLETOP
+                );
+            if (boundedModule !== undefined && boundedModule.subtype != boundedSubtype) {
+                this.kitchen.setModuleSubtype(boundedModule, boundedSubtype);
+            }
         }
-        // if zlewozmywak then set zlewozmywak on bounded module (tabletop <-> standing)
-        this.kitchen.setModuleSubtype(module, moduleSubtype);
+        this.kitchen.setModuleSubtype(module, newSubtype);
     }
 
     setModuleFunction(module:Module, moduleFunction: ModuleFunction): void {

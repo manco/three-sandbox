@@ -7,6 +7,7 @@ export class Labels {
         [ModuleSubtype.DRAWERS, "szuflady"],
         [ModuleSubtype.TABLETOP, "blat"],
         [ModuleSubtype.SINK, "zlewozmywak"],
+        [ModuleSubtype.UNDER_SINK, "zlewozmywak"],
         [ModuleSubtype.OVEN, "piekarnik"],
         [ModuleSubtype.OVEN_TABLETOP, "palniki"],
         [ModuleSubtype.WASHER, "pralka"],
