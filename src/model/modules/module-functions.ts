@@ -86,11 +86,12 @@ export const ModuleSubtypeToModuleFunction: Map<ModuleSubtype, ModuleFunction[]>
 ]);
 
 export const ModuleFunctionsIcons = new Map<ModuleFunction, string>([
+    [ ModuleFunction.SHELVES, 'functions/szafka_gora.jpg'],
     [ ModuleFunction.FRIDGE_1, 'functions/lodowka.png'],
     [ ModuleFunction.OVEN_1, 'functions/piekarnik.png'],
     [ ModuleFunction.WASHER_1, 'functions/pralka.png'],
     [ ModuleFunction.DISHWASHER_1, 'functions/zmywarka.png'],
-    [ ModuleFunction.NO_DRAWERS, 'functions/bez_szuflad.jpg'],
+    [ ModuleFunction.NO_DRAWERS, 'functions/szafka_dol.jpg'],
     [ ModuleFunction.BIG_2, 'functions/szuflady_1p1.jpg'],
     [ ModuleFunction.AVG_2_BIG_1, 'functions/szuflady_2p1.jpg'],
     [ ModuleFunction.SMALL_2_AVG_1_BIG_1, 'functions/szuflady_2p1p1.jpg'],
