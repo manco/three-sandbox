@@ -54,6 +54,7 @@ export enum ModuleFunction {
     SHELVES,
 
     TABLETOP,
+    OVEN_TABLETOP,
     CHAMBER_1,
     CHAMBER_DRAINER,
     CHAMBER_2,
@@ -82,7 +83,7 @@ export const ModuleSubtypeToModuleFunction: Map<ModuleSubtype, ModuleFunction[]>
     [ModuleSubtype.FRIDGE, [ModuleFunction.FRIDGE_1]],
     [ModuleSubtype.SHELVES, [ModuleFunction.SHELVES]],
     [ModuleSubtype.TABLETOP, [ModuleFunction.TABLETOP]],
-    [ModuleSubtype.OVEN_TABLETOP, [ModuleFunction.TABLETOP]]
+    [ModuleSubtype.OVEN_TABLETOP, [ModuleFunction.OVEN_TABLETOP]]
 ]);
 
 export const ModuleFunctionsIcons = new Map<ModuleFunction, string>([
@@ -100,7 +101,8 @@ export const ModuleFunctionsIcons = new Map<ModuleFunction, string>([
     [ ModuleFunction.UNDER_SINK, 'functions/zlewozmywak.png'],
     [ ModuleFunction.CHAMBER_1, 'functions/zlewozmywak.png'],
     [ ModuleFunction.CHAMBER_DRAINER, 'functions/zlewozmywak.png'],
-    [ ModuleFunction.CHAMBER_2, 'functions/zlewozmywak.png']
+    [ ModuleFunction.CHAMBER_2, 'functions/zlewozmywak.png'],
+    [ ModuleFunction.OVEN_TABLETOP, 'functions/plyta.jpg']
 ]);
 
 export class FrontsLibrary {
@@ -169,7 +171,8 @@ const ModuleFunctionTextures = [
     new TextureDefinition(ModuleFunction.UNDER_SINK, 'functions/zlewozmywak.png'),
     new TextureDefinition(ModuleFunction.CHAMBER_1, 'functions/zlewozmywak.png'),
     new TextureDefinition(ModuleFunction.CHAMBER_DRAINER, 'functions/zlewozmywak.png'),
-    new TextureDefinition(ModuleFunction.CHAMBER_2, 'functions/zlewozmywak.png')
+    new TextureDefinition(ModuleFunction.CHAMBER_2, 'functions/zlewozmywak.png'),
+    new TextureDefinition(ModuleFunction.OVEN_TABLETOP, 'functions/plyta.jpg')
 ];
 
 const ModuleFunctionTexturesAll = ModuleFunctionTextures.map(def => def.type);

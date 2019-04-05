@@ -48,6 +48,7 @@ const ModuleFunctionToMesh = new Map([
     [ModuleFunction.SHELVES, 'hanging'],
 
     [ModuleFunction.TABLETOP, 'tabletop'],
+    [ModuleFunction.OVEN_TABLETOP, 'tabletop'],
     [ModuleFunction.CHAMBER_1, 'tabletop'],
     [ModuleFunction.CHAMBER_DRAINER, 'tabletop'],
     [ModuleFunction.CHAMBER_2, 'tabletop'], //sink
