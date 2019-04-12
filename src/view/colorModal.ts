@@ -18,7 +18,7 @@ export class ColorModal {
         const modalContent = this.chooseColorModal.querySelector('div[class=\"modal-content\"]');
 
         ColorTypeUrls.forEach(color => {
-            const b = doc.createButton("");
+            const b = doc.createButton(`texture-${color.type}`, "");
             b.className = "textureButton";
             b.style.backgroundImage = `url(${color.url})`;
             Events.onClick(b, () => actions.changeColor(this.context, color.type));

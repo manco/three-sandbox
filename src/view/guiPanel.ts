@@ -73,11 +73,13 @@ export class GuiPanel {
     }
 
     private createModulesListHtml(moduleType: ModuleType) {
-        const ul = this.doc.createUl(`modulesList-${moduleType}`);
+        const listId = `modulesList-${moduleType}`;
+
+        const ul = this.doc.createUl(listId);
 
         const label = this.doc.createLabel(ul, Labels.ModuleTypesLabels.get(moduleType));
 
-        const buttonChooseColor = this.doc.createButton("kolor");
+        const buttonChooseColor = this.doc.createButton(`${listId}-color`,"kolor");
         Events.onClick(buttonChooseColor, () => {
             this.colorModal.setContext(moduleType);
             this.colorModal.show();
