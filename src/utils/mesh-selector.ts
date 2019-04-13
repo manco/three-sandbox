@@ -10,9 +10,11 @@ export class MeshSelector {
             MeshSelector.emissive(this.selected).forEach(c => c.setHex(this.previousSelectedEmissiveColor));
             this.selected = null;
         }
+        if (mesh !== null) {
             this.previousSelectedEmissiveColor = MeshSelector.emissive(mesh)[0].getHex();
             this.selected = mesh;
             MeshSelector.emissive(this.selected).forEach(c => c.setHex(this.SelectionColor));
+        }
     }
 
     private static emissive(mesh:Mesh): Color[] {
