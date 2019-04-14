@@ -120,23 +120,23 @@ export class FrontsLibrary {
             ModuleFunctionTexturesAll.forEach(fun => {
                 const inner = new Map<ColorType, Texture>();
                 ColorTypeAll.forEach( color => {
-                    const texCanvas = document.createElementNS( 'http://www.w3.org/1999/xhtml', 'canvas' ) as HTMLCanvasElement;
-                    const ctx = texCanvas.getContext("2d");
+                    const ctx = (document.createElementNS('http://www.w3.org/1999/xhtml', 'canvas') as HTMLCanvasElement).getContext("2d");
+                    const colorTexture = colorsLibrary.get(color);
+                    const functionTexture = functionsLibrary.get(fun);
                     const blended =
                         FrontsLibrary.blendTextures(
-                            colorsLibrary.get(color).image as HTMLImageElement,
-                            functionsLibrary.get(fun).image as HTMLImageElement,
+                            colorTexture.image as HTMLImageElement,
+                            functionTexture.image as HTMLImageElement,
                             ctx);
+                    blended.name = colorTexture.name + functionTexture.name;
                     inner.set(color, blended);
                 });
                 this.textures.set(fun, inner);
             });
         });
-
-
     }
 
-    private static blendTextures(colorTex, functionTex, ctx): Texture {
+    private static blendTextures(colorTex: HTMLImageElement, functionTex: HTMLImageElement, ctx: CanvasRenderingContext2D): Texture {
 
         ctx.canvas.width = functionTex.width;
         ctx.canvas.height = functionTex.height;

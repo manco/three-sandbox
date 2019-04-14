@@ -1,69 +1,56 @@
-import { Selector } from 'testcafe';
-import { ClientFunction } from 'testcafe';
+import {ClientFunction, Selector} from 'testcafe';
 
 fixture('Kuchnioplaner e2e')
     .page('http://localhost:9090');
 
-function modulesListTabletopItem(id) {
-    return Selector('#modulesList-1').child('li').withAttribute('value', id);
-}
-
 test('Test1', async t => {
 
-    const kitchenHasStandingSink = ClientFunction(
+    const kitchenHasStandingUnderSinkInWood = ClientFunction(
         () => {
             const standing = kitchen.modules.byType(0);
             const standingSink = standing.find(m => m.subtype === 4);
-            return standingSink !== undefined;
+            return
+                standingSink.color === 3
+               && standingSink.getFrontTexture().name === '313'
+                ;
         }
     );
 
-    let setupKitchen = () => {
+    const setupKitchen = () => {
         return t
             .click('#checkbox-wallB')
             .click('#checkbox-wallC')
             .click('#drawKitchenButton');
     }
 
-    let setBlackColorForModule = (moduleListId) => {
+    const setColorForModuleType = (moduleListId, colorType) => {
         return t
             .click(moduleListId)
-            .click('#texture-2')
+            .click('#texture-' + colorType)
             .click('#chooseColorModalClose');
     }
 
+    const selectSubtypeForModule = (moduleListId, moduleItem, subtype) => {
+        const selectedItem = Selector(moduleListId).child('li').withAttribute('value', moduleItem) //'65006'
+        const selectedSubtype = selectedItem.child('select').child('option').withAttribute('value', subtype) //'1'
+
+        return t.click(selectedItem).click(selectedSubtype)
+    }
+
     await setupKitchen();
-    await setBlackColorForModule('#modulesList-2-color') //hanging
-    await setBlackColorForModule('#modulesList-1-color') //tabletop
-
-    //TODO extract method select subtype for module
-
-    // set sink
-    let selectModule1 = modulesListTabletopItem('65006')
-
-    await t.click(selectModule1)
-            .click(
-                selectModule1.child('select').child('option').withAttribute('value', '1')
-            )
-
-    let selectModule2 = modulesListTabletopItem('68000')
-    // set oven-tabletop
-    await t.click(selectModule2)
-            .click(
-                selectModule2.child('select').child('option').withAttribute('value', '3')
-            )
-
-        //set standing color
-        // set oven
+    await setColorForModuleType('#modulesList-2-color', '2'); //hanging, black
+    await setColorForModuleType('#modulesList-1-color', '2'); //tabletop, black
+    await selectSubtypeForModule('#modulesList-1', '65006', '1'); // set sink
+    await selectSubtypeForModule('#modulesList-1',  '68000', '3'); //set oven-tabletop
+    await setColorForModuleType('#modulesList-0-color', '3'); //standing, wood
         // set drawers
-        // set washer
 
-    //assert scene and kitchen
-            .expect(kitchenHasStandingSink()).ok()
+        await t
+            .expect(kitchenHasStandingUnderSinkInWood).ok()
         // assert that there is sink in standing
-        // assert colors
-        // assert textures set
-        // assert meshes set (?)
+        // assert all standings / hanging / tabletops have expected color
+        // assert all standings / hanging / tabletops have expected textures (difficult)
+        // assert standing drawers have expected mesh
     
     ;
 });
