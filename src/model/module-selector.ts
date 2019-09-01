@@ -23,6 +23,10 @@ export class ModuleSelector extends Observable {
         }
     }
 
+    getSelectedModule() {
+        return this.selected;
+    }
+
     private _notifyThat(event: string) {
         this.notify(new Message(event, this.selected));
     }

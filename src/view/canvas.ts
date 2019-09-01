@@ -24,6 +24,11 @@ export class Canvas {
         const mouseTracker = new MouseTracker(canvas);
 
         Events.onClick(canvas, () => actions.selectModule(mouseTracker.xy()));
+
+        Events.onKeyDown(document, event => {
+            if (event.key === "Delete" || event.key === "Backspace")
+                actions.removeSelectedModule();
+        });
     }
 
     canvas(): HTMLCanvasElement { return this.renderer.canvas(); }

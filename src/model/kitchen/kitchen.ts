@@ -173,7 +173,7 @@ export class Kitchen extends Observable {
         this.notify(new Message("REMOVEALL"));
     }
 
-    private remove(module:Module): [Wall, number] {
+    remove(module:Module): [Wall, number] {
         const removedFromSlot = this.revIndexes.slotFor(module);
         this.modules.remove(module, removedFromSlot);
         this.revIndexes.remove(module);

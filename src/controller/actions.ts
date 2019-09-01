@@ -35,6 +35,13 @@ export class Actions {
         this.moduleSelector.selectModule(module);
     }
 
+    removeSelectedModule() {
+        const toRemove = this.moduleSelector.getSelectedModule();
+        if (toRemove !== null) {
+            this.kitchen.remove(toRemove);
+        }
+    }
+
     setModuleSubtype(module: Module, newSubtype: ModuleSubtype): void {
         //propagate to bounded module first
         const boundedSubtype = BoundedSubtypes.get(newSubtype);

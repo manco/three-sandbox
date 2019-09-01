@@ -10,6 +10,6 @@ optymalizacja:
    + nie wyliczac bounding box dla kazdego modelu, bazowac na wymiarach kuchni
    + ^ moze dzieki temu wystarczy jedna geometria
 
-O Przycisk 'zamów' i wysłanie emaila <--- jak to zabezpieczyć?
+O Przycisk 'zamów' i wysłanie emaila <--- jak to zabezpieczyć? (re-captcha?)
 O gdzie zahostowac assety?
 O pomyslec o latwym dodawaniu assetow
