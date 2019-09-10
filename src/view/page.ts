@@ -30,6 +30,9 @@ export class Page {
         const controls = controlsFactory.create(this.canvas.canvas());
         this.controlsPanel = new ControlsPanel(controls, this.doc);
 
+        //@ts-ignore
+        window.controls = controls;
+
         kitchenApi.onAddModule(msg => this.guiPanel.addModuleToModuleList(msg.obj));
 
         kitchenApi.onModuleRemoved(msg => this.guiPanel.remove(msg.obj));

@@ -23,6 +23,12 @@ const kitchen = new Kitchen(modulesLibrary, colorTypeLibrary, new FrontsLibrary(
 window.kitchen = kitchen;
 
 const moduleSelector = new ModuleSelector();
+//debug
+moduleSelector.subscribe(msg => {
+    if (msg.type === "SELECTED") {
+        console.log(msg.obj)
+    }
+});
 
 const camera = CameraFactory.create(scene);
 
