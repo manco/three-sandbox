@@ -5,7 +5,7 @@ import {Meshes} from "./meshes";
 
 export class MeshFactory {
     private readonly loader = new PromisingLoader();
-    private static readonly Scale: number = 3;
+    private static readonly Scale: number = 2.535;
     private prototypes: Map<String, Mesh> = null;
 
     loadPrototypes():Promise<void> {
