@@ -3,13 +3,23 @@ import {OrthographicCamera} from "three";
 import {OrbitControls} from "../utils/OrbitControls";
 import {Observable} from "../utils/observable";
 import {Message} from "../utils/observable";
+import {Actions} from "./actions";
 
 export class Controls extends Observable {
 
     private readonly orbitControls: OrbitControls;
-    constructor(private readonly camera: OrthographicCamera, canvas: HTMLCanvasElement) {
+    constructor(private readonly actions: Actions,
+                private readonly camera: OrthographicCamera,
+                canvas: HTMLCanvasElement) {
         super();
         this.orbitControls = new OrbitControls( camera, canvas );
+    }
+
+    switch2d3d():void {
+        //set 2d
+        this.actions.showWireframe();
+        this.camera.position.set (0, 900, 0);
+        this.orbitControls.update();
     }
 
     setTarget(target: Vector3) {

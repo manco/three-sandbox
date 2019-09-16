@@ -31,11 +31,14 @@ moduleSelector.subscribe(msg => {
 });
 
 const camera = CameraFactory.create(scene);
+const actions = new Actions(kitchen, moduleSelector, camera);
 
+//@ts-ignore
+window.actions = actions;
 const view = new Page(
     new RendererFactory(scene, camera),
-    new ControlsFactory(camera),
-    new Actions(kitchen, moduleSelector, camera),
+    new ControlsFactory(camera, actions),
+    actions,
     new KitchenApi(kitchen, moduleSelector)
 );
 

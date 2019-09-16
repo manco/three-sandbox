@@ -36,6 +36,6 @@ export class ControlsPanel {
         Events.onClick(buttonZoomOut, () => controls.zoomOut());
         Events.onClick(buttonModePan, () => controls.toggleMouseMode(MouseMode.PAN_ONLY));
         Events.onClick(buttonModeRotate, () => controls.toggleMouseMode(MouseMode.ROTATE_ONLY));
-        Events.onClick(buttonCenter, () => controls.reset());
+        Events.onClick(buttonCenter, () => controls.switch2d3d());
     }
 }

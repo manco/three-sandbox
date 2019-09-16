@@ -1,5 +1,6 @@
 import {ModuleType} from "../model/modules/types";
 import {ModuleSubtype} from "../model/modules/types";
+import {BoundedSubtypes} from "../model/modules/types";
 import {ColorType} from "../model/colors";
 import {Kitchen} from "../model/kitchen/kitchen";
 import {ModuleSelector} from "../model/module-selector";
@@ -7,7 +8,7 @@ import {Coords} from "../utils/lang";
 import {Camera} from "three";
 import {Module} from "../model/modules/module";
 import {ModuleFunction} from "../model/modules/module-functions";
-import {BoundedSubtypes} from "../model/modules/types";
+import {Meshes} from "../utils/meshes";
 
 export class Actions {
     constructor(
@@ -15,6 +16,11 @@ export class Actions {
         private readonly moduleSelector: ModuleSelector,
         private readonly camera: Camera
     ) {}
+
+    showWireframe() {
+        this.kitchen.modules.byType(ModuleType.HANGING).forEach(m => Meshes.showWireframe(m.mesh, true));
+        this.kitchen.modules.byType(ModuleType.TABLETOP).forEach(m => Meshes.showWireframe(m.mesh, false));
+    }
 
     loadKitchen(dims: {width:number, depth:number, height:number}, wallNames : string[]):void {
         this.kitchen.removeAll();
