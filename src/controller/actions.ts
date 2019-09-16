@@ -22,6 +22,11 @@ export class Actions {
         this.kitchen.modules.byType(ModuleType.TABLETOP).forEach(m => Meshes.showWireframe(m.mesh, false));
     }
 
+    hideWireframe() {
+        this.kitchen.modules.byType(ModuleType.HANGING).forEach(m => Meshes.hideWireframe(m.mesh));
+        this.kitchen.modules.byType(ModuleType.TABLETOP).forEach(m => Meshes.hideWireframe(m.mesh));
+    }
+
     loadKitchen(dims: {width:number, depth:number, height:number}, wallNames : string[]):void {
         this.kitchen.removeAll();
         this.kitchen.initFloorAndWalls(dims, wallNames);

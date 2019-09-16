@@ -19,6 +19,10 @@ export class Meshes {
         return Array.isArray(mesh.material);
     }
 
+    static hideWireframe(mesh: Mesh) {
+        mesh.dispatchEvent({type:"HIDE_WIREFRAME"});
+    }
+
     static showWireframe(mesh: Mesh, dashed: boolean) {
         const material = dashed ?
             new LineDashedMaterial({color: 0x000000, dashSize: 2, gapSize: 2, linewidth: 200}) :
@@ -31,6 +35,11 @@ export class Meshes {
             const geometry = new EdgesGeometry(mesh.geometry);
             const line = new LineSegments(geometry, material);
             line.computeLineDistances();
+            mesh.addEventListener("HIDE_WIREFRAME", _ => {
+                mesh.remove(line);
+                geometry.dispose();
+                material.dispose();
+            });
             return line;
         }
     }

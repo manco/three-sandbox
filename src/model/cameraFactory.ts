@@ -1,4 +1,5 @@
 import {OrthographicCamera, Scene} from "three";
+import {Vector3} from "three";
 
 export class CameraFactory {
     public static create(scene:Scene): OrthographicCamera {
@@ -16,8 +17,10 @@ export class CameraFactory {
 
         scene.add(threeJsCamera);
         setFrustum();
-        threeJsCamera.position.set(90, 450, 350);
+        threeJsCamera.position.copy(this.InitPosition);
         window.addEventListener( 'resize', setFrustum, false );
         return threeJsCamera;
     }
+
+    public static readonly InitPosition : Vector3 = new Vector3(90, 450, 350);
 }

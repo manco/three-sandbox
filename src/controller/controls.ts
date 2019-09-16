@@ -4,10 +4,16 @@ import {OrbitControls} from "../utils/OrbitControls";
 import {Observable} from "../utils/observable";
 import {Message} from "../utils/observable";
 import {Actions} from "./actions";
+import {CameraFactory} from "../model/cameraFactory";
 
 export class Controls extends Observable {
 
+    private readonly Init2dPosition:Vector3 = new Vector3(0, 900, 0);
+
     private readonly orbitControls: OrbitControls;
+    private is2d = false;
+    private target0 = new Vector3(0,0,0);
+
     constructor(private readonly actions: Actions,
                 private readonly camera: OrthographicCamera,
                 canvas: HTMLCanvasElement) {
@@ -16,16 +22,22 @@ export class Controls extends Observable {
     }
 
     switch2d3d():void {
-        //set 2d
-        this.actions.showWireframe();
-        this.camera.position.set (0, 900, 0);
-        this.orbitControls.update();
+        if (this.is2d) {
+            this.actions.hideWireframe();
+            this.camera.position.copy(CameraFactory.InitPosition);
+            this.is2d = false;
+        } else {
+            this.actions.showWireframe();
+            this.camera.position.copy(this.Init2dPosition);
+            this.is2d = true;
+        }
+        this.setTarget(this.target0);
     }
 
     setTarget(target: Vector3) {
-        this.orbitControls.target = target;
+        this.target0.copy(target);
+        this.orbitControls.target.copy(target);
         this.orbitControls.update();
-        this.orbitControls.saveState();
     }
 
     toggleMouseMode(mode: MouseMode) {
@@ -52,10 +64,6 @@ export class Controls extends Observable {
         const newZoom = this.camera.zoom + delta;
         this.camera.zoom = Math.min(10, Math.max(0, newZoom));
         this.camera.updateProjectionMatrix();
-    }
-
-    reset() {
-        this.orbitControls.reset();
     }
 }
 
