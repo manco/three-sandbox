@@ -35,7 +35,7 @@ class FloorFactory {
     }
 }
 
-class Wall {
+export class Wall {
     readonly mesh: Mesh;
 
     constructor(
@@ -196,7 +196,7 @@ export class Kitchen extends Observable {
     }
 }
 
-const wallsFactories = (width:number, depth:number, height:number):Map<string, () => Wall> => {
+export const wallsFactories = (width:number, depth:number, height:number):Map<string, () => Wall> => {
 
     const axisY = new Vector3(0, 1, 0);
 
