@@ -6,6 +6,7 @@ import {ColorTypeLibrary} from "../colors";
 import {ColorTypeAll} from "../colors";
 import {Texture} from "three";
 import {CanvasTexture} from "three";
+import {ModuleType} from "./types";
 
 /*
 
@@ -52,14 +53,17 @@ import {CanvasTexture} from "three";
  */
 export enum ModuleFunction {
     SHELVES,
+    CORNER_SHELVES,
 
     TABLETOP,
+    CORNER_TABLETOP,
     OVEN_TABLETOP,
     CHAMBER_1,
     CHAMBER_DRAINER,
     CHAMBER_2,
 
     NO_DRAWERS,
+    CORNER_NO_DRAWERS,
     BIG_2,
     AVG_2_BIG_1,
     AVG_4,
@@ -71,18 +75,23 @@ export enum ModuleFunction {
     DISHWASHER_1,
     FRIDGE_1 //fridge
 }
-//TODO reverse index
+
+export const ModuleTypeCorners: Map<ModuleType, ModuleFunction> = new Map([
+    [ModuleType.HANGING, ModuleFunction.CORNER_SHELVES],
+    [ModuleType.TABLETOP, ModuleFunction.CORNER_TABLETOP],
+    [ModuleType.STANDING, ModuleFunction.CORNER_NO_DRAWERS]
+]);
 
 export const ModuleSubtypeToModuleFunction: Map<ModuleSubtype, ModuleFunction[]> = new Map([
     [ModuleSubtype.UNDER_SINK, [ModuleFunction.UNDER_SINK]],
     [ModuleSubtype.SINK, [ModuleFunction.CHAMBER_1, ModuleFunction.CHAMBER_DRAINER, ModuleFunction.CHAMBER_2]],
-    [ModuleSubtype.DRAWERS, [ModuleFunction.NO_DRAWERS, ModuleFunction.BIG_2, ModuleFunction.AVG_2_BIG_1, ModuleFunction.AVG_4, ModuleFunction.SMALL_2_AVG_1_BIG_1, ModuleFunction.SMALL_2_AVG_3]],
+    [ModuleSubtype.DRAWERS, [ModuleFunction.NO_DRAWERS, ModuleFunction.BIG_2, ModuleFunction.AVG_2_BIG_1, ModuleFunction.AVG_4, ModuleFunction.SMALL_2_AVG_1_BIG_1, ModuleFunction.SMALL_2_AVG_3, ModuleFunction.CORNER_NO_DRAWERS]],
     [ModuleSubtype.OVEN,   [ModuleFunction.OVEN_1]],
     [ModuleSubtype.WASHER, [ModuleFunction.WASHER_1]],
     [ModuleSubtype.DISHWASHER, [ModuleFunction.DISHWASHER_1]],
     [ModuleSubtype.FRIDGE, [ModuleFunction.FRIDGE_1]],
-    [ModuleSubtype.SHELVES, [ModuleFunction.SHELVES]],
-    [ModuleSubtype.TABLETOP, [ModuleFunction.TABLETOP]],
+    [ModuleSubtype.SHELVES, [ModuleFunction.SHELVES, ModuleFunction.CORNER_SHELVES]],
+    [ModuleSubtype.TABLETOP, [ModuleFunction.TABLETOP, ModuleFunction.CORNER_TABLETOP]],
     [ModuleSubtype.OVEN_TABLETOP, [ModuleFunction.OVEN_TABLETOP]]
 ]);
 

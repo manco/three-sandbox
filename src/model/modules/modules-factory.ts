@@ -46,14 +46,17 @@ export default class ModulesFactory {
 
 const ModuleFunctionToMesh = new Map([
     [ModuleFunction.SHELVES, 'hanging'],
+    [ModuleFunction.CORNER_SHELVES, 'corner_hanging'],
 
     [ModuleFunction.TABLETOP, 'tabletop'],
+    [ModuleFunction.CORNER_TABLETOP, 'corner_tabletop'],
     [ModuleFunction.OVEN_TABLETOP, 'tabletop'],
     [ModuleFunction.CHAMBER_1, 'tabletop'],
     [ModuleFunction.CHAMBER_DRAINER, 'tabletop'],
     [ModuleFunction.CHAMBER_2, 'tabletop'], //sink
 
     [ModuleFunction.NO_DRAWERS, 'standing'],
+    [ModuleFunction.CORNER_NO_DRAWERS, 'corner_standing'],
     [ModuleFunction.BIG_2, 'standing_11'],
     [ModuleFunction.AVG_2_BIG_1, 'standing_21'],
     [ModuleFunction.AVG_4, 'standing_4'],

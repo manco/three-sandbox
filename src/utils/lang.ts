@@ -40,4 +40,8 @@ export class Arrays {
             arr.splice(index, 1);
         }
     }
+
+    static groupBy<K, V>(arr: V[], fmap: (v:V) => K): Map<K, V> {
+        return new Map(arr.map(w => [fmap(w), w] as [K, V]));
+    }
 }

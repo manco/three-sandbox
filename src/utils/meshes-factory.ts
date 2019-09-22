@@ -52,6 +52,9 @@ export class MeshFactory {
 }
 
 const MeshMetaData = new Map([
+    ['corner_standing', 'models/szafka_dol.obj'],
+    ['corner_tabletop', 'models/blat.obj'],
+    ['corner_hanging', 'models/szafka_gora.obj'],
     ['standing', 'models/szafka_dol.obj'],
     ['tabletop', 'models/blat.obj'],
     ['hanging', 'models/szafka_gora.obj'],

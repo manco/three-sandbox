@@ -22,6 +22,9 @@ import {ModuleSubtypeToModuleFunction} from "../modules/module-functions";
 import {Settler} from "./Settler";
 import {Settlement} from "./Settler";
 import {Direction} from "./Settler";
+import {Arrays} from "../../utils/lang";
+import {ModuleTypeToSubtype} from "../modules/types";
+import {ModuleTypeCorners} from "../modules/module-functions";
 
 class FloorFactory {
     public static create(width:number, depth:number, rotate:MutateMeshFun): Mesh {
@@ -116,7 +119,7 @@ export class Kitchen extends Observable {
         this.floor = FloorFactory.create(dimensions.width, dimensions.depth, m => m.rotateX(- Math.PI / 2 ) );
         this.scene.add(this.floor);
 
-        const factories = wallsFactories(dimensions.width, dimensions.depth, dimensions.height);
+        const factories: Map<string, () => Wall> = wallsFactories(dimensions.width, dimensions.depth, dimensions.height);
         wallNames.forEach(name => this.addWall(factories.get(name)()));
 
         this.settlement = this.settle();
@@ -131,27 +134,39 @@ export class Kitchen extends Observable {
     }
 
     private fillWallsWithModules(): void {
-        this.walls.forEach(wall => {
-            ModuleTypesAll.forEach(type => {
-                for (let i = 0; i < this.settlement.modulesCount.get(wall.name); i++) {
-                    const m = this.moduleLibrary.createForType(type);
-                    this.addModule(wall, m, i);
-                }
-            })
+        ModuleTypesAll.forEach(type => {
+            this.walls.forEach(wall => {
+                    for (let i = 0; i < this.settlement.modulesCount.get(wall.name); i++) {
+                        const m = this.moduleLibrary.createForType(type);
+                        const offset = this.settlement.modulesOffsetForIndex.get(wall.name)(i, m.width);
+                        this.addModule(wall, m, i, offset);
+                    }
+            });
+            this.settlement.corners.forEach(corner => {
+                const m = this.moduleLibrary.createForTypes(
+                    type,
+                    ModuleTypeToSubtype.get(type)[0],
+                    ModuleTypeCorners.get(type)
+                );
+                this.addModule(corner.left, m, 0, 0);
+            });
         });
+
     }
 
-    private addModule(wall: Wall, m: Module, i: number) {
+    private addModule(wall: Wall, m: Module, i: number, offset: number) {
         const direction = this.settlement.fillDirection.get(wall.name);
-        const offset = (direction === Direction.TO_LEFT ? -1 : 1) * (i * m.width + this.settlement.modulesOffset.get(wall.name));
+
         wall.put(m, offset, this.scene, direction);
-        this.modules.add(m, [wall, i]);
-        this.revIndexes.add(m, wall, i);
+
+        const slot:[Wall, number] = [wall, i];
+        this.modules.add(m, slot);
+        this.revIndexes.add(m, slot);
         this.notify(new Message("ADD", [m, (wall.name.charCodeAt(0)*1000)+i]));
     }
 
     private settle() {
-        return new Settler().settle(this.moduleLibrary.slotWidth(), new Map(this.walls.map(w => [w.name, w] as [string, Wall])));
+        return new Settler().settle(this.moduleLibrary.slotWidth(), Arrays.groupBy(this.walls, w => w.name));
     }
 
     byRaycast(camera: Camera, xy:Coords):Module | null {
@@ -202,7 +217,8 @@ export class Kitchen extends Observable {
         const [wall, index] = this.remove(module);
         const newModule = this.moduleLibrary.createForTypes(module.type, module.subtype, moduleFunction, module.color);
         this.setColor(newModule, newModule.color);
-        this.addModule(wall, newModule, index);
+        const offset = this.settlement.modulesOffsetForIndex.get(wall.name)(index, newModule.width);
+        this.addModule(wall, newModule, index, offset);
         this.notify(new Message("MODULE_CHANGED", newModule));
     }
 }
@@ -286,8 +302,8 @@ export class Indexes {
 export class ReverseIndexes {
     private readonly _slotsByModule: Map<Module, [Wall, number]> = new Map();
 
-    add(module: Module, wall: Wall, index: number) {
-        this._slotsByModule.set(module, [wall, index]);
+    add(module: Module, slot:[Wall, number]) {
+        this._slotsByModule.set(module, slot);
     }
 
     slotFor(module: Module):[Wall, number] {

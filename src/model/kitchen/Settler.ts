@@ -16,7 +16,7 @@ export class Settlement {
         public readonly corners:Corner[],
         public readonly modulesCount: Map<string, number>,
         public readonly fillDirection: Map<string, Direction>,
-        public readonly modulesOffset: Map<string, number>
+        public readonly modulesOffsetForIndex: Map<string, (index:number, width:number) => number>
     ) {}
 
 }
@@ -32,7 +32,10 @@ export class Settler {
         const modulesCount = Maps.mapValues(walls, wall => this.count(slotWidth, wall, corners));
         const directions = Maps.mapValues(walls, wall => this.goLeftIfCornerOnRight(wall, corners));
 
-        const offsets = Maps.mapValues(walls, wall => this.calcOffset(wall, directions, corners));
+        const offsets = Maps.mapValues(walls, wall => {
+            const direction = directions.get(wall.name);
+            return (index, moduleWidth) => ( (direction === Direction.TO_LEFT ? -1 : 1) * (index * moduleWidth + this.calcOffset(wall, directions, corners) ) );
+        });
 
         return new Settlement(corners, modulesCount, directions, offsets);
     };
