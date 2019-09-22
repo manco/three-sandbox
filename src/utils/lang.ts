@@ -15,7 +15,7 @@ export class Maps {
         return map.get(key);
     }
 
-    static mapValues<K, V, T>(map: Map<K, V>, fun: (V) => T): Map<K, T> {
+    static mapValues<K, V, T>(map: Map<K, V>, fun: (x:V) => T): Map<K, T> {
         return new Map(Array.from(map, ([k, v]) => [k, fun(v)] as [K, T]));
     }
 

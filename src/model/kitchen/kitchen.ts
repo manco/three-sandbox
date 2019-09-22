@@ -15,10 +15,13 @@ import {ColorType} from "../colors";
 import {Lang} from "../../utils/lang";
 import {Coords} from "../../utils/lang";
 import {MultiMaps} from "../../utils/lang";
+import {Maps} from "../../utils/lang";
 import {ModuleFunction} from "../modules/module-functions";
 import {FrontsLibrary} from "../modules/module-functions";
 import {ModuleSubtypeToModuleFunction} from "../modules/module-functions";
-import {Maps} from "../../utils/lang";
+import {Settler} from "./Settler";
+import {Result} from "./Settler";
+import {Direction} from "./Settler";
 
 class FloorFactory {
     public static create(width:number, depth:number, rotate:MutateMeshFun): Mesh {
@@ -50,12 +53,13 @@ export class Wall {
         this.rotateMesh(this.mesh);
         this.mesh.geometry.computeBoundingBox();
     }
-    put(module:Module, index:number, scene:Scene): void {
+    put(module:Module, offset:number, scene:Scene, direction: Direction): void {
         this.translateMesh(module.mesh);
         module.initRotation();
         this.rotateMesh(module.mesh);
         module.mesh.translateX(module.width/2 - this.mesh.geometry.boundingBox.max.x);
-        module.mesh.translateX(index * module.width);
+        if (direction === Direction.TO_LEFT) module.mesh.translateX(this.width - module.width); // to starting position
+        module.mesh.translateX(offset);
         module.mesh.translateY(- module.depth/2 - this.mesh.geometry.boundingBox.max.z);
         scene.add(module.mesh);
     }
@@ -93,6 +97,7 @@ export class Kitchen extends Observable {
     public readonly revIndexes = new ReverseIndexes();
 
     private readonly raycaster = new Raycaster();
+    private readonly settler = new Settler();
     private walls: Wall[] = [];
     private floor: Mesh = null;
     constructor(
@@ -122,25 +127,29 @@ export class Kitchen extends Observable {
     }
 
     private fillWallsWithModules(): void {
-        const slotWidth = this.moduleLibrary.slotWidth();
+        const result = this.settle();
+
         this.walls.forEach(wall => {
-            const items = Math.floor(wall.width / slotWidth);
-            ModuleTypesAll.forEach((type) => this.addModuleToWallSlots(wall, items, type))
+            ModuleTypesAll.forEach(type => {
+                for (let i = 0; i < result.modulesCount.get(wall.name); i++) {
+                    const m = this.moduleLibrary.createForType(type);
+                    this.addModule(wall, m, i, result);
+                }
+            })
         });
     }
 
-    private addModuleToWallSlots(wall:Wall, count:number, moduleType:ModuleType): void {
-        for (let i = 0; i < count; i++) {
-            const m = this.moduleLibrary.createForType(moduleType);
-            this.addModule(wall, m, i);
-        }
-    }
-
-    private addModule(wall: Wall, m: Module, i: number) {
-        wall.put(m, i, this.scene);
+    private addModule(wall: Wall, m: Module, i: number, result: Result) {
+        const direction = result.fillDirection.get(wall.name);
+        const offset = (direction === Direction.TO_LEFT ? -1 : 1) * (i * m.width + result.modulesOffset.get(wall.name));
+        wall.put(m, offset, this.scene, direction);
         this.modules.add(m, [wall, i]);
         this.revIndexes.add(m, wall, i);
         this.notify(new Message("ADD", [m, (wall.name.charCodeAt(0)*1000)+i]));
+    }
+
+    private settle() {
+        return this.settler.settle(this.moduleLibrary.slotWidth(), new Map(this.walls.map(w => [w.name, w] as [string, Wall])));
     }
 
     byRaycast(camera: Camera, xy:Coords):Module | null {
@@ -191,7 +200,7 @@ export class Kitchen extends Observable {
         const [wall, index] = this.remove(module);
         const newModule = this.moduleLibrary.createForTypes(module.type, module.subtype, moduleFunction, module.color);
         this.setColor(newModule, newModule.color);
-        this.addModule(wall, newModule, index);
+        this.addModule(wall, newModule, index, this.settle());
         this.notify(new Message("MODULE_CHANGED", newModule));
     }
 }
