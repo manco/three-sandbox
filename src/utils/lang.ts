@@ -40,8 +40,4 @@ export class Arrays {
             arr.splice(index, 1);
         }
     }
-
-    static flatten(arr) {
-        return [].concat(...arr)
-    }
 }

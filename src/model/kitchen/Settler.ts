@@ -11,7 +11,7 @@ export class Corner {
         return this.left === wall || this.right === wall;
     }
 }
-export class Result {
+export class Settlement {
     constructor(
         public readonly corners:Corner[],
         public readonly modulesCount: Map<string, number>,
@@ -34,7 +34,7 @@ export class Settler {
 
         const offsets = Maps.mapValues(walls, wall => this.calcOffset(wall, directions, corners));
 
-        return new Result(corners, modulesCount, directions, offsets);
+        return new Settlement(corners, modulesCount, directions, offsets);
     };
 
     private count(slotWidth:number, wall:Wall, corners:Corner[]) {

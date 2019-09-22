@@ -20,7 +20,7 @@ import {ModuleFunction} from "../modules/module-functions";
 import {FrontsLibrary} from "../modules/module-functions";
 import {ModuleSubtypeToModuleFunction} from "../modules/module-functions";
 import {Settler} from "./Settler";
-import {Result} from "./Settler";
+import {Settlement} from "./Settler";
 import {Direction} from "./Settler";
 
 class FloorFactory {
@@ -97,8 +97,8 @@ export class Kitchen extends Observable {
     public readonly revIndexes = new ReverseIndexes();
 
     private readonly raycaster = new Raycaster();
-    private readonly settler = new Settler();
     private walls: Wall[] = [];
+    private settlement: Settlement = null;
     private floor: Mesh = null;
     constructor(
         private readonly moduleLibrary : ModulesFactory,
@@ -115,9 +115,13 @@ export class Kitchen extends Observable {
     ): void {
         this.floor = FloorFactory.create(dimensions.width, dimensions.depth, m => m.rotateX(- Math.PI / 2 ) );
         this.scene.add(this.floor);
+
         const factories = wallsFactories(dimensions.width, dimensions.depth, dimensions.height);
         wallNames.forEach(name => this.addWall(factories.get(name)()));
+
+        this.settlement = this.settle();
         this.fillWallsWithModules();
+
         this.notify(new Message("LOADED", dimensions));
     }
 
@@ -127,21 +131,19 @@ export class Kitchen extends Observable {
     }
 
     private fillWallsWithModules(): void {
-        const result = this.settle();
-
         this.walls.forEach(wall => {
             ModuleTypesAll.forEach(type => {
-                for (let i = 0; i < result.modulesCount.get(wall.name); i++) {
+                for (let i = 0; i < this.settlement.modulesCount.get(wall.name); i++) {
                     const m = this.moduleLibrary.createForType(type);
-                    this.addModule(wall, m, i, result);
+                    this.addModule(wall, m, i);
                 }
             })
         });
     }
 
-    private addModule(wall: Wall, m: Module, i: number, result: Result) {
-        const direction = result.fillDirection.get(wall.name);
-        const offset = (direction === Direction.TO_LEFT ? -1 : 1) * (i * m.width + result.modulesOffset.get(wall.name));
+    private addModule(wall: Wall, m: Module, i: number) {
+        const direction = this.settlement.fillDirection.get(wall.name);
+        const offset = (direction === Direction.TO_LEFT ? -1 : 1) * (i * m.width + this.settlement.modulesOffset.get(wall.name));
         wall.put(m, offset, this.scene, direction);
         this.modules.add(m, [wall, i]);
         this.revIndexes.add(m, wall, i);
@@ -149,7 +151,7 @@ export class Kitchen extends Observable {
     }
 
     private settle() {
-        return this.settler.settle(this.moduleLibrary.slotWidth(), new Map(this.walls.map(w => [w.name, w] as [string, Wall])));
+        return new Settler().settle(this.moduleLibrary.slotWidth(), new Map(this.walls.map(w => [w.name, w] as [string, Wall])));
     }
 
     byRaycast(camera: Camera, xy:Coords):Module | null {
@@ -200,7 +202,7 @@ export class Kitchen extends Observable {
         const [wall, index] = this.remove(module);
         const newModule = this.moduleLibrary.createForTypes(module.type, module.subtype, moduleFunction, module.color);
         this.setColor(newModule, newModule.color);
-        this.addModule(wall, newModule, index, this.settle());
+        this.addModule(wall, newModule, index);
         this.notify(new Message("MODULE_CHANGED", newModule));
     }
 }
