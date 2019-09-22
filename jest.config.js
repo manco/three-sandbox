@@ -6,4 +6,9 @@ module.exports = {
     },
     "testRegex": "(/__tests__/.+(Test))\\.ts?$",
     "moduleFileExtensions": [ "ts", "js", "jsx", "json", "node"],
+    globals: {
+        'ts-jest': {
+            tsConfig: 'tsconfig.json'
+        }
+    }
 };
