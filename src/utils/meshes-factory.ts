@@ -14,8 +14,8 @@ export class MeshFactory {
                 Array.from(MeshMetaData.entries()).map(
                     e =>
                         this.loader.loadSingleMesh(e[1])
-                            .then((m:Mesh) => {
-                                MeshFactory.initMesh(m, e[0]);
+                            .then(m => {
+                                MeshFactory.initMesh(m);
                                 return [e[0], m] as [string, Mesh]
                             })
                 )
@@ -28,7 +28,7 @@ export class MeshFactory {
         }
     }
 
-    private static initMesh(m:Mesh, type: string): void {
+    private static initMesh(m:Mesh): void {
         m.geometry.scale(MeshFactory.Scale, MeshFactory.Scale, MeshFactory.Scale).computeBoundingBox();
     }
 

@@ -30,13 +30,15 @@ export default class ModulesFactory {
     //types need to be consistent
     createForTypes(type:ModuleType, subtype: ModuleSubtype, fun:ModuleFunction, color: ColorType = ColorType.WHITE): Module {
         const mesh = this.meshFactory.create(ModuleFunctionToMesh.get(fun));
-        return new Module(
+        const module = new Module(
             mesh,
             type,
             subtype,
             fun,
             color
         );
+        module.initWireframe();
+        return module;
     }
 
     public slotWidth() {

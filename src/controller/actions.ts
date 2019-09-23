@@ -18,6 +18,7 @@ export class Actions {
     ) {}
 
     showWireframe() {
+        this.kitchen.modules.all().forEach(m => Meshes.hideWireframe(m.mesh));
         this.kitchen.modules.byType(ModuleType.HANGING).forEach(m => Meshes.showWireframe(m.mesh, true));
         this.kitchen.modules.byType(ModuleType.TABLETOP).forEach(m => Meshes.showWireframe(m.mesh, false));
     }
@@ -25,6 +26,7 @@ export class Actions {
     hideWireframe() {
         this.kitchen.modules.byType(ModuleType.HANGING).forEach(m => Meshes.hideWireframe(m.mesh));
         this.kitchen.modules.byType(ModuleType.TABLETOP).forEach(m => Meshes.hideWireframe(m.mesh));
+        this.kitchen.modules.all().forEach(m => m.initWireframe());
     }
 
     loadKitchen(dims: {width:number, depth:number, height:number}, wallNames : string[]):void {

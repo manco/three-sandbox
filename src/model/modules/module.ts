@@ -33,6 +33,10 @@ export class Module {
         this.mesh.rotateX(-Math.PI / 2);
     }
 
+    initWireframe(): void {
+        if (this.type !== ModuleType.TABLETOP) Meshes.showWireframe(this.mesh, false);
+    }
+
     setColor(texture:Texture): void {
         Module.setTexture(this.colorMaterial, texture);
     }
