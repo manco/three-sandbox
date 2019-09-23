@@ -35,7 +35,6 @@ class FloorFactory {
                 side: DoubleSide
             }) );
         mesh.name = "Floor";
-        mesh.receiveShadow = true;
         rotate(mesh);
         return mesh;
     }

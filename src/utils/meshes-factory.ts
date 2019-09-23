@@ -29,10 +29,6 @@ export class MeshFactory {
     }
 
     private static initMesh(m:Mesh, type: string): void {
-        if (type == 'standing') {
-            m.castShadow = true;
-        }
-        m.receiveShadow = true;
         m.geometry.scale(MeshFactory.Scale, MeshFactory.Scale, MeshFactory.Scale).computeBoundingBox();
     }
 
