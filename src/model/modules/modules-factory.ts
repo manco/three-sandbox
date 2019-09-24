@@ -60,9 +60,9 @@ const ModuleFunctionToMesh = new Map([
     [ModuleFunction.TABLETOP, 'tabletop'],
     [ModuleFunction.CORNER_TABLETOP, 'corner_tabletop'],
     [ModuleFunction.OVEN_TABLETOP, 'tabletop'],
-    [ModuleFunction.CHAMBER_1, 'tabletop'],
-    [ModuleFunction.CHAMBER_DRAINER, 'tabletop'],
-    [ModuleFunction.CHAMBER_2, 'tabletop'], //sink
+    [ModuleFunction.CHAMBER_1, 'tabletop_sink_chamber_1'],
+    [ModuleFunction.CHAMBER_DRAINER, 'tabletop_sink_chamber_drainer'],
+    [ModuleFunction.CHAMBER_2, 'tabletop_sink_chamber_2'], //sink
 
     [ModuleFunction.NO_DRAWERS, 'standing'],
     [ModuleFunction.CORNER_NO_DRAWERS, 'corner_standing'],
