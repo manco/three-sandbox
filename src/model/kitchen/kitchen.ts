@@ -45,7 +45,7 @@ export class Wall {
 
     constructor(
         readonly name:string,
-        public readonly width:number,
+        readonly width:number,
         height:number,
         readonly translateMesh:MutateMeshFun = Lang.noop,
         readonly rotateMesh:MutateMeshFun = Lang.noop
@@ -55,12 +55,12 @@ export class Wall {
         this.rotateMesh(this.mesh);
         this.mesh.geometry.computeBoundingBox();
     }
-    put(module:Module, offset:number, scene:Scene, direction: Direction): void {
+    put(module:Module, offset:number, scene:Scene, direction: Direction, slotWidth:number): void {
         this.translateMesh(module.mesh);
         module.initRotation();
         this.rotateMesh(module.mesh);
-        module.mesh.translateX(module.width/2 - this.mesh.geometry.boundingBox.max.x);
-        if (direction === Direction.TO_LEFT) module.mesh.translateX(this.width - module.width); // to starting position
+        module.mesh.translateX(slotWidth/2 - this.mesh.geometry.boundingBox.max.x);
+        if (direction === Direction.TO_LEFT) module.mesh.translateX(this.width - slotWidth); // to starting position
         module.mesh.translateX(offset);
         module.mesh.translateY(- module.depth/2 - this.mesh.geometry.boundingBox.max.z);
         scene.add(module.mesh);
@@ -137,7 +137,7 @@ export class Kitchen extends Observable {
             this.walls.forEach(wall => {
                     for (let i = 0; i < this.settlement.modulesCount.get(wall.name); i++) {
                         const m = this.moduleLibrary.createForType(type);
-                        const offset = this.settlement.modulesOffsetForIndex.get(wall.name)(i, m.width);
+                        const offset = this.settlement.modulesOffsetForIndex.get(wall.name)(i);
                         this.addModule(wall, m, i, offset);
                     }
             });
@@ -156,7 +156,7 @@ export class Kitchen extends Observable {
     private addModule(wall: Wall, m: Module, i: number, offset: number) {
         const direction = this.settlement.fillDirection.get(wall.name);
 
-        wall.put(m, offset, this.scene, direction);
+        wall.put(m, offset, this.scene, direction, this.moduleLibrary.slotWidth());
 
         const slot:[Wall, number] = [wall, i];
         this.modules.add(m, slot);
@@ -216,7 +216,7 @@ export class Kitchen extends Observable {
         const [wall, index] = this.remove(module);
         const newModule = this.moduleLibrary.createForTypes(module.type, module.subtype, moduleFunction, module.color);
         this.setColor(newModule, newModule.color);
-        const offset = this.settlement.modulesOffsetForIndex.get(wall.name)(index, newModule.width);
+        const offset = this.settlement.modulesOffsetForIndex.get(wall.name)(index);
         this.addModule(wall, newModule, index, offset);
         this.notify(new Message("MODULE_CHANGED", newModule));
     }
