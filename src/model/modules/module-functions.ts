@@ -108,9 +108,9 @@ export const ModuleFunctionsIcons = new Map<ModuleFunction, string>([
     [ ModuleFunction.SMALL_2_AVG_3, 'functions/szuflady_2p3.jpg'],
     [ ModuleFunction.AVG_4, 'functions/szuflady_4.jpg'],
     [ ModuleFunction.UNDER_SINK, 'functions/zlewozmywak.png'],
-    [ ModuleFunction.CHAMBER_1, 'functions/zlewozmywak.png'],
-    [ ModuleFunction.CHAMBER_DRAINER, 'functions/zlewozmywak.png'],
-    [ ModuleFunction.CHAMBER_2, 'functions/zlewozmywak.png'],
+    [ ModuleFunction.CHAMBER_1, 'functions/zlewozmywak_jednokomorowy.jpg'],
+    [ ModuleFunction.CHAMBER_DRAINER, 'functions/zlewozmywak_ociekacz.jpg'],
+    [ ModuleFunction.CHAMBER_2, 'functions/zlewozmywak_dwukomorowy.jpg'],
     [ ModuleFunction.OVEN_TABLETOP, 'functions/plyta.jpg']
 ]);
 
