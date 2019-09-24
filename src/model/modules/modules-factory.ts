@@ -10,13 +10,16 @@ import {MeshFactory} from "../../utils/meshes-factory";
 
 export default class ModulesFactory {
     private _slotWidth: number;
+    private _cornerWidth: number;
 
-    constructor(private readonly meshFactory: MeshFactory, defaultSlotWidth?: number) {
+    constructor(private readonly meshFactory: MeshFactory, defaultSlotWidth?: number, defaultCornerWidth?: number) {
         this._slotWidth = defaultSlotWidth;
+        this._cornerWidth = defaultCornerWidth;
         const loading: Promise<void> = this.meshFactory.loadPrototypes();
         loading.then(
             () => {
                 this._slotWidth = Meshes.meshWidthX(this.meshFactory.ofType('standing'));
+                this._cornerWidth = Meshes.meshWidthX(this.meshFactory.ofType('corner_standing'));
             }
         )
     }
@@ -43,6 +46,10 @@ export default class ModulesFactory {
 
     public slotWidth() {
         return this._slotWidth;
+    }
+
+    public cornerWidth() {
+        return this._cornerWidth;
     }
 }
 

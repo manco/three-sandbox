@@ -20,7 +20,8 @@ ModulesFactory.mockImplementation(() => {
     return {
         createForType: () => moduleWithFront,
         createForTypes: () => Modules.moduleWithFront(Meshes.box("withF2")),
-        slotWidth: () => moduleWithFront.width
+        slotWidth: () => moduleWithFront.width,
+        cornerWidth: () => moduleWithFront.width
     };
 });
 

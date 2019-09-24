@@ -165,7 +165,7 @@ export class Kitchen extends Observable {
     }
 
     private settle() {
-        return new Settler().settle(this.moduleLibrary.slotWidth(), Arrays.groupBy(this.walls, w => w.name));
+        return new Settler(this.moduleLibrary.slotWidth(), this.moduleLibrary.cornerWidth()).settle(Arrays.groupBy(this.walls, w => w.name));
     }
 
     byRaycast(camera: Camera, xy:Coords):Module | null {

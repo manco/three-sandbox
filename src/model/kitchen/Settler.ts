@@ -23,13 +23,16 @@ export class Settlement {
 
 export class Settler {
 
-    private static readonly CornerWidth = 70;
+    constructor(
+        private readonly slotWidth:number,
+        private readonly cornerWidth:number
+    ) {}
 
-    settle(slotWidth:number, walls:Map<string, Wall>) {
+    settle(walls:Map<string, Wall>) {
 
         const corners: Corner[] = this.setupCorners(walls);
 
-        const modulesCount = Maps.mapValues(walls, wall => this.count(slotWidth, wall, corners));
+        const modulesCount = Maps.mapValues(walls, wall => this.count(wall, corners));
         const directions = Maps.mapValues(walls, wall => this.goLeftIfCornerOnRight(wall, corners));
 
         const offsets = Maps.mapValues(walls, wall => {
@@ -40,10 +43,10 @@ export class Settler {
         return new Settlement(corners, modulesCount, directions, offsets);
     };
 
-    private count(slotWidth:number, wall:Wall, corners:Corner[]) {
+    private count(wall:Wall, corners:Corner[]) {
         const cornersCount = corners.filter(c => c.contains(wall)).length;
 
-        return Math.floor((wall.width - (cornersCount * Settler.CornerWidth)) / slotWidth);
+        return Math.floor((wall.width - (cornersCount * this.cornerWidth)) / this.slotWidth);
     };
 
     private goLeftIfCornerOnRight(wall: Wall, corners: Corner[]): Direction {
@@ -52,10 +55,10 @@ export class Settler {
 
     private calcOffset(wall: Wall, fillDirection: Map<string, Direction>, corners: Corner[]) {
         if (fillDirection.get(wall.name) === Direction.TO_LEFT)
-            return corners.find(c => c.left === wall) !== undefined ? Settler.CornerWidth : 0;
+            return corners.find(c => c.left === wall) !== undefined ? this.cornerWidth : 0;
 
         if (fillDirection.get(wall.name) === Direction.TO_RIGHT)
-            return corners.find(c => c.right === wall) !== undefined ? Settler.CornerWidth : 0;
+            return corners.find(c => c.right === wall) !== undefined ? this.cornerWidth : 0;
 
         return 0;
     }

@@ -17,7 +17,7 @@ test('settler should identify two corners with fill directions and count modules
               f => f()
           );
 
-     const result = new Settler().settle(60, new Map(walls));
+     const result = new Settler(60, 70).settle(new Map(walls));
 
      expect(result.corners).toContainEqual(new Corner(walls.get("A"), walls.get("B")));
      expect(result.corners).toContainEqual(new Corner(walls.get("D"), walls.get("A")));
