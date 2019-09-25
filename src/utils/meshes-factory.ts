@@ -61,5 +61,6 @@ const MeshMetaData = new Map([
     ['standing_211', 'models/szuflady_2+1+1.obj'],
     ['standing_21', 'models/szuflady_2+1.obj'],
     ['standing_23', 'models/szuflady_2+3.obj'],
-    ['standing_4', 'models/szuflady_4.obj']
+    ['standing_4', 'models/szuflady_4.obj'],
+    ['fridge', 'models/lodowka.obj']
 ]);

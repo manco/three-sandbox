@@ -75,6 +75,6 @@ const ModuleFunctionToMesh = new Map([
     [ModuleFunction.UNDER_SINK, 'standing'], //under_sink
     [ModuleFunction.WASHER_1, 'standing'], //washer
     [ModuleFunction.DISHWASHER_1, 'standing'], //dishwasher,
-    [ModuleFunction.FRIDGE_1 , 'standing']//fridge
+    [ModuleFunction.FRIDGE_1 , 'fridge']//fridge
 ]);
 
