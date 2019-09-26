@@ -59,11 +59,24 @@ export class Wall {
         this.translateMesh(module.mesh);
         module.initRotation();
         this.rotateMesh(module.mesh);
-        module.mesh.translateX(slotWidth/2 - this.mesh.geometry.boundingBox.max.x);
-        if (direction === Direction.TO_LEFT) module.mesh.translateX(this.width - slotWidth); // to starting position
+
+        this.moveAwayFromWall(module);
+
+        module.mesh.translateX(slotWidth/2);
+        const tY = module.isCorner() ? slotWidth : module.depth;
+        module.mesh.translateY(- tY/2);
+
         module.mesh.translateX(offset);
-        module.mesh.translateY(- module.depth/2 - this.mesh.geometry.boundingBox.max.z);
+
+        // to starting position
+        if (direction === Direction.TO_LEFT) module.mesh.translateX(this.width - slotWidth);
+
         scene.add(module.mesh);
+    }
+
+    private moveAwayFromWall(module: Module) {
+        module.mesh.translateX(-this.mesh.geometry.boundingBox.max.x);
+        module.mesh.translateY(-this.mesh.geometry.boundingBox.max.z);
     }
 
     private static createMesh(name:string, width:number, height:number): Mesh {

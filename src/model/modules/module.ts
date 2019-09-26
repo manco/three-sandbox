@@ -6,6 +6,7 @@ import {ModuleType} from "./types";
 import {ModuleSubtype} from "./types";
 import {ModuleFunction} from "./module-functions";
 import {ColorType} from "../colors";
+import {ModuleTypeCorners} from "./module-functions";
 
 export class Module {
     public readonly id: string = this.mesh.uuid;
@@ -27,6 +28,10 @@ export class Module {
         } else {
             this.colorMaterial = mesh.material as MeshLambertMaterial;
         }
+    }
+
+    isCorner():boolean {
+        return ModuleTypeCorners.get(this.type) === this.moduleFunction;
     }
 
     initRotation(): void {
