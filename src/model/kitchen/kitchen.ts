@@ -47,10 +47,11 @@ export class Wall {
         readonly name:string,
         readonly width:number,
         height:number,
+        private readonly depth:number,
         readonly translateMesh:MutateMeshFun = Lang.noop,
         readonly rotateMesh:MutateMeshFun = Lang.noop
     ) {
-        this.mesh = Wall.createMesh(name, width, height);
+        this.mesh = Wall.createMesh(name, width, height, depth);
         this.translateMesh(this.mesh);
         this.rotateMesh(this.mesh);
         this.mesh.geometry.computeBoundingBox();
@@ -63,6 +64,7 @@ export class Wall {
         this.moveAwayFromWall(module);
 
         module.mesh.translateX(slotWidth/2);
+
         const tY = module.isCorner() ? slotWidth : module.depth;
         module.mesh.translateY(- tY/2);
 
@@ -79,14 +81,16 @@ export class Wall {
         module.mesh.translateY(-this.mesh.geometry.boundingBox.max.z);
     }
 
-    private static createMesh(name:string, width:number, height:number): Mesh {
+    private static createMesh(name:string, width:number, height:number, depth:number): Mesh {
         const material = new MeshLambertMaterial( {
             color: 0xbdbdbd,
             side: DoubleSide
         } );
+        const widthAdjusted = width + depth;
         const rect = new Shape();
-        const minx = -width/2;
-        const maxx = width/2;
+        const minx = -widthAdjusted/2;
+        const maxx = widthAdjusted/2;
+
         rect.moveTo( minx, 0 );
         rect.lineTo( minx, height );
         rect.lineTo( maxx, height );
@@ -94,7 +98,7 @@ export class Wall {
         rect.lineTo( minx, 0 );
         const mesh = new Mesh(
             new ExtrudeBufferGeometry(rect, {
-                depth: 8,
+                depth: depth,
                 bevelThickness:1,
                 bevelSize: 0,
                 bevelSegments: 1
@@ -238,27 +242,26 @@ export class Kitchen extends Observable {
 export const wallsFactories = (width:number, depth:number, height:number):Map<string, () => Wall> => {
 
     const axisY = new Vector3(0, 1, 0);
+    const wallDepth = 8;
+    const widthAdjusted = width + wallDepth;
+    const depthAdjusted = depth + wallDepth;
 
-    const wallA = ():Wall => new Wall("A", width, height,
-        (m:Mesh) => { m.translateZ(-depth/2) }
-        );
-
-    const wallB = ():Wall => new Wall("B", depth, height,
-        (m:Mesh) => {
-            m.translateX(width/2);
-        },
-        (m:Mesh) => { m.rotateOnWorldAxis(axisY, - Math.PI / 2) }
+    const wallA = () => new Wall("A", widthAdjusted, height, wallDepth,
+        (m:Mesh) => m.translateZ(-depthAdjusted / 2 - wallDepth/2)
     );
 
-    const wallC = ():Wall => new Wall("C", width, height,
-        (m:Mesh) => { m.translateZ(depth/2) },
-        (m:Mesh) => { m.rotateOnWorldAxis(axisY, Math.PI) }
+    const wallB = () => new Wall("B", depthAdjusted, height, wallDepth,
+        (m:Mesh) => m.translateX(widthAdjusted / 2 + wallDepth/2),
+        (m:Mesh) => m.rotateOnWorldAxis(axisY, -Math.PI / 2)
     );
 
-    const wallD = ():Wall => new Wall("D", depth, height,
-        (m:Mesh) => {
-            m.translateX(-width/2);
-        },
+    const wallC = () => new Wall("C", widthAdjusted, height, wallDepth,
+        (m:Mesh) => m.translateZ(depthAdjusted / 2 + wallDepth/2),
+        (m:Mesh) => m.rotateOnWorldAxis(axisY, Math.PI)
+    );
+
+    const wallD = () => new Wall("D", depthAdjusted, height, wallDepth,
+        (m:Mesh) => m.translateX(-widthAdjusted / 2 - wallDepth/2),
         (m:Mesh) => { m.rotateOnWorldAxis(axisY, Math.PI / 2) }
     );
 
