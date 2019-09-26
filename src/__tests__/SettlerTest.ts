@@ -29,4 +29,8 @@ test('settler should identify two corners with fill directions and count modules
      expect(result.fillDirection.get("A")).toEqual(Direction.TO_LEFT);
      expect(result.fillDirection.get("B")).toEqual(Direction.TO_RIGHT);
      expect(result.fillDirection.get("D")).toEqual(Direction.TO_LEFT);
+
+     expect(result.modulesOffsetForIndex.get("A")(0)).toEqual(-70);
+     expect(result.modulesOffsetForIndex.get("B")(0)).toEqual(70);
+     expect(result.modulesOffsetForIndex.get("D")(0)).toEqual(-70);
 });

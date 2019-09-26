@@ -12,10 +12,15 @@ import {ControlsFactory} from "./controller/controlsFactory";
 import {FrontsLibrary} from "./model/modules/module-functions";
 import {MeshFactory} from "./utils/meshes-factory";
 
+// @ts-ignore
+window.THREE = THREE;
+
 const meshFactory = new MeshFactory();
 const modulesLibrary = new ModulesFactory(meshFactory);
 
 const scene = SceneFactory.create();
+// @ts-ignore
+window.scene = scene;
 
 const colorTypeLibrary = new ColorTypeLibrary();
 const kitchen = new Kitchen(modulesLibrary, colorTypeLibrary, new FrontsLibrary(colorTypeLibrary), scene);
