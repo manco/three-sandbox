@@ -70,8 +70,10 @@ export class Wall {
 
         module.mesh.translateX(offset);
 
-        // to starting position
         if (direction === Direction.TO_LEFT) module.mesh.translateX(this.width - slotWidth);
+
+        //don't know how does it help
+        if (direction === Direction.TO_RIGHT) module.mesh.translateX(this.depth);
 
         scene.add(module.mesh);
     }
