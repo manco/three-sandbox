@@ -55,9 +55,10 @@ export class Wall {
         this.rotateMesh(this.mesh);
         this.mesh.geometry.computeBoundingBox();
     }
+
     put(module:Module, index:number, settlement:Settlement, slotWidth:number): void {
         const direction = settlement.fillDirection.get(this.name);
-        const offset = (module.isCorner()) ? 0 : settlement.modulesOffsetForIndex.get(this.name)(index);
+        const offset = settlement.modulesOffsetForIndex.get(this.name)(index);
 
         this.translateMesh(module.mesh);
         module.initRotation();
@@ -154,7 +155,7 @@ export class Kitchen extends Observable {
     private fillWallsWithModules(): void {
         ModuleTypesAll.forEach(type => {
             this.walls.forEach(wall => {
-                    for (let i = 0; i < this.settlement.modulesCount.get(wall.name); i++) {
+                    for (let i = 1; i <= this.settlement.modulesCount.get(wall.name); i++) {
                         const m = this.moduleLibrary.createForType(type);
                         this.addModule([wall.name, i], m, false);
                     }
@@ -180,10 +181,13 @@ export class Kitchen extends Observable {
         }
 
         this.scene.add(m.mesh);
-
-        this.modules.add(m, slot);
-        this.revIndexes.add(m, slot);
+        this.index(m, slot);
         this.notify(new Message("ADD", [m, (wallName.charCodeAt(0)*1000)+i]));
+    }
+
+    private index(module:Module, slot:[string, number]) {
+        this.modules.add(module, slot);
+        this.revIndexes.add(module, slot);
     }
 
     private settle() {

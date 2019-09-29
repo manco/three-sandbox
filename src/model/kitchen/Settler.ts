@@ -5,7 +5,7 @@ export enum Direction {
     TO_LEFT = "TO_LEFT", TO_RIGHT = "TO_RIGHT"
 }
 export class Corner {
-    constructor(public left:string, public right:string) {}
+    constructor(public readonly left:string, public readonly right:string) {}
 
     contains(wall: string) {
         return this.left === wall || this.right === wall;
@@ -37,7 +37,10 @@ export class Settler {
 
         const offsets = Maps.mapValues(walls, wall => {
             const direction = directions.get(wall.name);
-            return (index) => ( (direction === Direction.TO_LEFT ? -1 : 1) * (index * this.slotWidth + this.calcOffset(wall.name, directions, corners) ) );
+            return (index) => {
+                if (index === 0) return 0;
+                return ( (direction === Direction.TO_LEFT ? -1 : 1) * ((index-1) * this.slotWidth + this.calcOffset(wall.name, directions, corners) ) );
+            }
         });
 
         return new Settlement(corners, modulesCount, directions, offsets);
