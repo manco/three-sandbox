@@ -16,7 +16,7 @@ export class Actions {
         private readonly kitchen: Kitchen,
         private readonly moduleSelector: ModuleSelector,
         private readonly camera: Camera,
-        private readonly purgatory: Stack<[Module, string, number]> //Module - wallName - index
+        private readonly purgatory: Stack<[Module, [string, number]]> //Module, slot
     ) {}
 
     showWireframe() {
@@ -53,8 +53,8 @@ export class Actions {
     removeSelectedModule() {
         const toRemove = this.moduleSelector.getSelectedModule();
         if (toRemove !== null) {
-            const [wall, number] = this.kitchen.revIndexes.slotFor(toRemove);
-            this.purgatory.push([toRemove, wall.name, number]);
+            const slot = this.kitchen.revIndexes.slotFor(toRemove);
+            this.purgatory.push([toRemove, slot]);
             this.kitchen.remove(toRemove);
         }
     }
@@ -62,8 +62,8 @@ export class Actions {
     undo() {
         const elem = this.purgatory.pop();
         if (elem !== undefined) {
-            const [m, wall, i] = elem;
-            return this.kitchen.addModule(wall, m, i, true);
+            const [m, [wall, i]] = elem;
+            return this.kitchen.addModule([wall, i], m, true);
         }
     }
 

@@ -82,5 +82,4 @@ f 3//7 6//7 12//7 4//7
 
     const geo = mesh.geometry as BufferGeometry;
     expect(geo.attributes.uv).toBeDefined();
-    console.log(geo.attributes.uv);
 });

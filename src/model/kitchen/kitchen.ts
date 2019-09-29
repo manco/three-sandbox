@@ -22,7 +22,6 @@ import {ModuleSubtypeToModuleFunction} from "../modules/module-functions";
 import {Settler} from "./Settler";
 import {Settlement} from "./Settler";
 import {Direction} from "./Settler";
-import {Arrays} from "../../utils/lang";
 import {ModuleTypeToSubtype} from "../modules/types";
 import {ModuleTypeCorners} from "../modules/module-functions";
 
@@ -56,7 +55,10 @@ export class Wall {
         this.rotateMesh(this.mesh);
         this.mesh.geometry.computeBoundingBox();
     }
-    put(module:Module, offset:number, direction: Direction, slotWidth:number): void {
+    put(module:Module, index:number, settlement:Settlement, slotWidth:number): void {
+        const direction = settlement.fillDirection.get(this.name);
+        const offset = (module.isCorner()) ? 0 : settlement.modulesOffsetForIndex.get(this.name)(index);
+
         this.translateMesh(module.mesh);
         module.initRotation();
         this.rotateMesh(module.mesh);
@@ -116,7 +118,7 @@ export class Kitchen extends Observable {
     public readonly revIndexes = new ReverseIndexes();
 
     private readonly raycaster = new Raycaster();
-    private walls: Wall[] = [];
+    private walls: Map<string, Wall> = new Map();
     private settlement: Settlement = null;
     private floor: Mesh = null;
     constructor(
@@ -145,7 +147,7 @@ export class Kitchen extends Observable {
     }
 
     private addWall(wall:Wall): void {
-        this.walls.push(wall);
+        this.walls.set(wall.name, wall);
         this.scene.add(wall.mesh);
     }
 
@@ -154,7 +156,7 @@ export class Kitchen extends Observable {
             this.walls.forEach(wall => {
                     for (let i = 0; i < this.settlement.modulesCount.get(wall.name); i++) {
                         const m = this.moduleLibrary.createForType(type);
-                        this.addModule(wall.name, m, i, false);
+                        this.addModule([wall.name, i], m, false);
                     }
             });
             this.settlement.corners.forEach(corner => {
@@ -163,32 +165,29 @@ export class Kitchen extends Observable {
                     ModuleTypeToSubtype.get(type)[0],
                     ModuleTypeCorners.get(type)
                 );
-                this.addModule(corner.left.name, m, 0, false);
+                this.addModule([corner.left, 0], m, false);
             });
         });
 
     }
 
-    addModule(wallName: string, m: Module, i: number, isUndo:boolean) {
-        const direction = this.settlement.fillDirection.get(wallName);
-        const offset = (m.isCorner()) ? 0 : this.settlement.modulesOffsetForIndex.get(wallName)(i);
-
-        const wall = this.walls.find(w => w.name === wallName);
+    addModule(slot:[string, number], m: Module, isUndo:boolean) {
+        const [wallName, i] = slot;
 
         if (!isUndo) {
-            wall.put(m, offset, direction, this.moduleLibrary.slotWidth());
+            const wall = this.walls.get(wallName);
+            wall.put(m, i, this.settlement, this.moduleLibrary.slotWidth());
         }
 
         this.scene.add(m.mesh);
 
-        const slot:[Wall, number] = [wall, i];
         this.modules.add(m, slot);
         this.revIndexes.add(m, slot);
         this.notify(new Message("ADD", [m, (wallName.charCodeAt(0)*1000)+i]));
     }
 
     private settle() {
-        return new Settler(this.moduleLibrary.slotWidth(), this.moduleLibrary.cornerWidth()).settle(Arrays.groupBy(this.walls, w => w.name));
+        return new Settler(this.moduleLibrary.slotWidth(), this.moduleLibrary.cornerWidth()).settle(this.walls);
     }
 
     byRaycast(camera: Camera, xy:Coords):Module | null {
@@ -212,7 +211,7 @@ export class Kitchen extends Observable {
 
     removeAll(): void {
         this.walls.forEach(wall => this.scene.remove(wall.mesh));
-        this.walls = [];
+        this.walls = new Map();
         this.scene.remove(...this.modules.all().map(m => m.mesh));
         this.modules.clear();
         this.revIndexes.clear();
@@ -221,7 +220,7 @@ export class Kitchen extends Observable {
         this.notify(new Message("REMOVEALL"));
     }
 
-    remove(module:Module): [Wall, number] {
+    remove(module:Module): [string, number] {
         const removedFromSlot = this.revIndexes.slotFor(module);
         this.modules.remove(module, removedFromSlot);
         this.revIndexes.remove(module);
@@ -236,10 +235,10 @@ export class Kitchen extends Observable {
     }
 
     setModuleFunction(module: Module, moduleFunction: ModuleFunction): void {
-        const [wall, index] = this.remove(module);
+        const slot = this.remove(module);
         const newModule = this.moduleLibrary.createForTypes(module.type, module.subtype, moduleFunction, module.color);
         this.setColor(newModule, newModule.color);
-        this.addModule(wall.name, newModule, index, false);
+        this.addModule(slot, newModule, false);
         this.notify(new Message("MODULE_CHANGED", newModule));
     }
 }
@@ -284,7 +283,7 @@ export class Dimensions {
 export class Indexes {
     private readonly _byId: Map<string, Module> = new Map();
     private readonly _byType: Map<ModuleType, Module[]> = new Map();
-    private readonly _bySlot: Map<Wall, Map<number, Map<ModuleType, Module>>> = new Map();
+    private readonly _bySlot: Map<string, Map<number, Map<ModuleType, Module>>> = new Map();
 
     all(): Module[] { return Array.from(this._byId.values()); }
 
@@ -292,21 +291,21 @@ export class Indexes {
 
     byType(type: ModuleType): Module[] { return this._byType.get(type); }
 
-    bySlot([wall, index]: [Wall, number]): Map<ModuleType, Module> {
+    bySlot([wall, index]: [string, number]): Map<ModuleType, Module> {
         return Maps.getOrDefault(this.byWall(wall), index, new Map());
     }
 
-    private byWall(wall: Wall) {
+    private byWall(wall: string) {
         return Maps.getOrDefault(this._bySlot, wall, new Map());
     }
 
-    add(module: Module, slot: [Wall, number]) {
+    add(module: Module, slot: [string, number]) {
         this._byId.set(module.id, module);
         this.bySlot(slot).set(module.type, module);
         MultiMaps.set(this._byType, module.type, module);
     }
 
-    remove(module:Module, slot: [Wall, number]) {
+    remove(module:Module, slot: [string, number]) {
         this._byId.delete(module.id);
         this.bySlot(slot).delete(module.type);
         MultiMaps.remove(this._byType, module.type, module);
@@ -320,13 +319,13 @@ export class Indexes {
 }
 
 export class ReverseIndexes {
-    private readonly _slotsByModule: Map<Module, [Wall, number]> = new Map();
+    private readonly _slotsByModule: Map<Module, [string, number]> = new Map();
 
-    add(module: Module, slot:[Wall, number]) {
+    add(module: Module, slot:[string, number]) {
         this._slotsByModule.set(module, slot);
     }
 
-    slotFor(module: Module):[Wall, number] {
+    slotFor(module: Module):[string, number] {
         return this._slotsByModule.get(module);
     }
 

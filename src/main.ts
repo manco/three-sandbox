@@ -38,7 +38,7 @@ moduleSelector.subscribe(msg => {
 });
 
 const camera = CameraFactory.create(scene);
-const actions = new Actions(kitchen, moduleSelector, camera, new Stack<[Module, string, number]>());
+const actions = new Actions(kitchen, moduleSelector, camera, new Stack<[Module, [string, number]]>());
 
 //@ts-ignore
 window.actions = actions;

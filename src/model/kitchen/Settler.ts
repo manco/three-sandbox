@@ -5,9 +5,9 @@ export enum Direction {
     TO_LEFT = "TO_LEFT", TO_RIGHT = "TO_RIGHT"
 }
 export class Corner {
-    constructor(public left:Wall, public right:Wall) {}
+    constructor(public left:string, public right:string) {}
 
-    contains(wall: Wall) {
+    contains(wall: string) {
         return this.left === wall || this.right === wall;
     }
 }
@@ -33,31 +33,31 @@ export class Settler {
         const corners: Corner[] = this.setupCorners(walls);
 
         const modulesCount = Maps.mapValues(walls, wall => this.count(wall, corners));
-        const directions = Maps.mapValues(walls, wall => this.goLeftIfCornerOnRight(wall, corners));
+        const directions = Maps.mapValues(walls, wall => this.goLeftIfCornerOnRight(wall.name, corners));
 
         const offsets = Maps.mapValues(walls, wall => {
             const direction = directions.get(wall.name);
-            return (index) => ( (direction === Direction.TO_LEFT ? -1 : 1) * (index * this.slotWidth + this.calcOffset(wall, directions, corners) ) );
+            return (index) => ( (direction === Direction.TO_LEFT ? -1 : 1) * (index * this.slotWidth + this.calcOffset(wall.name, directions, corners) ) );
         });
 
         return new Settlement(corners, modulesCount, directions, offsets);
     };
 
     private count(wall:Wall, corners:Corner[]) {
-        const cornersCount = corners.filter(c => c.contains(wall)).length;
+        const cornersCount = corners.filter(c => c.contains(wall.name)).length;
 
         return Math.floor((wall.width - (cornersCount * this.cornerWidth)) / this.slotWidth);
     };
 
-    private goLeftIfCornerOnRight(wall: Wall, corners: Corner[]): Direction {
+    private goLeftIfCornerOnRight(wall: string, corners: Corner[]): Direction {
         return corners.find(c => c.left === wall) !== undefined ? Direction.TO_LEFT : Direction.TO_RIGHT;
     }
 
-    private calcOffset(wall: Wall, fillDirection: Map<string, Direction>, corners: Corner[]) {
-        if (fillDirection.get(wall.name) === Direction.TO_LEFT)
+    private calcOffset(wall: string, fillDirection: Map<string, Direction>, corners: Corner[]) {
+        if (fillDirection.get(wall) === Direction.TO_LEFT)
             return corners.find(c => c.left === wall) !== undefined ? this.cornerWidth : 0;
 
-        if (fillDirection.get(wall.name) === Direction.TO_RIGHT)
+        if (fillDirection.get(wall) === Direction.TO_RIGHT)
             return corners.find(c => c.right === wall) !== undefined ? this.cornerWidth : 0;
 
         return 0;
@@ -67,7 +67,7 @@ export class Settler {
         const corners = new Array<Corner>();
 
         const addCornerIfExist = (left, right) => {
-            if (walls.has(left) && walls.has(right)) corners.push(new Corner(walls.get(left), walls.get(right)));
+            if (walls.has(left) && walls.has(right)) corners.push(new Corner(left, right));
         };
 
         addCornerIfExist("A", "B");
