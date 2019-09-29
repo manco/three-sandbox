@@ -212,8 +212,12 @@ export class Kitchen extends Observable {
 
     private castRay(camera: Camera, xy:Coords): Object3D[] {
         this.raycaster.setFromCamera(xy, camera);
-        return this.raycaster.intersectObjects((this.modules.all()).map(_ => _.mesh)).map((i:Intersection) => i.object);
+        return this.raycaster.intersectObjects(this.allModuleMeshes()).map((i:Intersection) => i.object);
     };
+
+    private allModuleMeshes(): Mesh[] {
+        return this.modules.all().map(_ => _.mesh);
+    }
 
     setColor(module: Module, type: ColorType): void {
         module.color = type;
@@ -224,7 +228,7 @@ export class Kitchen extends Observable {
     removeAll(): void {
         this.walls.forEach(wall => this.scene.remove(wall.mesh));
         this.walls = new Map();
-        this.scene.remove(...this.modules.all().map(m => m.mesh));
+        this.scene.remove(...this.allModuleMeshes());
         this.modules.clear();
         this.revIndexes.clear();
         this.scene.remove(this.floor);
