@@ -154,35 +154,43 @@ export class Kitchen extends Observable {
 
     private fillWallsWithModules(): void {
         ModuleTypesAll.forEach(type => {
-            this.walls.forEach(wall => {
-                    for (let i = 1; i <= this.settlement.modulesCount.get(wall.name); i++) {
-                        const m = this.moduleLibrary.createForType(type);
-                        this.addModule([wall.name, i], m, false);
-                    }
-            });
             this.settlement.corners.forEach(corner => {
                 const m = this.moduleLibrary.createForTypes(
                     type,
                     ModuleTypeToSubtype.get(type)[0],
                     ModuleTypeCorners.get(type)
                 );
-                this.addModule([corner.left, 0], m, false);
+                this.addModule([corner.left, 0], m);
+            });
+            this.walls.forEach(wall => {
+                    for (let i = 1; i <= this.settlement.modulesCount.get(wall.name); i++) {
+                        const m = this.moduleLibrary.createForType(type);
+                        this.addModule([wall.name, i], m);
+                    }
             });
         });
 
     }
 
-    addModule(slot:[string, number], m: Module, isUndo:boolean) {
-        const [wallName, i] = slot;
+    addModule(slot:[string, number], m: Module) {
 
-        if (!isUndo) {
-            const wall = this.walls.get(wallName);
-            wall.put(m, i, this.settlement, this.moduleLibrary.slotWidth());
-        }
+        const [wallName, i] = slot;
+        const wall = this.walls.get(wallName);
+        wall.put(m, i, this.settlement, this.moduleLibrary.slotWidth());
 
         this.scene.add(m.mesh);
         this.index(m, slot);
-        this.notify(new Message("ADD", [m, (wallName.charCodeAt(0)*1000)+i]));
+        this.notify(new Message("ADD", [m, Kitchen.label(slot)]));
+    }
+
+    restoreModule(slot:[string, number], m: Module) {
+        this.scene.add(m.mesh);
+        this.index(m, slot);
+        this.notify(new Message("ADD", [m, Kitchen.label(slot)]));
+    }
+
+    private static label([wallName, i]:[string, number]) {
+        return (wallName.charCodeAt(0)*1000)+i;
     }
 
     private index(module:Module, slot:[string, number]) {
@@ -242,7 +250,7 @@ export class Kitchen extends Observable {
         const slot = this.remove(module);
         const newModule = this.moduleLibrary.createForTypes(module.type, module.subtype, moduleFunction, module.color);
         this.setColor(newModule, newModule.color);
-        this.addModule(slot, newModule, false);
+        this.addModule(slot, newModule);
         this.notify(new Message("MODULE_CHANGED", newModule));
     }
 }

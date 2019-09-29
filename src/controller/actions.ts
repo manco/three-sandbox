@@ -62,8 +62,8 @@ export class Actions {
     undo() {
         const elem = this.purgatory.pop();
         if (elem !== undefined) {
-            const [m, [wall, i]] = elem;
-            return this.kitchen.addModule([wall, i], m, true);
+            const [m, slot] = elem;
+            return this.kitchen.restoreModule(slot, m);
         }
     }
 
