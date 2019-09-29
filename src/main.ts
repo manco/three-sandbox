@@ -11,6 +11,8 @@ import {RendererFactory} from "./view/rendererFactory";
 import {ControlsFactory} from "./controller/controlsFactory";
 import {FrontsLibrary} from "./model/modules/module-functions";
 import {MeshFactory} from "./utils/meshes-factory";
+import {Module} from "./model/modules/module";
+import {Stack} from "./model/stack";
 
 // @ts-ignore
 window.THREE = THREE;
@@ -36,7 +38,7 @@ moduleSelector.subscribe(msg => {
 });
 
 const camera = CameraFactory.create(scene);
-const actions = new Actions(kitchen, moduleSelector, camera);
+const actions = new Actions(kitchen, moduleSelector, camera, new Stack<[Module, string, number]>());
 
 //@ts-ignore
 window.actions = actions;

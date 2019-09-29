@@ -9,12 +9,14 @@ import {Camera} from "three";
 import {Module} from "../model/modules/module";
 import {ModuleFunction} from "../model/modules/module-functions";
 import {Meshes} from "../utils/meshes";
+import {Stack} from "../model/stack";
 
 export class Actions {
     constructor(
         private readonly kitchen: Kitchen,
         private readonly moduleSelector: ModuleSelector,
-        private readonly camera: Camera
+        private readonly camera: Camera,
+        private readonly purgatory: Stack<[Module, string, number]> //Module - wallName - index
     ) {}
 
     showWireframe() {
@@ -51,7 +53,17 @@ export class Actions {
     removeSelectedModule() {
         const toRemove = this.moduleSelector.getSelectedModule();
         if (toRemove !== null) {
+            const [wall, number] = this.kitchen.revIndexes.slotFor(toRemove);
+            this.purgatory.push([toRemove, wall.name, number]);
             this.kitchen.remove(toRemove);
+        }
+    }
+
+    undo() {
+        const elem = this.purgatory.pop();
+        if (elem !== undefined) {
+            const [m, wall, i] = elem;
+            return this.kitchen.addModule(wall, m, i, true);
         }
     }
 

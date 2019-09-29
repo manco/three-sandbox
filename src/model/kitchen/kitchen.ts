@@ -56,7 +56,7 @@ export class Wall {
         this.rotateMesh(this.mesh);
         this.mesh.geometry.computeBoundingBox();
     }
-    put(module:Module, offset:number, scene:Scene, direction: Direction, slotWidth:number): void {
+    put(module:Module, offset:number, direction: Direction, slotWidth:number): void {
         this.translateMesh(module.mesh);
         module.initRotation();
         this.rotateMesh(module.mesh);
@@ -74,8 +74,6 @@ export class Wall {
 
         //don't know how does it help
         if (direction === Direction.TO_RIGHT) module.mesh.translateX(this.depth);
-
-        scene.add(module.mesh);
     }
 
     private moveAwayFromWall(module: Module) {
@@ -156,8 +154,7 @@ export class Kitchen extends Observable {
             this.walls.forEach(wall => {
                     for (let i = 0; i < this.settlement.modulesCount.get(wall.name); i++) {
                         const m = this.moduleLibrary.createForType(type);
-                        const offset = this.settlement.modulesOffsetForIndex.get(wall.name)(i);
-                        this.addModule(wall, m, i, offset);
+                        this.addModule(wall.name, m, i, false);
                     }
             });
             this.settlement.corners.forEach(corner => {
@@ -166,21 +163,28 @@ export class Kitchen extends Observable {
                     ModuleTypeToSubtype.get(type)[0],
                     ModuleTypeCorners.get(type)
                 );
-                this.addModule(corner.left, m, 0, 0);
+                this.addModule(corner.left.name, m, 0, false);
             });
         });
 
     }
 
-    private addModule(wall: Wall, m: Module, i: number, offset: number) {
-        const direction = this.settlement.fillDirection.get(wall.name);
+    addModule(wallName: string, m: Module, i: number, isUndo:boolean) {
+        const direction = this.settlement.fillDirection.get(wallName);
+        const offset = (m.isCorner()) ? 0 : this.settlement.modulesOffsetForIndex.get(wallName)(i);
 
-        wall.put(m, offset, this.scene, direction, this.moduleLibrary.slotWidth());
+        const wall = this.walls.find(w => w.name === wallName);
+
+        if (!isUndo) {
+            wall.put(m, offset, direction, this.moduleLibrary.slotWidth());
+        }
+
+        this.scene.add(m.mesh);
 
         const slot:[Wall, number] = [wall, i];
         this.modules.add(m, slot);
         this.revIndexes.add(m, slot);
-        this.notify(new Message("ADD", [m, (wall.name.charCodeAt(0)*1000)+i]));
+        this.notify(new Message("ADD", [m, (wallName.charCodeAt(0)*1000)+i]));
     }
 
     private settle() {
@@ -235,8 +239,7 @@ export class Kitchen extends Observable {
         const [wall, index] = this.remove(module);
         const newModule = this.moduleLibrary.createForTypes(module.type, module.subtype, moduleFunction, module.color);
         this.setColor(newModule, newModule.color);
-        const offset = this.settlement.modulesOffsetForIndex.get(wall.name)(index);
-        this.addModule(wall, newModule, index, offset);
+        this.addModule(wall.name, newModule, index, false);
         this.notify(new Message("MODULE_CHANGED", newModule));
     }
 }
