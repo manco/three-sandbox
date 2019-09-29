@@ -13,6 +13,7 @@ export class ControlsPanel {
         const buttonCenter = panel.querySelector('button[id=\"center\"]');
         const buttonModePan = panel.querySelector('button[id=\"modepan\"]');
         const buttonModeRotate = panel.querySelector('button[id=\"moderotate\"]');
+        const buttonUndo = panel.querySelector('button[id=\"undo\"]');
 
         const buttonsByMouseMode = new Map<MouseMode, Element>([
             [MouseMode.PAN_ONLY, buttonModePan],
@@ -37,5 +38,6 @@ export class ControlsPanel {
         Events.onClick(buttonModePan, () => controls.toggleMouseMode(MouseMode.PAN_ONLY));
         Events.onClick(buttonModeRotate, () => controls.toggleMouseMode(MouseMode.ROTATE_ONLY));
         Events.onClick(buttonCenter, () => controls.switch2d3d());
+        Events.onClick(buttonUndo, () => controls.undo());
     }
 }

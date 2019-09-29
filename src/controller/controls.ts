@@ -65,6 +65,10 @@ export class Controls extends Observable {
         this.camera.zoom = Math.min(10, Math.max(0, newZoom));
         this.camera.updateProjectionMatrix();
     }
+
+    undo() {
+        this.actions.undo();
+    }
 }
 
 export enum MouseMode {

@@ -57,8 +57,6 @@ export class Wall {
     }
 
     put(module:Module, index:number, settlement:Settlement, slotWidth:number): void {
-        const direction = settlement.fillDirection.get(this.name);
-        const offset = settlement.modulesOffsetForIndex.get(this.name)(index);
 
         this.translateMesh(module.mesh);
         module.initRotation();
@@ -71,8 +69,10 @@ export class Wall {
         const tY = module.isCorner() ? slotWidth : module.depth;
         module.mesh.translateY(- tY/2);
 
+        const offset = settlement.modulesOffsetForIndex.get(this.name)(index);
         module.mesh.translateX(offset);
 
+        const direction = settlement.fillDirection.get(this.name);
         if (direction === Direction.TO_LEFT) module.mesh.translateX(this.width - slotWidth);
 
         //don't know how does it help
