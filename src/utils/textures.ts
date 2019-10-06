@@ -1,5 +1,6 @@
 import {TextureLoader} from "three";
 import {Texture} from "three";
+import {RepeatWrapping} from "three";
 
 export class TextureDefinition<T> {
     constructor(
@@ -19,7 +20,7 @@ export abstract class TexturesLibrary<T> {
             definitions.map(
             d =>
                 new Promise<Texture>(f => this.loader.load(d.url, f))
-                    .then(t => {t.name = d.type.toString(); return t;})
+                    .then(t => {t.name = d.type.toString(); t.wrapS = RepeatWrapping; t.wrapT = RepeatWrapping; return t;})
                     .then(tex => this.textures.set(d.type, tex))
             )
         );
