@@ -10,13 +10,16 @@ import {Module} from "../model/modules/module";
 import {ModuleFunction} from "../model/modules/module-functions";
 import {Meshes} from "../utils/meshes";
 import {Stack} from "../model/stack";
+import {SubtypesLarge} from "../model/modules/types";
+import {Maps} from "../utils/lang";
 
 export class Actions {
     constructor(
         private readonly kitchen: Kitchen,
         private readonly moduleSelector: ModuleSelector,
         private readonly camera: Camera,
-        private readonly purgatory: Stack<[Module, [string, number]]> //Module, slot
+        private readonly undoable: Stack<[Module, [string, number]]>, //Module, slot
+        private readonly removed: Array<[[string, number], Module[]]> //multimap
     ) {}
 
     showWireframe() {
@@ -54,13 +57,13 @@ export class Actions {
         const toRemove = this.moduleSelector.getSelectedModule();
         if (toRemove !== null) {
             const slot = this.kitchen.revIndexes.slotFor(toRemove);
-            this.purgatory.push([toRemove, slot]);
+            this.undoable.push([toRemove, slot]);
             this.kitchen.remove(toRemove);
         }
     }
 
     undo() {
-        const elem = this.purgatory.pop();
+        const elem = this.undoable.pop();
         if (elem !== undefined) {
             const [m, slot] = elem;
             return this.kitchen.restoreModule(slot, m);
@@ -68,19 +71,34 @@ export class Actions {
     }
 
     setModuleSubtype(module: Module, newSubtype: ModuleSubtype): void {
+
+        if (SubtypesLarge.includes(newSubtype)) {
+            const slot = this.kitchen.revIndexes.slotFor(module);
+            const toRemove = Maps.filterKeys(this.kitchen.modules.bySlot(slot), type => type !== module.type);
+            this.removed.push([slot, Array.from(toRemove.values())]);
+            toRemove.forEach(m => this.kitchen.remove(m));
+        }
+
+        if (SubtypesLarge.includes(module.subtype)) {
+            const slot = this.kitchen.revIndexes.slotFor(module);
+            const [, modules] = this.removed.find(([s,]) => s === slot);
+            modules.forEach(m => this.kitchen.restoreModule(slot, m));
+        }
+
         //propagate to bounded module first
         const boundedSubtype = BoundedSubtypes.get(newSubtype);
         if (boundedSubtype !== undefined) {
             const slot = this.kitchen.revIndexes.slotFor(module);
             const boundedModule = this.kitchen.modules.bySlot(slot)
                 .get(
-                    //FIXME this is lame. Types NEED tree structure MUST HAVE
+                    //FIXME this is lame. Types NEED tree structure OR reverse mapping
                     module.type === ModuleType.TABLETOP ? ModuleType.STANDING : ModuleType.TABLETOP
                 );
             if (boundedModule !== undefined && boundedModule.subtype != boundedSubtype) {
                 this.kitchen.setModuleSubtype(boundedModule, boundedSubtype);
             }
         }
+
         this.kitchen.setModuleSubtype(module, newSubtype);
     }
 

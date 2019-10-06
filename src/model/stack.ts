@@ -1,5 +1,5 @@
 export class Stack<T> {
-    private removed: T[] = [];
+    private readonly removed: T[] = [];
 
     pop():T | undefined {
         return this.removed.pop();

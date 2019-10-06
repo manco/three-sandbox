@@ -20,4 +20,6 @@ export const BoundedSubtypes:Map<ModuleSubtype, ModuleSubtype> = new Map([
 ]
 );
 
+export const SubtypesLarge = [ModuleSubtype.FRIDGE];
+
 export const ModuleTypesAll = Array.from(ModuleTypeToSubtype.keys());
