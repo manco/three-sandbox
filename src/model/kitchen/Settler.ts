@@ -15,6 +15,7 @@ export class Settlement {
     constructor(
         public readonly corners:Corner[],
         public readonly modulesCount: Map<string, number>,
+        public readonly wallHoleSize: Map<string, number>,
         public readonly fillDirection: Map<string, Direction>,
         public readonly modulesOffsetForIndex: Map<string, (index:number) => number>
     ) {}
@@ -33,6 +34,7 @@ export class Settler {
         const corners: Corner[] = this.setupCorners(walls);
 
         const modulesCount = Maps.mapValues(walls, wall => this.count(wall, corners));
+        const wallsHoleSizes = Maps.mapValues(walls, wall => this.holeSize(wall, corners));
         const directions = Maps.mapValues(walls, wall => this.goLeftIfCornerOnRight(wall.name, corners));
 
         const offsets = Maps.mapValues(walls, wall => {
@@ -43,14 +45,21 @@ export class Settler {
             }
         });
 
-        return new Settlement(corners, modulesCount, directions, offsets);
+        return new Settlement(corners, modulesCount, wallsHoleSizes, directions, offsets);
     };
 
     private count(wall:Wall, corners:Corner[]) {
-        const cornersCount = corners.filter(c => c.contains(wall.name)).length;
+        return Math.floor(this.spaceForModules(wall, corners) / this.slotWidth);
+    }
 
-        return Math.floor((wall.width - (cornersCount * this.cornerWidth)) / this.slotWidth);
-    };
+    private holeSize(wall:Wall, corners:Corner[]): number {
+        return this.spaceForModules(wall, corners) % this.slotWidth;
+    }
+
+    private spaceForModules(wall:Wall, corners:Corner[]) {
+        const cornersCount = corners.filter(c => c.contains(wall.name)).length;
+        return wall.width - (cornersCount * this.cornerWidth);
+    }
 
     private goLeftIfCornerOnRight(wall: string, corners: Corner[]): Direction {
         return corners.find(c => c.left === wall) !== undefined ? Direction.TO_LEFT : Direction.TO_RIGHT;

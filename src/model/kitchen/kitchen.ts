@@ -170,6 +170,10 @@ export class Kitchen extends Observable {
                         this.addModule([wall.name, i], m);
                     }
             });
+            //detect holes, candidates to expand
+            this.walls.forEach( wall => {
+                console.log(`${wall.name} has hole: ${this.settlement.wallHoleSize.get(wall.name)}`);
+            })
         });
 
     }
