@@ -39,6 +39,8 @@ class FloorFactory {
     }
 }
 
+type Slot = [string, number]
+
 export class Wall {
     readonly mesh: Mesh;
 
@@ -172,7 +174,7 @@ export class Kitchen extends Observable {
 
     }
 
-    addModule(slot:[string, number], m: Module) {
+    addModule(slot:Slot, m: Module) {
 
         const [wallName, i] = slot;
         const wall = this.walls.get(wallName);
@@ -183,17 +185,17 @@ export class Kitchen extends Observable {
         this.notify(new Message("ADD", [m, Kitchen.label(slot)]));
     }
 
-    restoreModule(slot:[string, number], m: Module) {
+    restoreModule(slot:Slot, m: Module) {
         this.scene.add(m.mesh);
         this.index(m, slot);
         this.notify(new Message("ADD", [m, Kitchen.label(slot)]));
     }
 
-    private static label([wallName, i]:[string, number]) {
+    private static label([wallName, i]:Slot) {
         return (wallName.charCodeAt(0)*1000)+i;
     }
 
-    private index(module:Module, slot:[string, number]) {
+    private index(module:Module, slot:Slot) {
         this.modules.add(module, slot);
         this.revIndexes.add(module, slot);
     }
@@ -236,7 +238,7 @@ export class Kitchen extends Observable {
         this.notify(new Message("REMOVEALL"));
     }
 
-    remove(module:Module): [string, number] {
+    remove(module:Module): Slot {
         const removedFromSlot = this.revIndexes.slotFor(module);
         this.modules.remove(module, removedFromSlot);
         this.revIndexes.remove(module);
@@ -307,7 +309,7 @@ export class Indexes {
 
     byType(type: ModuleType): Module[] { return this._byType.get(type); }
 
-    bySlot([wall, index]: [string, number]): Map<ModuleType, Module> {
+    bySlot([wall, index]: Slot): Map<ModuleType, Module> {
         return Maps.getOrDefault(this.byWall(wall), index, new Map());
     }
 
@@ -315,13 +317,13 @@ export class Indexes {
         return Maps.getOrDefault(this._bySlot, wall, new Map());
     }
 
-    add(module: Module, slot: [string, number]) {
+    add(module: Module, slot: Slot) {
         this._byId.set(module.id, module);
         this.bySlot(slot).set(module.type, module);
         MultiMaps.set(this._byType, module.type, module);
     }
 
-    remove(module:Module, slot: [string, number]) {
+    remove(module:Module, slot: Slot) {
         this._byId.delete(module.id);
         this.bySlot(slot).delete(module.type);
         MultiMaps.remove(this._byType, module.type, module);
@@ -335,13 +337,13 @@ export class Indexes {
 }
 
 export class ReverseIndexes {
-    private readonly _slotsByModule: Map<Module, [string, number]> = new Map();
+    private readonly _slotsByModule: Map<Module, Slot> = new Map();
 
-    add(module: Module, slot:[string, number]) {
+    add(module: Module, slot:Slot) {
         this._slotsByModule.set(module, slot);
     }
 
-    slotFor(module: Module):[string, number] {
+    slotFor(module: Module):Slot {
         return this._slotsByModule.get(module);
     }
 
