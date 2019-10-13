@@ -12,17 +12,16 @@ export class MeshFactory {
         if (this.prototypes === null) {
             return Promise.all(
                 Array.from(MeshMetaData.entries()).map(
-                    e =>
-                        this.loader.loadSingleMesh(e[1])
+                    ([name, path]) =>
+                        this.loader.loadSingleMesh(path)
                             .then(m => {
                                 MeshFactory.initMesh(m);
-                                return [e[0], m] as [string, Mesh]
+                                return [name, m] as [string, Mesh]
                             })
                 )
-            )
-                .then(meshes => {
-                    this.prototypes = new Map<string, Mesh>(meshes);
-                });
+            ).then(meshes => {
+                this.prototypes = new Map<string, Mesh>(meshes);
+            });
         } else {
             return Promise.resolve();
         }
@@ -38,6 +37,7 @@ export class MeshFactory {
 
     create(type:string):Mesh {
         const mesh = this.ofType(type).clone();
+        mesh.geometry = mesh.geometry.clone();
         if (Meshes.hasFront(mesh)) {
             mesh.material = [new MeshLambertMaterial(), new MeshLambertMaterial()];
         } else {

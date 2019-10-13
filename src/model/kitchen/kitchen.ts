@@ -10,6 +10,7 @@ import {Module} from "../modules/module";
 import {ModuleTypesAll} from "../modules/types";
 import {ModuleType} from "../modules/types";
 import {ModuleSubtype} from "../modules/types";
+import {ModuleTypeToSubtype} from "../modules/types";
 import {ColorTypeLibrary} from "../colors";
 import {ColorType} from "../colors";
 import {Lang} from "../../utils/lang";
@@ -19,11 +20,10 @@ import {Maps} from "../../utils/lang";
 import {ModuleFunction} from "../modules/module-functions";
 import {FrontsLibrary} from "../modules/module-functions";
 import {ModuleSubtypeToModuleFunction} from "../modules/module-functions";
+import {ModuleTypeCorners} from "../modules/module-functions";
 import {Settler} from "./Settler";
 import {Settlement} from "./Settler";
 import {Direction} from "./Settler";
-import {ModuleTypeToSubtype} from "../modules/types";
-import {ModuleTypeCorners} from "../modules/module-functions";
 
 class FloorFactory {
     public static create(width:number, depth:number, rotate:MutateMeshFun): Mesh {
@@ -173,6 +173,12 @@ export class Kitchen extends Observable {
             //detect holes, candidates to expand
             this.walls.forEach( wall => {
                 console.log(`${wall.name} has hole: ${this.settlement.wallHoleSize.get(wall.name)}`);
+                const maxIndex = this.settlement.modulesCount.get(wall.name);
+                //copy geometry
+                //scale geometry
+                // // ratio?
+                // // which axis?
+                //this.setColor(this.modules.bySlot([wall.name, maxIndex]).get(type), ColorType.WOOD);
             })
         });
 
