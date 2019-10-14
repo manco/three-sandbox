@@ -172,13 +172,16 @@ export class Kitchen extends Observable {
             });
             //detect holes, candidates to expand
             this.walls.forEach( wall => {
-                console.log(`${wall.name} has hole: ${this.settlement.wallHoleSize.get(wall.name)}`);
+                const holeSize = this.settlement.wallHoleSize.get(wall.name);
                 const maxIndex = this.settlement.modulesCount.get(wall.name);
-                //copy geometry
-                //scale geometry
-                // // ratio?
-                // // which axis?
-                //this.setColor(this.modules.bySlot([wall.name, maxIndex]).get(type), ColorType.WOOD);
+                const moduleNextToHole = this.modules.bySlot([wall.name, maxIndex]).get(type);
+                const factor = (holeSize / moduleNextToHole.width);
+                moduleNextToHole.mesh.geometry.scale(1 + factor/2, 1, 1);
+                moduleNextToHole.mesh.geometry.computeBoundingBox();
+                const signum = this.settlement.fillDirection.get(wall.name) === Direction.TO_LEFT ? -1 : 1;
+               moduleNextToHole.mesh.translateX(signum * holeSize/4);
+
+                moduleNextToHole.recalculateDimensions();
             })
         });
 

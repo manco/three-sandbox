@@ -13,8 +13,8 @@ export class Module {
     private readonly colorMaterial;
     private readonly frontMaterial;
     private readonly hasFront = Meshes.hasFront(this.mesh);
-    public readonly width: number = Meshes.meshWidthX(this.mesh);
-    public readonly depth: number = Meshes.meshDepthY(this.mesh);
+    private _width: number;
+    private _depth: number;
     constructor(
         readonly mesh: Mesh,
         readonly type: ModuleType,
@@ -22,6 +22,7 @@ export class Module {
         public moduleFunction: ModuleFunction,
         public color: ColorType
     ) {
+        this.recalculateDimensions();
         if (this.hasFront) {
             this.colorMaterial = mesh.material[1] as MeshLambertMaterial;
             this.frontMaterial = mesh.material[0] as MeshLambertMaterial;
@@ -40,6 +41,13 @@ export class Module {
 
     initWireframe(): void {
         if (this.type !== ModuleType.TABLETOP) Meshes.showWireframe(this.mesh, false);
+    }
+
+    recalculateDimensions(): void {
+        this._width = Meshes.meshWidthX(this.mesh);
+        this._depth = Meshes.meshDepthY(this.mesh);
+        Meshes.hideWireframe(this.mesh);
+        this.initWireframe();
     }
 
     setColor(texture:Texture): void {
@@ -64,5 +72,12 @@ export class Module {
     private static setTexture(material: MeshLambertMaterial, texture: Texture) {
         material.map = texture;
         material.needsUpdate = true;
+    }
+
+    get depth(): number {
+        return this._depth;
+    }
+    get width(): number {
+        return this._width;
     }
 }
