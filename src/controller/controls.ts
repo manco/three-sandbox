@@ -8,7 +8,7 @@ import {CameraFactory} from "../model/cameraFactory";
 
 export class Controls extends Observable {
 
-    private readonly Init2dPosition:Vector3 = new Vector3(0, 900, 0);
+    private readonly Init2dPosition:Vector3 = new Vector3(0, 0, 900);
 
     private readonly orbitControls: OrbitControls;
     private is2d = false;

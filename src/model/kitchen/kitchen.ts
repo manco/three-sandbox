@@ -1,6 +1,6 @@
 import ModulesFactory from '../modules/modules-factory'
 import {Message, Observable} from "../../utils/observable";
-import {DoubleSide, ExtrudeBufferGeometry, Mesh, MeshLambertMaterial, PlaneBufferGeometry, Scene, Shape, Vector3} from "three";
+import {DoubleSide, ExtrudeBufferGeometry, Mesh, MeshLambertMaterial, PlaneBufferGeometry, Scene, Shape} from "three";
 import {Camera} from "three";
 import {Raycaster} from "three";
 import {Intersection} from "three";
@@ -26,7 +26,7 @@ import {Settlement} from "./Settler";
 import {Direction} from "./Settler";
 
 class FloorFactory {
-    public static create(width:number, depth:number, rotate:MutateMeshFun): Mesh {
+    public static create(width:number, depth:number): Mesh {
         const mesh = new Mesh(
             new PlaneBufferGeometry( width, depth ),
             new MeshLambertMaterial({
@@ -34,7 +34,6 @@ class FloorFactory {
                 side: DoubleSide
             }) );
         mesh.name = "Floor";
-        rotate(mesh);
         return mesh;
     }
 }
@@ -53,16 +52,15 @@ export class Wall {
         readonly rotateMesh:MutateMeshFun = Lang.noop
     ) {
         this.mesh = Wall.createMesh(name, width, height, depth);
-        this.translateMesh(this.mesh);
         this.rotateMesh(this.mesh);
+        this.translateMesh(this.mesh);
         this.mesh.geometry.computeBoundingBox();
     }
 
     put(module:Module, index:number, settlement:Settlement, slotWidth:number): void {
 
-        this.translateMesh(module.mesh);
-        module.initRotation();
         this.rotateMesh(module.mesh);
+        this.translateMesh(module.mesh);
 
         this.moveAwayFromWall(module);
 
@@ -83,7 +81,7 @@ export class Wall {
 
     private moveAwayFromWall(module: Module) {
         module.mesh.translateX(-this.mesh.geometry.boundingBox.max.x);
-        module.mesh.translateY(-this.mesh.geometry.boundingBox.max.z);
+        module.mesh.translateY(-this.mesh.geometry.boundingBox.max.y);
     }
 
     private static createMesh(name:string, width:number, height:number, depth:number): Mesh {
@@ -101,14 +99,16 @@ export class Wall {
         rect.lineTo( maxx, height );
         rect.lineTo( maxx, 0 );
         rect.lineTo( minx, 0 );
-        const mesh = new Mesh(
-            new ExtrudeBufferGeometry(rect, {
+        const geom = new ExtrudeBufferGeometry(rect, {
                 depth: depth,
                 bevelThickness:1,
                 bevelSize: 0,
                 bevelSegments: 1
             }
-        ), material
+        );
+        geom.rotateX(Math.PI/2);
+        const mesh = new Mesh(
+            geom, material
         );
         mesh.name = "Wall" + name;
         mesh.receiveShadow = true;
@@ -137,7 +137,7 @@ export class Kitchen extends Observable {
         dimensions: Dimensions,
         wallNames: string[]
     ): void {
-        this.floor = FloorFactory.create(dimensions.width, dimensions.depth, m => m.rotateX(- Math.PI / 2 ) );
+        this.floor = FloorFactory.create(dimensions.width, dimensions.depth);
         this.scene.add(this.floor);
 
         const factories: Map<string, () => Wall> = wallsFactories(dimensions.width, dimensions.depth, dimensions.height);
@@ -172,16 +172,17 @@ export class Kitchen extends Observable {
             });
             //detect holes, candidates to expand
             this.walls.forEach( wall => {
-                const holeSize = this.settlement.wallHoleSize.get(wall.name);
                 const maxIndex = this.settlement.modulesCount.get(wall.name);
                 const moduleNextToHole = this.modules.bySlot([wall.name, maxIndex]).get(type);
-                const factor = (holeSize / moduleNextToHole.width);
-                moduleNextToHole.mesh.geometry.scale(1 + factor/2, 1, 1);
-                moduleNextToHole.mesh.geometry.computeBoundingBox();
-                const signum = this.settlement.fillDirection.get(wall.name) === Direction.TO_LEFT ? -1 : 1;
-               moduleNextToHole.mesh.translateX(signum * holeSize/4);
-
-                moduleNextToHole.recalculateDimensions();
+                if (moduleNextToHole !== undefined) {
+                    const holeSize = this.settlement.wallHoleSize.get(wall.name);
+                    const factor = (holeSize / moduleNextToHole.width);
+                    moduleNextToHole.mesh.geometry.scale(1 + factor/2, 1, 1);
+                    moduleNextToHole.mesh.geometry.computeBoundingBox();
+                    const signum = this.settlement.fillDirection.get(wall.name) === Direction.TO_LEFT ? -1 : 1;
+                    moduleNextToHole.mesh.translateX(signum * holeSize/4);
+                    moduleNextToHole.recalculateDimensions();
+                }
             })
         });
 
@@ -276,28 +277,27 @@ export class Kitchen extends Observable {
 
 export const wallsFactories = (width:number, depth:number, height:number):Map<string, () => Wall> => {
 
-    const axisY = new Vector3(0, 1, 0);
     const wallDepth = 8;
     const widthAdjusted = width + wallDepth;
     const depthAdjusted = depth + wallDepth;
 
-    const wallA = () => new Wall("A", widthAdjusted, height, wallDepth,
-        (m:Mesh) => m.translateZ(-depthAdjusted / 2 - wallDepth/2)
+    const wallA = () => new Wall("A", widthAdjusted, height, wallDepth
+        ,(m:Mesh) => m.translateY((depthAdjusted + wallDepth)/2)
     );
 
     const wallB = () => new Wall("B", depthAdjusted, height, wallDepth,
-        (m:Mesh) => m.translateX(widthAdjusted / 2 + wallDepth/2),
-        (m:Mesh) => m.rotateOnWorldAxis(axisY, -Math.PI / 2)
+        (m:Mesh) => m.translateY((widthAdjusted + wallDepth)/2)
+        ,(m:Mesh) => m.rotateZ(-Math.PI / 2)
     );
 
     const wallC = () => new Wall("C", widthAdjusted, height, wallDepth,
-        (m:Mesh) => m.translateZ(depthAdjusted / 2 + wallDepth/2),
-        (m:Mesh) => m.rotateOnWorldAxis(axisY, Math.PI)
+        (m:Mesh) => m.translateY((depthAdjusted + wallDepth)/2),
+        (m:Mesh) => m.rotateZ(Math.PI)
     );
 
     const wallD = () => new Wall("D", depthAdjusted, height, wallDepth,
-        (m:Mesh) => m.translateX(-widthAdjusted / 2 - wallDepth/2),
-        (m:Mesh) => { m.rotateOnWorldAxis(axisY, Math.PI / 2) }
+        (m:Mesh) => m.translateY((widthAdjusted + wallDepth)/2),
+        (m:Mesh) => { m.rotateZ(Math.PI / 2) }
     );
 
     return new Map([["A", wallA], ["B", wallB], ["C", wallC], ["D", wallD]]);
@@ -326,7 +326,7 @@ export class Indexes {
         return Maps.getOrDefault(this.byWall(wall), index, new Map());
     }
 
-    private byWall(wall: string) {
+    private byWall(wall: string): Map<number, Map<ModuleType, Module>> {
         return Maps.getOrDefault(this._bySlot, wall, new Map());
     }
 

@@ -4,7 +4,7 @@ export class SceneFactory {
     static create(): Scene {
         const light = new DirectionalLight( 0xffffff, 0.7 );
         light.name = 'DirLight';
-        light.position.set( 100, 300, 100 );
+        light.position.set( 100, -100, 300 );
         light.castShadow = true;
         light.shadow.camera.near = 1;
         light.shadow.camera.far = 500;

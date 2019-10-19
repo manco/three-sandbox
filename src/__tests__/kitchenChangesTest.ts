@@ -9,12 +9,13 @@ import {Kitchen} from "../model/kitchen/kitchen";
 import {Dimensions} from "../model/kitchen/kitchen";
 import ModulesFactory from "../model/modules/modules-factory";
 import {Meshes} from "./helpers/meshes";
+import {ModuleType} from "../model/modules/types";
 
 jest.mock("../model/modules/modules-factory");
 jest.mock("../model/colors");
 jest.mock("../model/modules/module-functions");
 
-const moduleWithFront = Modules.moduleWithFront(Meshes.box("withF"));
+const moduleWithFront = Modules.moduleWithFront(Meshes.box("withF"), ModuleType.STANDING);
 //@ts-ignore
 ModulesFactory.mockImplementation(() => {
     return {

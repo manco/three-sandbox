@@ -45,7 +45,7 @@ export class Page {
             actions.selectModuleById(msg.obj.id);
         });
 
-        kitchenApi.onLoad((msg) => controls.setTarget(new Vector3(0, msg.obj.height / 2, 0)));
+        kitchenApi.onLoad((msg) => controls.setTarget(new Vector3(0, 0, msg.obj.height / 2)));
 
         kitchenApi.onModuleSelected(msg => {
             const objElement = this.doc.getElementById(msg.obj.id);

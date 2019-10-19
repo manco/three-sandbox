@@ -19,8 +19,9 @@ export class CameraFactory {
         setFrustum();
         threeJsCamera.position.copy(this.InitPosition);
         window.addEventListener( 'resize', setFrustum, false );
+        threeJsCamera.up.set(0,0,1);
         return threeJsCamera;
     }
 
-    public static readonly InitPosition : Vector3 = new Vector3(90, 450, 350);
+    public static readonly InitPosition : Vector3 = new Vector3(90, -350, 450);
 }
