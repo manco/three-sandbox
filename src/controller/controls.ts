@@ -26,10 +26,12 @@ export class Controls extends Observable {
             this.actions.hideWireframe();
             this.camera.position.copy(CameraFactory.InitPosition);
             this.is2d = false;
+            this.notify(new Message("SET_VIEW_3D"));
         } else {
             this.actions.showWireframe();
             this.camera.position.copy(this.Init2dPosition);
             this.is2d = true;
+            this.notify(new Message("SET_VIEW_2D"));
         }
         this.setTarget(this.target0);
     }

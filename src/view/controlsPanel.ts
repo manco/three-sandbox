@@ -10,7 +10,7 @@ export class ControlsPanel {
         const panel = doc.getElementById("controls");
         const buttonZoomIn = panel.querySelector('button[id=\"zoomin\"]');
         const buttonZoomOut = panel.querySelector('button[id=\"zoomout\"]');
-        const buttonCenter = panel.querySelector('button[id=\"center\"]');
+        const buttonSwitch2d3d = panel.querySelector('button[id=\"switch2d3d\"]');
         const buttonModePan = panel.querySelector('button[id=\"modepan\"]');
         const buttonModeRotate = panel.querySelector('button[id=\"moderotate\"]');
         const buttonUndo = panel.querySelector('button[id=\"undo\"]');
@@ -37,7 +37,23 @@ export class ControlsPanel {
         Events.onClick(buttonZoomOut, () => controls.zoomOut());
         Events.onClick(buttonModePan, () => controls.toggleMouseMode(MouseMode.PAN_ONLY));
         Events.onClick(buttonModeRotate, () => controls.toggleMouseMode(MouseMode.ROTATE_ONLY));
-        Events.onClick(buttonCenter, () => controls.switch2d3d());
+        Events.onClick(buttonSwitch2d3d, () => controls.switch2d3d());
+
+        controls.subscribe(msg => {
+            switch(msg.type) {
+                case "SET_VIEW_3D":
+                    buttonSwitch2d3d.classList.remove("icon-3d");
+                    buttonSwitch2d3d.classList.add("icon-2d");
+                    break;
+                case "SET_VIEW_2D":
+                    buttonSwitch2d3d.classList.remove("icon-2d");
+                    buttonSwitch2d3d.classList.add("icon-3d");
+                    break;
+                default:
+                    break;
+            }
+        });
+
         Events.onClick(buttonUndo, () => controls.undo());
     }
 }
