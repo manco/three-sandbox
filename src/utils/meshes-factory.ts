@@ -5,7 +5,6 @@ import {Meshes} from "./meshes";
 
 export class MeshFactory {
     private readonly loader = new PromisingLoader();
-    private static readonly Scale: number = 2.535;
     private prototypes: Map<String, Mesh> = null;
 
     loadPrototypes():Promise<void> {
@@ -15,7 +14,7 @@ export class MeshFactory {
                     ([name, path]) =>
                         this.loader.loadSingleMesh(path)
                             .then(m => {
-                                MeshFactory.initMesh(m);
+                                m.geometry.computeBoundingBox();
                                 return [name, m] as [string, Mesh]
                             })
                 )
@@ -26,11 +25,6 @@ export class MeshFactory {
             return Promise.resolve();
         }
     }
-
-    private static initMesh(m:Mesh): void {
-        m.geometry.scale(MeshFactory.Scale, MeshFactory.Scale, MeshFactory.Scale).computeBoundingBox();
-    }
-
     ofType(type:string):Mesh {
         return this.prototypes.get(type);
     }
@@ -39,7 +33,7 @@ export class MeshFactory {
         const mesh = this.ofType(type).clone();
         mesh.geometry = mesh.geometry.clone();
         if (Meshes.hasFront(mesh)) {
-            mesh.material = [new MeshLambertMaterial(), new MeshLambertMaterial()];
+            mesh.material = (mesh.material as Array<Object>).map(_ => new MeshLambertMaterial());
         } else {
             mesh.material = new MeshLambertMaterial();
         }

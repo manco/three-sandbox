@@ -178,9 +178,9 @@ const ModuleFunctionTextures = [
     new TextureDefinition(ModuleFunction.WASHER_1, 'functions/pralka.png'),
     new TextureDefinition(ModuleFunction.DISHWASHER_1, 'functions/zmywarka.png'),
     new TextureDefinition(ModuleFunction.UNDER_SINK, 'functions/zlewozmywak.png'),
-    new TextureDefinition(ModuleFunction.CHAMBER_1, 'functions/zlewozmywak.png'),
-    new TextureDefinition(ModuleFunction.CHAMBER_DRAINER, 'functions/zlewozmywak.png'),
-    new TextureDefinition(ModuleFunction.CHAMBER_2, 'functions/zlewozmywak.png'),
+    new TextureDefinition(ModuleFunction.CHAMBER_1, 'functions/zlewozmywak_white.jpg'),
+    new TextureDefinition(ModuleFunction.CHAMBER_DRAINER, 'functions/zlewozmywak_white.jpg'),
+    new TextureDefinition(ModuleFunction.CHAMBER_2, 'functions/zlewozmywak_white.jpg'),
     new TextureDefinition(ModuleFunction.OVEN_TABLETOP, 'functions/plyta.jpg')
 ];
 
