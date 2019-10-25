@@ -81,7 +81,7 @@ export class Wall {
 
     private moveAwayFromWall(module: Module) {
         module.mesh.translateX(-this.mesh.geometry.boundingBox.max.x);
-        module.mesh.translateY(-this.mesh.geometry.boundingBox.max.y);
+        module.mesh.translateY(-this.depth);
     }
 
     private static createMesh(name:string, width:number, height:number, depth:number): Mesh {
