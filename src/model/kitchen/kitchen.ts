@@ -43,6 +43,8 @@ type Slot = [string, number]
 export class Wall {
     readonly mesh: Mesh;
 
+    readonly floorWidth = this.width - this.depth;
+
     constructor(
         readonly name:string,
         readonly width:number,
@@ -62,7 +64,8 @@ export class Wall {
         this.rotateMesh(module.mesh);
         this.translateMesh(module.mesh);
 
-        this.moveAwayFromWall(module);
+        module.mesh.translateX(-this.mesh.geometry.boundingBox.max.x);
+        module.mesh.translateY(-this.depth);
 
         module.mesh.translateX(slotWidth/2);
 
@@ -78,12 +81,6 @@ export class Wall {
         //don't know how does it help
         if (direction === Direction.TO_RIGHT) module.mesh.translateX(this.depth);
     }
-
-    private moveAwayFromWall(module: Module) {
-        module.mesh.translateX(-this.mesh.geometry.boundingBox.max.x);
-        module.mesh.translateY(-this.depth);
-    }
-
     private static createMesh(name:string, width:number, height:number, depth:number): Mesh {
         const material = new MeshLambertMaterial( {
             color: 0xbdbdbd,
@@ -177,10 +174,10 @@ export class Kitchen extends Observable {
                 if (moduleNextToHole !== undefined) {
                     const holeSize = this.settlement.wallHoleSize.get(wall.name);
                     const factor = (holeSize / moduleNextToHole.width);
-                    moduleNextToHole.mesh.geometry.scale(1 + factor/2, 1, 1);
+                    moduleNextToHole.mesh.geometry.scale(1 + factor, 1, 1);
                     moduleNextToHole.mesh.geometry.computeBoundingBox();
                     const signum = this.settlement.fillDirection.get(wall.name) === Direction.TO_LEFT ? -1 : 1;
-                    moduleNextToHole.mesh.translateX(signum * holeSize/4);
+                    moduleNextToHole.mesh.translateX(signum * holeSize/2);
                     moduleNextToHole.recalculateDimensions();
                 }
             })

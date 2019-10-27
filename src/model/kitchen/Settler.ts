@@ -58,7 +58,7 @@ export class Settler {
 
     private spaceForModules(wall:Wall, corners:Corner[]) {
         const cornersCount = corners.filter(c => c.contains(wall.name)).length;
-        return wall.width - (cornersCount * this.cornerWidth);
+        return wall.floorWidth - cornersCount * this.cornerWidth;
     }
 
     private goLeftIfCornerOnRight(wall: string, corners: Corner[]): Direction {
