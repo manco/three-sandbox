@@ -162,25 +162,12 @@ export class Kitchen extends Observable {
                 this.addModule([corner.left, 0], m);
             });
             this.walls.forEach(wall => {
-                    for (let i = 1; i <= this.settlement.modulesCount.get(wall.name); i++) {
-                        const m = this.moduleLibrary.createForType(type);
-                        this.addModule([wall.name, i], m);
-                    }
-            });
-            //detect holes, candidates to expand
-            this.walls.forEach( wall => {
                 const maxIndex = this.settlement.modulesCount.get(wall.name);
-                const moduleNextToHole = this.modules.bySlot([wall.name, maxIndex]).get(type);
-                if (moduleNextToHole !== undefined) {
-                    const holeSize = this.settlement.wallHoleSize.get(wall.name);
-                    const factor = (holeSize / moduleNextToHole.width);
-                    moduleNextToHole.mesh.geometry.scale(1 + factor, 1, 1);
-                    moduleNextToHole.mesh.geometry.computeBoundingBox();
-                    const signum = this.settlement.fillDirection.get(wall.name) === Direction.TO_LEFT ? -1 : 1;
-                    moduleNextToHole.mesh.translateX(signum * holeSize/2);
-                    moduleNextToHole.recalculateDimensions();
+                for (let i = 1; i <= maxIndex; i++) {
+                    const m = this.moduleLibrary.createForType(type);
+                    this.addModule([wall.name, i], m);
                 }
-            })
+            });
         });
 
     }
@@ -190,6 +177,17 @@ export class Kitchen extends Observable {
         const [wallName, i] = slot;
         const wall = this.walls.get(wallName);
         wall.put(m, i, this.settlement, this.moduleLibrary.slotWidth());
+
+        const maxIndex = this.settlement.modulesCount.get(wallName);
+        if (i == maxIndex) {
+            const holeSize = this.settlement.wallHoleSize.get(wallName);
+            const factor = (holeSize / m.width);
+            m.mesh.geometry.scale(1 + factor, 1, 1);
+            m.mesh.geometry.computeBoundingBox();
+            const signum = this.settlement.fillDirection.get(wallName) === Direction.TO_LEFT ? -1 : 1;
+            m.recalculateDimensions();
+            m.mesh.translateX(signum * holeSize/2);
+        }
 
         this.scene.add(m.mesh);
         this.index(m, slot);
