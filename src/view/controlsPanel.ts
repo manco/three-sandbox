@@ -12,7 +12,7 @@ export class ControlsPanel {
         const buttonZoomOut = panel.querySelector('button[id=\"zoomout\"]');
         const buttonSwitch2d3d = panel.querySelector('button[id=\"switch2d3d\"]');
         const buttonModePan = panel.querySelector('button[id=\"modepan\"]');
-        const buttonModeRotate = panel.querySelector('button[id=\"moderotate\"]');
+        const buttonModeRotate: HTMLButtonElement = panel.querySelector('button[id=\"moderotate\"]');
         const buttonUndo = panel.querySelector('button[id=\"undo\"]');
 
         const buttonsByMouseMode = new Map<MouseMode, Element>([
@@ -21,15 +21,18 @@ export class ControlsPanel {
         ]);
 
         controls.subscribe(msg => {
-            switch(msg.type) {
-                case "UNSET":
-                    buttonsByMouseMode.get(msg.obj).classList.remove("selected");
-                    break;
-                case "SET":
-                    buttonsByMouseMode.get(msg.obj).classList.add("selected");
-                    break;
-                default:
-                    break;
+            const element = buttonsByMouseMode.get(msg.obj);
+            if (element !== undefined) {
+                switch(msg.type) {
+                    case "UNSET":
+                        element.classList.remove("selected");
+                        break;
+                    case "SET":
+                        element.classList.add("selected");
+                        break;
+                    default:
+                        break;
+                }
             }
         });
 
@@ -44,10 +47,14 @@ export class ControlsPanel {
                 case "SET_VIEW_3D":
                     buttonSwitch2d3d.classList.remove("icon-3d");
                     buttonSwitch2d3d.classList.add("icon-2d");
+                    controls.toggleMouseMode(MouseMode.NONE);
+                    buttonModeRotate.disabled = false;
                     break;
                 case "SET_VIEW_2D":
                     buttonSwitch2d3d.classList.remove("icon-2d");
                     buttonSwitch2d3d.classList.add("icon-3d");
+                    controls.toggleMouseMode(MouseMode.NONE);
+                    buttonModeRotate.disabled = true;
                     break;
                 default:
                     break;
