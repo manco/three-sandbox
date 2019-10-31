@@ -72,6 +72,10 @@ export class Actions {
 
     setModuleSubtype(module: Module, newSubtype: ModuleSubtype): void {
 
+        if (module.isCorner()) {
+            throw "cant change subtype for corner module";
+        }
+
         if (SubtypesLarge.includes(newSubtype)) {
             const slot = this.kitchen.revIndexes.slotFor(module);
             const toRemove = Maps.filterKeys(this.kitchen.modules.bySlot(slot), type => type !== module.type);

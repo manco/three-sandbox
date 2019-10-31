@@ -52,6 +52,7 @@ export class GuiPanel {
                 this.actions.setModuleSubtype(module, ModuleSubtype[ModuleSubtype[inputValue]]);
             }
         );
+        if (module.isCorner()) selectBox.disabled = true;
         li.appendChild(selectBox);
 
         Events.onClick(li, () => this.actions.selectModuleById(li.id));
