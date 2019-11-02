@@ -9,6 +9,7 @@ import {ColorType} from "../colors";
 import {ModuleTypeCorners} from "./module-functions";
 
 export class Module {
+
     public readonly id: string = this.mesh.uuid;
     private readonly colorMaterial;
     private readonly frontMaterial;
@@ -19,16 +20,30 @@ export class Module {
         readonly mesh: Mesh,
         readonly type: ModuleType,
         public subtype: ModuleSubtype,
-        public moduleFunction: ModuleFunction,
-        public color: ColorType
+        public readonly moduleFunction: ModuleFunction,
+        public color: ColorType,
+        public readonly resized?: (Module) => void
     ) {
         this.recalculateDimensions();
+        if (this.isResized()) {
+            resized(this);
+            this.recalculateDimensions();
+        }
         if (this.hasFront) {
             this.colorMaterial = mesh.material[1] as MeshLambertMaterial;
             this.frontMaterial = mesh.material[0] as MeshLambertMaterial;
         } else {
             this.colorMaterial = mesh.material as MeshLambertMaterial;
         }
+    }
+
+    resizeTo(size:number):void {
+        this.mesh.geometry.scale(size / this.width, 1, 1);
+        this.mesh.geometry.computeBoundingBox();
+    };
+
+    isResized():boolean {
+        return this.resized !== undefined;
     }
 
     isCorner():boolean {
@@ -39,11 +54,9 @@ export class Module {
         if (this.type !== ModuleType.TABLETOP) Meshes.showWireframe(this.mesh, false);
     }
 
-    recalculateDimensions(): void {
+    private recalculateDimensions(): void {
         this._width = Meshes.meshWidthX(this.mesh);
         this._depth = Meshes.meshDepthY(this.mesh);
-        Meshes.hideWireframe(this.mesh);
-        this.initWireframe();
     }
 
     setColor(texture:Texture): void {

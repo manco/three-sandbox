@@ -4,6 +4,9 @@ import {Maps} from "../../utils/lang";
 export enum Direction {
     TO_LEFT = "TO_LEFT", TO_RIGHT = "TO_RIGHT"
 }
+export namespace Direction {
+    export const signum = (direction: Direction) => direction === Direction.TO_LEFT ? -1 : 1;
+}
 export class Corner {
     constructor(public readonly left:string, public readonly right:string) {}
 
@@ -41,7 +44,7 @@ export class Settler {
             const direction = directions.get(wall.name);
             return (index) => {
                 if (index === 0) return 0;
-                return ( (direction === Direction.TO_LEFT ? -1 : 1) * ((index-1) * this.slotWidth + this.calcOffset(wall.name, directions, corners) ) );
+                return (Direction.signum(direction) * ((index-1) * this.slotWidth + this.calcCornerOffset(wall.name, directions, corners) ) );
             }
         });
 
@@ -65,7 +68,7 @@ export class Settler {
         return corners.find(c => c.left === wall) !== undefined ? Direction.TO_LEFT : Direction.TO_RIGHT;
     }
 
-    private calcOffset(wall: string, fillDirection: Map<string, Direction>, corners: Corner[]) {
+    private calcCornerOffset(wall: string, fillDirection: Map<string, Direction>, corners: Corner[]) {
         if (fillDirection.get(wall) === Direction.TO_LEFT)
             return corners.find(c => c.left === wall) !== undefined ? this.cornerWidth : 0;
 

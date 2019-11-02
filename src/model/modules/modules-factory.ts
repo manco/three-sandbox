@@ -24,21 +24,22 @@ export default class ModulesFactory {
         )
     }
 
-    createForType(type:ModuleType): Module {
+    createForType(type:ModuleType, resized?: (Module) => void): Module {
         const defaultSubtype = ModuleTypeToSubtype.get(type)[0];
         const defaultFunction = ModuleSubtypeToModuleFunction.get(defaultSubtype)[0];
-        return this.createForTypes(type, defaultSubtype, defaultFunction);
+        return this.createForTypes(type, defaultSubtype, defaultFunction, resized);
     }
 
     //types need to be consistent
-    createForTypes(type:ModuleType, subtype: ModuleSubtype, fun:ModuleFunction, color: ColorType = ColorType.WHITE): Module {
+    createForTypes(type:ModuleType, subtype: ModuleSubtype, fun:ModuleFunction, resized?: (Module) => void, color: ColorType = ColorType.WHITE): Module {
         const mesh = this.meshFactory.create(ModuleFunctionToMesh.get(fun));
         const module = new Module(
             mesh,
             type,
             subtype,
             fun,
-            color
+            color,
+            resized
         );
         module.initWireframe();
         return module;

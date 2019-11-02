@@ -80,6 +80,10 @@ export class Wall {
 
         //don't know how does it help
         if (direction === Direction.TO_RIGHT) module.mesh.translateX(this.depth);
+
+        if (module.isResized()) {
+            module.mesh.translateX(Direction.signum(direction) * (module.width - slotWidth) / 2)
+        }
     }
     private static createMesh(name:string, width:number, height:number, depth:number): Mesh {
         const material = new MeshLambertMaterial( {
@@ -163,13 +167,22 @@ export class Kitchen extends Observable {
             });
             this.walls.forEach(wall => {
                 const maxIndex = this.settlement.modulesCount.get(wall.name);
-                for (let i = 1; i <= maxIndex; i++) {
+                for (let i = 1; i < maxIndex; i++) {
                     const m = this.moduleLibrary.createForType(type);
                     this.addModule([wall.name, i], m);
                 }
+                const holeSize = this.settlement.wallHoleSize.get(wall.name);
+
+                if (holeSize <= 30) {
+                    const m = this.moduleLibrary.createForType(type, (m: Module) => m.resizeTo(m.width + holeSize));
+                    this.addModule([wall.name, maxIndex], m);
+                } else {
+                    this.addModule([wall.name, maxIndex], this.moduleLibrary.createForType(type));
+                    const blende = this.moduleLibrary.createForType(type, (m: Module) => m.resizeTo(holeSize));
+                    this.addModule([wall.name, maxIndex+1], blende);
+                }
             });
         });
-
     }
 
     addModule(slot:Slot, m: Module) {
@@ -177,21 +190,7 @@ export class Kitchen extends Observable {
         const [wallName, i] = slot;
         const wall = this.walls.get(wallName);
         wall.put(m, i, this.settlement, this.moduleLibrary.slotWidth());
-
-        const maxIndex = this.settlement.modulesCount.get(wallName);
-        if (i == maxIndex) {
-            const holeSize = this.settlement.wallHoleSize.get(wallName);
-            const factor = (holeSize / m.width);
-            m.mesh.geometry.scale(1 + factor, 1, 1);
-            m.mesh.geometry.computeBoundingBox();
-            const signum = this.settlement.fillDirection.get(wallName) === Direction.TO_LEFT ? -1 : 1;
-            m.recalculateDimensions();
-            m.mesh.translateX(signum * holeSize/2);
-        }
-
-        this.scene.add(m.mesh);
-        this.index(m, slot);
-        this.notify(new Message("ADD", [m, Kitchen.label(slot)]));
+        this.restoreModule(slot, m);
     }
 
     restoreModule(slot:Slot, m: Module) {
@@ -263,7 +262,7 @@ export class Kitchen extends Observable {
 
     setModuleFunction(module: Module, moduleFunction: ModuleFunction): void {
         const slot = this.remove(module);
-        const newModule = this.moduleLibrary.createForTypes(module.type, module.subtype, moduleFunction, module.color);
+        const newModule = this.moduleLibrary.createForTypes(module.type, module.subtype, moduleFunction, module.resized, module.color);
         this.setColor(newModule, newModule.color);
         this.addModule(slot, newModule);
         this.notify(new Message("MODULE_CHANGED", newModule));
