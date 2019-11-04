@@ -1,5 +1,5 @@
 export class Stack<T> {
-    private readonly removed: T[] = [];
+    private removed: T[] = [];
 
     pop():T | undefined {
         return this.removed.pop();
@@ -7,6 +7,10 @@ export class Stack<T> {
 
     push(item:T):void {
         this.removed.push(item);
+    }
+
+    drop():void {
+        this.removed = [];
     }
 
 }

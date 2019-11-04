@@ -12,14 +12,15 @@ import {Meshes} from "../utils/meshes";
 import {Stack} from "../model/stack";
 import {SubtypesLarge} from "../model/modules/types";
 import {Maps} from "../utils/lang";
+import {Slot} from "../model/kitchen/kitchen";
 
 export class Actions {
     constructor(
         private readonly kitchen: Kitchen,
         private readonly moduleSelector: ModuleSelector,
         private readonly camera: Camera,
-        private readonly undoable: Stack<[Module, [string, number]]>, //Module, slot
-        private readonly removed: Array<[[string, number], Module[]]> //multimap
+        private readonly undoable: Stack<[Module, Slot]>,
+        private removed: Array<[Slot, Module[]]> //multimap
     ) {}
 
     showWireframe() {
@@ -36,6 +37,8 @@ export class Actions {
 
     loadKitchen(dims: {width:number, depth:number, height:number}, wallNames : string[]):void {
         this.kitchen.removeAll();
+        this.undoable.drop();
+        this.removed = [];
         this.kitchen.initFloorAndWalls(dims, wallNames);
     }
 

@@ -13,6 +13,7 @@ import {FrontsLibrary} from "./model/modules/module-functions";
 import {MeshFactory} from "./utils/meshes-factory";
 import {Module} from "./model/modules/module";
 import {Stack} from "./model/stack";
+import {Slot} from "./model/kitchen/kitchen";
 
 // @ts-ignore
 window.THREE = THREE;
@@ -38,7 +39,7 @@ moduleSelector.subscribe(msg => {
 });
 
 const camera = CameraFactory.create(scene);
-const actions = new Actions(kitchen, moduleSelector, camera, new Stack<[Module, [string, number]]>(), new Array<[[string, number], Module[]]>());
+const actions = new Actions(kitchen, moduleSelector, camera, new Stack<[Module, Slot]>(), new Array<[Slot, Module[]]>());
 
 //@ts-ignore
 window.actions = actions;
