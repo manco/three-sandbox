@@ -13,6 +13,7 @@ import {FunctionsLarge} from "../model/modules/types";
 import {Maps} from "../utils/lang";
 import {Slot} from "../model/kitchen/kitchen";
 import {ModuleFunction} from "../model/modules/types";
+import {Arrays} from "../utils/lang";
 
 export class Actions {
     constructor(
@@ -107,7 +108,9 @@ export class Actions {
 
         if (FunctionsLarge.includes(module.moduleFunction)) {
             const slot = this.kitchen.revIndexes.slotFor(module);
-            const [, modules] = this.removed.find(([s,]) => s === slot);
+            const modulesInSlot = this.removed.find(([s,]) => s === slot);
+            Arrays.remove(this.removed, modulesInSlot);
+            const [,modules] = modulesInSlot;
             modules.forEach(m => this.kitchen.restoreModule(slot, m));
         }
 

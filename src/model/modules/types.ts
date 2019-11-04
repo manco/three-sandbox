@@ -44,7 +44,8 @@ export enum ModuleFunction {
     UNDER_SINK,
     WASHER_1,
     DISHWASHER_1,
-    FRIDGE_1 //fridge
+    FRIDGE_1,
+    FRIDGE_2
 }
 
 export const ModuleTypeCorners: Map<ModuleType, ModuleFunction> = new Map([
@@ -60,7 +61,7 @@ export const ModuleSubtypeToModuleFunction: Map<ModuleSubtype, ModuleFunction[]>
     [ModuleSubtype.OVEN,   [ModuleFunction.OVEN_1]],
     [ModuleSubtype.WASHER, [ModuleFunction.WASHER_1]],
     [ModuleSubtype.DISHWASHER, [ModuleFunction.DISHWASHER_1]],
-    [ModuleSubtype.FRIDGE, [ModuleFunction.FRIDGE_1]],
+    [ModuleSubtype.FRIDGE, [ModuleFunction.FRIDGE_1, ModuleFunction.FRIDGE_2]],
     [ModuleSubtype.SHELVES, [ModuleFunction.SHELVES, ModuleFunction.CORNER_SHELVES]],
     [ModuleSubtype.TABLETOP, [ModuleFunction.TABLETOP, ModuleFunction.CORNER_TABLETOP]],
     [ModuleSubtype.OVEN_TABLETOP, [ModuleFunction.OVEN_TABLETOP]]
@@ -69,6 +70,7 @@ export const ModuleSubtypeToModuleFunction: Map<ModuleSubtype, ModuleFunction[]>
 export const ModuleFunctionsIcons = new Map<ModuleFunction, string>([
     [ ModuleFunction.SHELVES, 'functions/szafka_gora.jpg'],
     [ ModuleFunction.FRIDGE_1, 'functions/lodowka.png'],
+    [ ModuleFunction.FRIDGE_2, 'functions/lodowka.png'],
     [ ModuleFunction.OVEN_1, 'functions/piekarnik.png'],
     [ ModuleFunction.WASHER_1, 'functions/pralka.png'],
     [ ModuleFunction.DISHWASHER_1, 'functions/zmywarka.png'],
@@ -85,12 +87,13 @@ export const ModuleFunctionsIcons = new Map<ModuleFunction, string>([
     [ ModuleFunction.OVEN_TABLETOP, 'functions/plyta.jpg']
 ]);
 
-export const FunctionsLarge = [ModuleFunction.FRIDGE_1];
+export const FunctionsLarge = [ModuleFunction.FRIDGE_2];
 
 export const ModuleTypesAll = Array.from(ModuleTypeToSubtype.keys());
 
 export const ModuleFunctionTextures = [
     new TextureDefinition(ModuleFunction.FRIDGE_1, 'functions/lodowka.png'),
+    new TextureDefinition(ModuleFunction.FRIDGE_2, 'functions/lodowka.png'),
     new TextureDefinition(ModuleFunction.OVEN_1, 'functions/piekarnik.png'),
     new TextureDefinition(ModuleFunction.WASHER_1, 'functions/pralka.png'),
     new TextureDefinition(ModuleFunction.DISHWASHER_1, 'functions/zmywarka.png'),
