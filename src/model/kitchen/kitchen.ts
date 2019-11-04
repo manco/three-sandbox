@@ -38,7 +38,7 @@ class FloorFactory {
     }
 }
 
-type Slot = [string, number]
+export type Slot = [string, number]
 
 export class Wall {
     readonly mesh: Mesh;
@@ -173,7 +173,7 @@ export class Kitchen extends Observable {
                 }
                 const holeSize = this.settlement.wallHoleSize.get(wall.name);
 
-                if (holeSize <= 30) {
+                if (holeSize <= 20) {
                     const m = this.moduleLibrary.createForType(type, (m: Module) => m.resizeTo(m.width + holeSize));
                     this.addModule([wall.name, maxIndex], m);
                 } else {
