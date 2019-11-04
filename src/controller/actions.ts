@@ -7,12 +7,12 @@ import {ModuleSelector} from "../model/module-selector";
 import {Coords} from "../utils/lang";
 import {Camera} from "three";
 import {Module} from "../model/modules/module";
-import {ModuleFunction} from "../model/modules/module-functions";
 import {Meshes} from "../utils/meshes";
 import {Stack} from "../model/stack";
-import {SubtypesLarge} from "../model/modules/types";
+import {FunctionsLarge} from "../model/modules/types";
 import {Maps} from "../utils/lang";
 import {Slot} from "../model/kitchen/kitchen";
+import {ModuleFunction} from "../model/modules/types";
 
 export class Actions {
     constructor(
@@ -79,19 +79,6 @@ export class Actions {
             throw "cant change subtype for corner module";
         }
 
-        if (SubtypesLarge.includes(newSubtype)) {
-            const slot = this.kitchen.revIndexes.slotFor(module);
-            const toRemove = Maps.filterKeys(this.kitchen.modules.bySlot(slot), type => type !== module.type);
-            this.removed.push([slot, Array.from(toRemove.values())]);
-            toRemove.forEach(m => this.kitchen.remove(m));
-        }
-
-        if (SubtypesLarge.includes(module.subtype)) {
-            const slot = this.kitchen.revIndexes.slotFor(module);
-            const [, modules] = this.removed.find(([s,]) => s === slot);
-            modules.forEach(m => this.kitchen.restoreModule(slot, m));
-        }
-
         //propagate to bounded module first
         const boundedSubtype = BoundedSubtypes.get(newSubtype);
         if (boundedSubtype !== undefined) {
@@ -109,8 +96,22 @@ export class Actions {
         this.kitchen.setModuleSubtype(module, newSubtype);
     }
 
-    setModuleFunction(module:Module, moduleFunction: ModuleFunction): void {
-        this.kitchen.setModuleFunction(module, moduleFunction);
+    setModuleFunction(module:Module, newFunction: ModuleFunction): void {
+
+        if (FunctionsLarge.includes(newFunction)) {
+            const slot = this.kitchen.revIndexes.slotFor(module);
+            const toRemove = Maps.filterKeys(this.kitchen.modules.bySlot(slot), type => type !== module.type);
+            this.removed.push([slot, Array.from(toRemove.values())]);
+            toRemove.forEach(m => this.kitchen.remove(m));
+        }
+
+        if (FunctionsLarge.includes(module.moduleFunction)) {
+            const slot = this.kitchen.revIndexes.slotFor(module);
+            const [, modules] = this.removed.find(([s,]) => s === slot);
+            modules.forEach(m => this.kitchen.restoreModule(slot, m));
+        }
+
+        this.kitchen.setModuleFunction(module, newFunction);
     }
 }
 

@@ -3,10 +3,10 @@ import {Module} from "./module";
 import {ModuleTypeToSubtype} from "./types";
 import {ModuleType} from "./types";
 import {ModuleSubtype} from "./types";
-import {ModuleSubtypeToModuleFunction} from "./module-functions";
-import {ModuleFunction} from "./module-functions";
 import {ColorType} from "../colors";
 import {MeshFactory} from "../../utils/meshes-factory";
+import {ModuleSubtypeToModuleFunction} from "./types";
+import {ModuleFunction} from "./types";
 
 export default class ModulesFactory {
     private _slotWidth: number;

@@ -4,9 +4,9 @@ import {Texture} from "three";
 import {Meshes} from "../../utils/meshes";
 import {ModuleType} from "./types";
 import {ModuleSubtype} from "./types";
-import {ModuleFunction} from "./module-functions";
 import {ColorType} from "../colors";
-import {ModuleTypeCorners} from "./module-functions";
+import {ModuleFunction} from "./types";
+import {ModuleTypeCorners} from "./types";
 
 export class Module {
 

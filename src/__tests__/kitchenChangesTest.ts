@@ -3,13 +3,13 @@ import {Scene} from "three";
 import {ColorTypeLibrary} from "../model/colors";
 import {ColorType} from "../model/colors";
 import {FrontsLibrary} from "../model/modules/module-functions";
-import {ModuleFunction} from "../model/modules/module-functions";
 import {Modules} from "./helpers/modules";
 import {Kitchen} from "../model/kitchen/kitchen";
 import {Dimensions} from "../model/kitchen/kitchen";
 import ModulesFactory from "../model/modules/modules-factory";
 import {Meshes} from "./helpers/meshes";
 import {ModuleType} from "../model/modules/types";
+import {ModuleFunction} from "../model/modules/types";
 
 jest.mock("../model/modules/modules-factory");
 jest.mock("../model/colors");

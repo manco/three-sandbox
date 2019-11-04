@@ -17,13 +17,13 @@ import {Lang} from "../../utils/lang";
 import {Coords} from "../../utils/lang";
 import {MultiMaps} from "../../utils/lang";
 import {Maps} from "../../utils/lang";
-import {ModuleFunction} from "../modules/module-functions";
 import {FrontsLibrary} from "../modules/module-functions";
-import {ModuleSubtypeToModuleFunction} from "../modules/module-functions";
-import {ModuleTypeCorners} from "../modules/module-functions";
 import {Settler} from "./Settler";
 import {Settlement} from "./Settler";
 import {Direction} from "./Settler";
+import {ModuleTypeCorners} from "../modules/types";
+import {ModuleSubtypeToModuleFunction} from "../modules/types";
+import {ModuleFunction} from "../modules/types";
 
 class FloorFactory {
     public static create(width:number, depth:number): Mesh {

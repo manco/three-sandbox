@@ -1,9 +1,9 @@
 import {SmartDoc} from "./html/smart-doc";
 import {Module} from "../model/modules/module";
-import {ModuleSubtypeToModuleFunction} from "../model/modules/module-functions";
-import {ModuleFunctionsIcons} from "../model/modules/module-functions";
 import {Events} from "./html/events";
 import {Actions} from "../controller/actions";
+import {ModuleSubtypeToModuleFunction} from "../model/modules/types";
+import {ModuleFunctionsIcons} from "../model/modules/types";
 
 export class FunctionsPanel {
 
