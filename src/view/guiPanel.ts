@@ -35,14 +35,7 @@ export class GuiPanel {
     public addModuleToModuleList([module, index]: [Module, number]) {
         const li = this.doc.createLi(`${module.id}`, index);
 
-        const options = ModuleTypeToSubtype.get(module.type)
-            .map(stype => {
-                return {
-                    value: `${stype}`,
-                    text: Labels.ModuleSubtypesLabels.get(stype),
-                    isSelected: module.subtype == stype
-                }
-            });
+        const options = this.createOptions(module);
 
         const selectBox = Html.select(this.doc, options);
         Events.onInputChange(
@@ -52,7 +45,7 @@ export class GuiPanel {
                 this.actions.setModuleSubtype(module, ModuleSubtype[ModuleSubtype[inputValue]]);
             }
         );
-        if (module.isCorner()) selectBox.disabled = true;
+        if (module.isCorner() || module.isResized()) selectBox.disabled = true;
         li.appendChild(selectBox);
 
         Events.onClick(li, () => this.actions.selectModuleById(li.id));
@@ -61,6 +54,25 @@ export class GuiPanel {
 
         if (firstHigher === undefined) modulesList.appendChild(li);
         else modulesList.insertBefore(li, firstHigher);
+    }
+
+    private createOptions(module:Module) {
+        if (module.isCorner())
+            return [GuiPanel.singleOption("corner", "narożnik", true)];
+
+        if (module.isResized())
+            return [GuiPanel.singleOption(`${module.resize.reason}`, Labels.ResizedLabels.get(module.resize.reason), true)];
+
+        return ModuleTypeToSubtype.get(module.type)
+            .map(stype => GuiPanel.singleOption(`${stype}`, Labels.ModuleSubtypesLabels.get(stype), module.subtype == stype));
+    }
+
+    private static singleOption(value:string, text:string, isSelected:boolean) {
+        return {
+            value: value,
+            text: text,
+            isSelected: isSelected
+        };
     }
 
     private guiCheckboxesValues(): string[] {

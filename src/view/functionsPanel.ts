@@ -4,6 +4,7 @@ import {Events} from "./html/events";
 import {Actions} from "../controller/actions";
 import {ModuleSubtypeToModuleFunction} from "../model/modules/types";
 import {ModuleFunctionsIcons} from "../model/modules/types";
+import {ResizeReason} from "../model/modules/resizing";
 
 export class FunctionsPanel {
 
@@ -20,13 +21,18 @@ export class FunctionsPanel {
     }
 
     public fillFunctionsList(module: Module): void {
-        const listItems = ModuleSubtypeToModuleFunction.get(module.subtype).map(mf => {
+        this.items(module).forEach(li => this.panel.appendChild(li));
+    }
+
+    private items(module: Module) {
+        if (module.isCorner() || module.resize.reason == ResizeReason.BLENDE) return [];
+
+        return ModuleSubtypeToModuleFunction.get(module.subtype).map(mf => {
             const div = this.doc.createDiv();
-            div.className="functionInputBgnd";
+            div.className = "functionInputBgnd";
             div.appendChild(this.imgInput(mf, module));
             return div;
         });
-        listItems.forEach(li => this.panel.appendChild(li));
     }
 
     private imgInput(mf, module: Module) {

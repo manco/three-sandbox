@@ -1,7 +1,14 @@
 import {ModuleSubtype} from "../model/modules/types";
 import {ModuleType} from "../model/modules/types";
+import {ResizeReason} from "../model/modules/resizing";
 
 export class Labels {
+
+    public static readonly ResizedLabels = new Map<ResizeReason, string>([
+        [ResizeReason.EXPANSION, "niestandardowy"],
+        [ResizeReason.BLENDE, "blenda"]
+    ]);
+
     public static readonly ModuleSubtypesLabels = new Map<ModuleSubtype, string>([
         [ModuleSubtype.SHELVES, "półki"],
         [ModuleSubtype.DRAWERS, "szuflady"],
