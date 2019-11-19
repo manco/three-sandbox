@@ -5,6 +5,7 @@ import {MeshLambertMaterial} from "three";
 import {ModuleType} from "../../model/modules/types";
 import {Meshes} from "./meshes";
 import {ColorType} from "../../model/colors";
+import {ResizeStrategyFactory} from "../../model/modules/resizing";
 
 export class Modules {
     static module(type: ModuleType = null, mesh: Mesh = Meshes.box()):Module {
@@ -22,6 +23,6 @@ export class Modules {
     }
 
     private static dummyModule(mesh: Mesh, type: ModuleType) {
-        return new Module(mesh, type, null, null, ColorType.WHITE);
+        return new Module(mesh, type, null, null, ColorType.WHITE, ResizeStrategyFactory.NOOP);
     }
 }

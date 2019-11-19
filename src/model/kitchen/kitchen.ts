@@ -7,10 +7,15 @@ import {Intersection} from "three";
 import {Object3D} from "three";
 import {MutateMeshFun} from "../../utils/meshes";
 import {Module} from "../modules/module";
+import {ResizeStrategyFactory} from "../modules/resizing";
+import {ResizeReason} from "../modules/resizing";
 import {ModuleTypesAll} from "../modules/types";
 import {ModuleType} from "../modules/types";
 import {ModuleSubtype} from "../modules/types";
 import {ModuleTypeToSubtype} from "../modules/types";
+import {ModuleTypeCorners} from "../modules/types";
+import {ModuleSubtypeToModuleFunction} from "../modules/types";
+import {ModuleFunction} from "../modules/types";
 import {ColorTypeLibrary} from "../colors";
 import {ColorType} from "../colors";
 import {Lang} from "../../utils/lang";
@@ -21,9 +26,6 @@ import {FrontsLibrary} from "../modules/module-functions";
 import {Settler} from "./Settler";
 import {Settlement} from "./Settler";
 import {Direction} from "./Settler";
-import {ModuleTypeCorners} from "../modules/types";
-import {ModuleSubtypeToModuleFunction} from "../modules/types";
-import {ModuleFunction} from "../modules/types";
 
 class FloorFactory {
     public static create(width:number, depth:number): Mesh {
@@ -171,15 +173,18 @@ export class Kitchen extends Observable {
                     const m = this.moduleLibrary.createForType(type);
                     this.addModule([wall.name, i], m);
                 }
-                const holeSize = this.settlement.wallHoleSize.get(wall.name);
+                const resizeStrategy = ResizeStrategyFactory.byHoleSize(this.settlement.wallHoleSize.get(wall.name));
 
-                if (holeSize <= 20) {
-                    const m = this.moduleLibrary.createForType(type, (m: Module) => m.resizeTo(m.width + holeSize));
-                    this.addModule([wall.name, maxIndex], m);
-                } else {
-                    this.addModule([wall.name, maxIndex], this.moduleLibrary.createForType(type));
-                    const blende = this.moduleLibrary.createForType(type, (m: Module) => m.resizeTo(holeSize));
-                    this.addModule([wall.name, maxIndex+1], blende);
+                switch (resizeStrategy.reason) {
+                    case ResizeReason.EXPANSION:
+                        const m = this.moduleLibrary.createForType(type, resizeStrategy);
+                        this.addModule([wall.name, maxIndex], m);
+                        break;
+                    case ResizeReason.BLENDE:
+                        this.addModule([wall.name, maxIndex], this.moduleLibrary.createForType(type));
+                        const blende = this.moduleLibrary.createForType(type, resizeStrategy);
+                        this.addModule([wall.name, maxIndex+1], blende);
+                        break;
                 }
             });
         });
@@ -262,7 +267,7 @@ export class Kitchen extends Observable {
 
     setModuleFunction(module: Module, moduleFunction: ModuleFunction): void {
         const slot = this.remove(module);
-        const newModule = this.moduleLibrary.createForTypes(module.type, module.subtype, moduleFunction, module.resized, module.color);
+        const newModule = this.moduleLibrary.createForTypes(module.type, module.subtype, moduleFunction, module.resize, module.color);
         this.setColor(newModule, newModule.color);
         this.addModule(slot, newModule);
         this.notify(new Message("MODULE_CHANGED", newModule));

@@ -7,6 +7,8 @@ import {ColorType} from "../colors";
 import {MeshFactory} from "../../utils/meshes-factory";
 import {ModuleSubtypeToModuleFunction} from "./types";
 import {ModuleFunction} from "./types";
+import {ResizeStrategy} from "./resizing";
+import {ResizeStrategyFactory} from "./resizing";
 
 export default class ModulesFactory {
     private _slotWidth: number;
@@ -24,14 +26,14 @@ export default class ModulesFactory {
         )
     }
 
-    createForType(type:ModuleType, resized?: (Module) => void): Module {
+    createForType(type:ModuleType, resize: ResizeStrategy = ResizeStrategyFactory.NOOP): Module {
         const defaultSubtype = ModuleTypeToSubtype.get(type)[0];
         const defaultFunction = ModuleSubtypeToModuleFunction.get(defaultSubtype)[0];
-        return this.createForTypes(type, defaultSubtype, defaultFunction, resized);
+        return this.createForTypes(type, defaultSubtype, defaultFunction, resize);
     }
 
     //types need to be consistent
-    createForTypes(type:ModuleType, subtype: ModuleSubtype, fun:ModuleFunction, resized?: (Module) => void, color: ColorType = ColorType.WHITE): Module {
+    createForTypes(type:ModuleType, subtype: ModuleSubtype, fun:ModuleFunction, resize: ResizeStrategy = ResizeStrategyFactory.NOOP, color: ColorType = ColorType.WHITE): Module {
         const mesh = this.meshFactory.create(ModuleFunctionToMesh.get(fun));
         const module = new Module(
             mesh,
@@ -39,7 +41,7 @@ export default class ModulesFactory {
             subtype,
             fun,
             color,
-            resized
+            resize
         );
         module.initWireframe();
         return module;

@@ -7,6 +7,8 @@ import {ModuleSubtype} from "./types";
 import {ColorType} from "../colors";
 import {ModuleFunction} from "./types";
 import {ModuleTypeCorners} from "./types";
+import {ResizeStrategy} from "./resizing";
+import {ResizeStrategyFactory} from "./resizing";
 
 export class Module {
 
@@ -22,11 +24,11 @@ export class Module {
         public subtype: ModuleSubtype,
         public readonly moduleFunction: ModuleFunction,
         public color: ColorType,
-        public readonly resized?: (Module) => void
+        public readonly resize: ResizeStrategy
     ) {
         this.recalculateDimensions();
         if (this.isResized()) {
-            resized(this);
+            resize.applyOn(this);
             this.recalculateDimensions();
         }
         if (this.hasFront) {
@@ -37,13 +39,8 @@ export class Module {
         }
     }
 
-    resizeTo(size:number):void {
-        this.mesh.geometry.scale(size / this.width, 1, 1);
-        this.mesh.geometry.computeBoundingBox();
-    };
-
     isResized():boolean {
-        return this.resized !== undefined;
+        return this.resize !== ResizeStrategyFactory.NOOP;
     }
 
     isCorner():boolean {
