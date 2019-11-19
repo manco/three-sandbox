@@ -84,7 +84,8 @@ export const ModuleFunctionsIcons = new Map<ModuleFunction, string>([
     [ ModuleFunction.CHAMBER_1, 'functions/zlewozmywak_jednokomorowy.jpg'],
     [ ModuleFunction.CHAMBER_DRAINER, 'functions/zlewozmywak_ociekacz.jpg'],
     [ ModuleFunction.CHAMBER_2, 'functions/zlewozmywak_dwukomorowy.jpg'],
-    [ ModuleFunction.OVEN_TABLETOP, 'functions/plyta.jpg']
+    [ ModuleFunction.OVEN_TABLETOP, 'functions/plyta.jpg'],
+    [ ModuleFunction.TABLETOP, 'textures/white.jpg']
 ]);
 
 export const FunctionsLarge = [ModuleFunction.FRIDGE_2];
