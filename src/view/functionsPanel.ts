@@ -5,6 +5,7 @@ import {Actions} from "../controller/actions";
 import {ModuleSubtypeToModuleFunction} from "../model/modules/types";
 import {ModuleFunctionsIcons} from "../model/modules/types";
 import {ResizeReason} from "../model/modules/resizing";
+import {ModuleTypeCorners} from "../model/modules/types";
 
 export class FunctionsPanel {
 
@@ -26,8 +27,10 @@ export class FunctionsPanel {
 
     private items(module: Module) {
         if (module.isCorner() || module.resize.reason == ResizeReason.BLENDE) return [];
-
-        return ModuleSubtypeToModuleFunction.get(module.subtype).map(mf => {
+        const cornerType = ModuleTypeCorners.get(module.type);
+        return ModuleSubtypeToModuleFunction.get(module.subtype)
+            .filter(mf => mf !== cornerType)
+            .map(mf => {
             const div = this.doc.createDiv();
             div.className = "functionInputBgnd";
             div.appendChild(this.imgInput(mf, module));
