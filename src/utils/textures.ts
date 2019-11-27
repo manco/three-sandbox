@@ -1,8 +1,15 @@
 import {TextureLoader} from "three";
 import {Texture} from "three";
 import {RepeatWrapping} from "three";
-import {LinearMipMapLinearFilter} from "three";
-import {NearestFilter} from "three";
+
+export class TextureInitializer {
+    static withNameAndWrapping(texture: Texture, name: string): Texture {
+        texture.name = name;
+        texture.wrapS = RepeatWrapping;
+        texture.wrapT = RepeatWrapping;
+        return texture;
+    }
+}
 
 export class TextureDefinition<T> {
     constructor(
@@ -22,21 +29,12 @@ export abstract class TexturesLibrary<T> {
             definitions.map(
             d =>
                 new Promise<Texture>(f => this.loader.load(d.url, f))
-                    .then(t => {
-                        t.name = d.type.toString();
-                        return TexturesLibrary.withOptions(t);
-                    })
+                    .then(tex => TextureInitializer.withNameAndWrapping(tex, d.type.toString()))
                     .then(tex => this.textures.set(d.type, tex))
             )
         );
     }
 
-
-    private static withOptions(t: Texture): Texture {
-        t.wrapS = RepeatWrapping;
-        t.wrapT = RepeatWrapping;
-        return t;
-    }
 
     loadingPromise() {
         return this.loading;

@@ -7,6 +7,7 @@ import {CanvasTexture} from "three";
 import {ModuleFunction} from "./types";
 import {ModuleFunctionTextures} from "./types";
 import {ModuleFunctionTexturesAll} from "./types";
+import {TextureInitializer} from "../../utils/textures";
 
 /*
 
@@ -75,7 +76,7 @@ export class FrontsLibrary {
                             colorTexture.image as HTMLImageElement,
                             functionTexture.image as HTMLImageElement,
                             ctx);
-                    blended.name = colorTexture.name + functionTexture.name;
+                    TextureInitializer.withNameAndWrapping(blended, colorTexture.name + functionTexture.name);
                     inner.set(color, blended);
                 });
                 this.textures.set(fun, inner);
