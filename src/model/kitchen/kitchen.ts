@@ -26,6 +26,7 @@ import {FrontsLibrary} from "../modules/module-functions";
 import {Settler} from "./Settler";
 import {Settlement} from "./Settler";
 import {Direction} from "./Settler";
+import {Obstacle} from "./obstacle";
 
 class FloorFactory {
     public static create(width:number, depth:number): Mesh {
@@ -124,7 +125,8 @@ export class Kitchen extends Observable {
     public readonly revIndexes = new ReverseIndexes();
 
     private readonly raycaster = new Raycaster();
-    private walls: Map<string, Wall> = new Map();
+    private readonly walls: Map<string, Wall> = new Map();
+    private obstacles: Obstacle[];
     private settlement: Settlement = null;
     private floor: Mesh = null;
     constructor(
@@ -242,7 +244,8 @@ export class Kitchen extends Observable {
 
     removeAll(): void {
         this.walls.forEach(wall => this.scene.remove(wall.mesh));
-        this.walls = new Map();
+        this.walls.clear();
+        this.obstacles = [];
         this.scene.remove(...this.allModuleMeshes());
         this.modules.clear();
         this.revIndexes.clear();

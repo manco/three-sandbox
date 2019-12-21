@@ -1,6 +1,7 @@
 import {ModuleSubtype} from "../model/modules/types";
 import {ModuleType} from "../model/modules/types";
 import {ResizeReason} from "../model/modules/resizing";
+import {ObstacleType} from "../model/kitchen/obstacle";
 
 export class Labels {
 
@@ -26,5 +27,11 @@ export class Labels {
         [ModuleType.STANDING, "SZAFKI STOJĄCE"],
         [ModuleType.TABLETOP, "BLAT KUCHENNY"],
         [ModuleType.HANGING, "SZAFKI WISZĄCE"]
+    ]);
+
+    public static readonly ObstacleTypesLabels = new Map<ObstacleType, string>([
+        [ObstacleType.DOOR, "DRZWI"],
+        [ObstacleType.WINDOW, "OKNO"],
+        [ObstacleType.RADIATOR, "KALORYFER"]
     ]);
 }
