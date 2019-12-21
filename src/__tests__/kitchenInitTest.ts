@@ -1,5 +1,5 @@
 import {Kitchen} from "../model/kitchen/kitchen";
-import {Dimensions} from "../model/kitchen/kitchen";
+import {Dimensions3D} from "../model/kitchen/kitchen";
 import {Scene} from "three";
 import ModulesFactory from "../model/modules/modules-factory";
 import {ModuleTypesAll} from "../model/modules/types";
@@ -32,7 +32,7 @@ test('kitchen creates floor, wall and wall modules', () => {
         null,
         null,
         scene
-    ).initFloorAndWalls(new Dimensions(slotWidth * 4, 1000, 1000), ["A"]);
+    ).initFloorAndWalls(new Dimensions3D(slotWidth * 4, 1000, 1000), ["A"]);
 
     const modules = scene.children.filter((m) => m.name === Meshes.DefaultMeshName);
     expect(modules).toHaveLength(ModuleTypesAll.length * 4);
@@ -51,7 +51,7 @@ test('kitchen can remove everything from scene and indexes', () => {
         scene
     );
 
-    kitchen.initFloorAndWalls(new Dimensions(slotWidth * 4, 1000, 1000), ["A"]);
+    kitchen.initFloorAndWalls(new Dimensions3D(slotWidth * 4, 1000, 1000), ["A"]);
     kitchen.removeAll();
 
     expect(scene.children).toHaveLength(0);

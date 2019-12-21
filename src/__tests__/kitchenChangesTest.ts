@@ -5,7 +5,7 @@ import {ColorType} from "../model/colors";
 import {FrontsLibrary} from "../model/modules/module-functions";
 import {Modules} from "./helpers/modules";
 import {Kitchen} from "../model/kitchen/kitchen";
-import {Dimensions} from "../model/kitchen/kitchen";
+import {Dimensions3D} from "../model/kitchen/kitchen";
 import ModulesFactory from "../model/modules/modules-factory";
 import {Meshes} from "./helpers/meshes";
 import {ModuleType} from "../model/modules/types";
@@ -90,7 +90,7 @@ test('kitchen can change module with front texture of front', () => {
         new Scene()
     );
 
-    kitchen.initFloorAndWalls(new Dimensions(moduleWithFront.width, 1000, 1000), ["A"]);
+    kitchen.initFloorAndWalls(new Dimensions3D(moduleWithFront.width, 1000, 1000), ["A"]);
 
     kitchen.setModuleFunction(
         moduleWithFront,

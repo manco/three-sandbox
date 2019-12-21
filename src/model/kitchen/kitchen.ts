@@ -137,7 +137,7 @@ export class Kitchen extends Observable {
     }
 
     initFloorAndWalls(
-        dimensions: Dimensions,
+        dimensions: Dimensions3D,
         wallNames: string[]
     ): void {
         this.floor = FloorFactory.create(dimensions.width, dimensions.depth);
@@ -302,7 +302,7 @@ export const wallsFactories = (width:number, depth:number, height:number):Map<st
     return new Map([["A", wallA], ["B", wallB], ["C", wallC], ["D", wallD]]);
 };
 
-export class Dimensions {
+export class Dimensions3D {
     constructor(
         public readonly width:number,
         public readonly depth:number,

@@ -9,6 +9,7 @@ import {ColorModal} from "./colorModal";
 import {Actions} from "../controller/actions";
 import {Module} from "../model/modules/module";
 import {Html} from "./html/dom";
+import {Dimensions3D} from "../model/kitchen/kitchen";
 
 export class GuiPanel {
     private readonly panel: HTMLElement = this.doc.getElementById("gui-panel");
@@ -105,7 +106,7 @@ export class GuiPanel {
         return ul;
     }
 
-    private kitchenDimensions():{width:number, depth:number, height:number} {
+    private kitchenDimensions():Dimensions3D {
         return {
             width: this.kitchenWidth.valueAsNumber,
             depth: this.kitchenDepth.valueAsNumber,

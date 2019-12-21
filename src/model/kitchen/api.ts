@@ -3,7 +3,7 @@ import {Kitchen} from "./kitchen";
 import {ModuleSelector} from "../module-selector";
 import {Observable} from "../../utils/observable";
 import {Module} from "../modules/module";
-import {Dimensions} from "./kitchen";
+import {Dimensions3D} from "./kitchen";
 
 export class KitchenApi {
 
@@ -16,7 +16,7 @@ export class KitchenApi {
         this.observeKitchen("ADD", fun);
     }
 
-    onLoad(fun: Observer<Dimensions>) {
+    onLoad(fun: Observer<Dimensions3D>) {
         this.observeKitchen("LOADED", fun);
     }
 
