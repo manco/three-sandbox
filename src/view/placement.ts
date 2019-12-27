@@ -38,7 +38,7 @@ export class ObstacleInputPanel {
 
         const selectWall = Html.select(
             this.doc,
-            Wall.Names.map(this.option)
+            Wall.Names.map(ObstacleInputPanel.option)
         );
 
         const distanceHtml = this.dimInputWithLabel("distance", "odległość");
@@ -54,13 +54,9 @@ export class ObstacleInputPanel {
         return div;
     }
 
-    private option(val: string) { return {text:val, value:val} }
-
-    private dimInputWithLabel(id:string, label:string): HTMLElement[] {
-        const input = this.doc.createInput("number");
-        input.id = id;
-        input.className = "dimensionInput";
-        const inputLabel = this.doc.createLabel(input, label);
-        return [inputLabel, input];
+    private dimInputWithLabel(id: string, label: string) {
+        return Html.dimInputWithLabel(this.doc, id, label);
     }
+
+    private static option(val: string) { return {text:val, value:val} }
 }

@@ -9,36 +9,35 @@ import {ColorModal} from "./colorModal";
 import {Actions} from "../controller/actions";
 import {Module} from "../model/modules/module";
 import {Html} from "./html/dom";
-import {Dimensions3D} from "../model/kitchen/kitchen";
 import {ObstacleType} from "../model/kitchen/obstacle";
 import {ObstacleInputPanel} from "./placement";
 import {ObstacleTypeAll} from "../model/kitchen/obstacle";
+import {KitchenSetup} from "./kitchenSetup";
 
 export class GuiPanel {
     private readonly panel: HTMLElement = this.doc.getElementById("gui-panel");
-
-    private readonly kitchenWidth: HTMLInputElement = this.doc.getInput("kitchen-width");
-    private readonly kitchenHeight: HTMLInputElement = this.doc.getInput("kitchen-height");
-    private readonly kitchenDepth: HTMLInputElement = this.doc.getInput("kitchen-depth");
-
-    private readonly drawKitchenButton = this.doc.getElementById("drawKitchenButton");
+    private readonly kitchenSetup = new KitchenSetup(this.doc);
+    private readonly drawKitchenButton = this.doc.createButton("drawKitchenButton", "Rysuj");
     private readonly colorModal:ColorModal = new ColorModal(this.doc, this.actions);
     private readonly obstacleInput: Map<ObstacleType, ObstacleInputPanel> = new Map();
     private readonly modulesLists: Map<ModuleType, HTMLElement> = new Map();
 
     constructor(private readonly doc: SmartDoc, private readonly actions: Actions) {
 
-        ModuleTypesAll.forEach(t => this.modulesLists.set(t, this.createModulesListHtml(t)));
+        this.panel.prepend(...this.kitchenSetup.html);
 
         ObstacleTypeAll.forEach(t => this.obstacleInput.set(t, new ObstacleInputPanel(t, doc)));
+        Array.from(this.obstacleInput.values()).map(p => p.panel).forEach(p => this.panel.appendChild(p));
 
-        Array.from(this.obstacleInput.values()).forEach(p => this.panel.appendChild(p.panel));
+        this.panel.append(this.drawKitchenButton, this.doc.br());
+
+        ModuleTypesAll.forEach(t => this.modulesLists.set(t, this.createModulesListHtml(t)));
 
         Events.onClick(
             this.drawKitchenButton,
             () => actions.loadKitchen(
-                this.kitchenDimensions(),
-                this.guiCheckboxesValues()
+                this.kitchenSetup.kitchenDimensions(),
+                this.kitchenSetup.guiCheckboxesValues()
             )
         );
     }
@@ -86,12 +85,6 @@ export class GuiPanel {
         };
     }
 
-    private guiCheckboxesValues(): string[] {
-        return this.doc.findByIdPrefix<HTMLInputElement>('checkbox-wall')
-            .filter(c => c.checked)
-            .map(w => w.value);
-    }
-
     private getModulesList(type: ModuleType): HTMLElement {
         return this.modulesLists.get(type);
     }
@@ -114,14 +107,6 @@ export class GuiPanel {
         this.panel.appendChild(ul);
 
         return ul;
-    }
-
-    private kitchenDimensions():Dimensions3D {
-        return {
-            width: this.kitchenWidth.valueAsNumber,
-            depth: this.kitchenDepth.valueAsNumber,
-            height: this.kitchenHeight.valueAsNumber
-        };
     }
 
     public remove(module: Module) {
