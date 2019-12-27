@@ -1,4 +1,4 @@
-import {wallsFactories} from "../model/kitchen/kitchen";
+import {WallFactories} from "../model/kitchen/kitchen";
 
 import {Settler} from "../model/kitchen/Settler";
 import {Corner} from "../model/kitchen/Settler";
@@ -11,7 +11,7 @@ test('settler should identify two corners with fill directions and count modules
      const walls =
           Maps.mapValues(
               Maps.filterKeys(
-                  wallsFactories(480, 200, 260),
+                  WallFactories(480, 200, 260),
           k => givenNames.includes(k)
               ),
               f => f()

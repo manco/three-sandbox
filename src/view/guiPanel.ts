@@ -10,19 +10,29 @@ import {Actions} from "../controller/actions";
 import {Module} from "../model/modules/module";
 import {Html} from "./html/dom";
 import {Dimensions3D} from "../model/kitchen/kitchen";
+import {ObstacleType} from "../model/kitchen/obstacle";
+import {ObstacleInputPanel} from "./placement";
+import {ObstacleTypeAll} from "../model/kitchen/obstacle";
 
 export class GuiPanel {
     private readonly panel: HTMLElement = this.doc.getElementById("gui-panel");
+
     private readonly kitchenWidth: HTMLInputElement = this.doc.getInput("kitchen-width");
     private readonly kitchenHeight: HTMLInputElement = this.doc.getInput("kitchen-height");
     private readonly kitchenDepth: HTMLInputElement = this.doc.getInput("kitchen-depth");
+
     private readonly drawKitchenButton = this.doc.getElementById("drawKitchenButton");
     private readonly colorModal:ColorModal = new ColorModal(this.doc, this.actions);
+    private readonly obstacleInput: Map<ObstacleType, ObstacleInputPanel> = new Map();
     private readonly modulesLists: Map<ModuleType, HTMLElement> = new Map();
 
     constructor(private readonly doc: SmartDoc, private readonly actions: Actions) {
 
         ModuleTypesAll.forEach(t => this.modulesLists.set(t, this.createModulesListHtml(t)));
+
+        ObstacleTypeAll.forEach(t => this.obstacleInput.set(t, new ObstacleInputPanel(t, doc)));
+
+        Array.from(this.obstacleInput.values()).forEach(p => this.panel.appendChild(p.panel));
 
         Events.onClick(
             this.drawKitchenButton,
@@ -85,7 +95,7 @@ export class GuiPanel {
     private getModulesList(type: ModuleType): HTMLElement {
         return this.modulesLists.get(type);
     }
-
+//TODO encapsulate in ModulesList
     private createModulesListHtml(moduleType: ModuleType) {
         const listId = `modulesList-${moduleType}`;
 

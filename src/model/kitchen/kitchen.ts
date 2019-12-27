@@ -44,6 +44,9 @@ class FloorFactory {
 export type Slot = [string, number]
 
 export class Wall {
+
+    static readonly Names = ["A", "B", "C", "D"];
+
     readonly mesh: Mesh;
 
     readonly floorWidth = this.width - this.depth;
@@ -145,7 +148,7 @@ export class Kitchen extends Observable {
         this.floor = FloorFactory.create(dimensions.width, dimensions.depth);
         this.scene.add(this.floor);
 
-        const factories: Map<string, () => Wall> = wallsFactories(dimensions.width, dimensions.depth, dimensions.height);
+        const factories: Map<string, () => Wall> = WallFactories(dimensions.width, dimensions.depth, dimensions.height);
         wallNames.forEach(name => this.addWall(factories.get(name)()));
 
         this.settlement = this.settle();
@@ -277,7 +280,7 @@ export class Kitchen extends Observable {
     }
 }
 
-export const wallsFactories = (width:number, depth:number, height:number):Map<string, () => Wall> => {
+export const WallFactories = (width:number, depth:number, height:number):Map<string, () => Wall> => {
 
     const wallDepth = 8;
     const widthAdjusted = width + wallDepth;

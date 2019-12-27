@@ -50,13 +50,22 @@ export class SmartDoc {
     }
 
     createImageInput(imageSrc: string) {
-        const elem = this.doc.createElement("input") as HTMLInputElement;
-        elem.type = "image";
+        const elem = this.createInput("image");
         elem.src = imageSrc;
+        return elem;
+    }
+
+    createInput(type: string) {
+        const elem = this.doc.createElement("input") as HTMLInputElement;
+        elem.type = type;
         return elem;
     }
 
     createDiv(): HTMLDivElement {
         return this.doc.createElement("div") as HTMLDivElement;
+    }
+
+    br(): HTMLBRElement {
+        return this.doc.createElement("br") as HTMLBRElement;
     }
 }

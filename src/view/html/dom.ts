@@ -1,7 +1,7 @@
 import {SmartDoc} from "./smart-doc";
 
 export class Html {
-    static select(doc : SmartDoc, options: {value, text, isSelected}[]): HTMLSelectElement {
+    static select(doc : SmartDoc, options: {value, text, isSelected?}[]): HTMLSelectElement {
         const element = doc.createSelect();
         options.map(o => {
             const option = doc.createOption();
