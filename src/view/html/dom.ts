@@ -15,19 +15,11 @@ export class Html {
     }
 
     static dimInputWithLabel(doc: SmartDoc, id:string, label:string): [HTMLLabelElement, HTMLInputElement] {
-        const [ilabel, input] = Html.inputWithLabel(doc, id, "number", label);
+        const input = doc.createInputOfId(id, "number");
         input.className = "dimensionInput";
-        return [ilabel, input];
-    }
-
-    static inputWithLabel(doc: SmartDoc, id:string, type: string, label:string): [HTMLLabelElement, HTMLInputElement] {
-        const input = doc.createInput(type);
-        input.id = id;
-        const inputLabel = doc.createLabel(input, label);
-        return [inputLabel, input];
-    }
-
-    static toArray<T extends Node>(htmlCollection: NodeListOf<T>):T[] {
-        return [].slice.call(htmlCollection);
+        return [
+            doc.createLabel(input, label),
+            input
+        ];
     }
 }

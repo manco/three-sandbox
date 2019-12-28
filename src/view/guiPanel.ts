@@ -10,24 +10,26 @@ import {Actions} from "../controller/actions";
 import {Module} from "../model/modules/module";
 import {Html} from "./html/dom";
 import {ObstacleType} from "../model/kitchen/obstacle";
-import {ObstacleInputPanel} from "./placement";
+import {ObstacleSetup} from "./obstacleSetup";
 import {ObstacleTypeAll} from "../model/kitchen/obstacle";
 import {KitchenSetup} from "./kitchenSetup";
+import {Obstacle} from "../model/kitchen/obstacle";
+import {PlacementInfo} from "../model/kitchen/obstacle";
 
 export class GuiPanel {
     private readonly panel: HTMLElement = this.doc.getElementById("gui-panel");
     private readonly kitchenSetup = new KitchenSetup(this.doc);
     private readonly drawKitchenButton = this.doc.createButton("drawKitchenButton", "Rysuj");
     private readonly colorModal:ColorModal = new ColorModal(this.doc, this.actions);
-    private readonly obstacleInput: Map<ObstacleType, ObstacleInputPanel> = new Map();
+    private readonly obstacleInput: Map<ObstacleType, ObstacleSetup> = new Map();
     private readonly modulesLists: Map<ModuleType, HTMLElement> = new Map();
 
     constructor(private readonly doc: SmartDoc, private readonly actions: Actions) {
 
         this.panel.prepend(...this.kitchenSetup.html);
 
-        ObstacleTypeAll.forEach(t => this.obstacleInput.set(t, new ObstacleInputPanel(t, doc)));
-        Array.from(this.obstacleInput.values()).map(p => p.panel).forEach(p => this.panel.appendChild(p));
+        ObstacleTypeAll.forEach(t => this.obstacleInput.set(t, new ObstacleSetup(t, doc)));
+        Array.from(this.obstacleInput.values()).map(p => p.html).forEach(p => this.panel.appendChild(p));
 
         this.panel.append(this.drawKitchenButton, this.doc.br());
 
@@ -37,7 +39,16 @@ export class GuiPanel {
             this.drawKitchenButton,
             () => actions.loadKitchen(
                 this.kitchenSetup.kitchenDimensions(),
-                this.kitchenSetup.guiCheckboxesValues()
+                this.kitchenSetup.guiCheckboxesValues(),
+                Array.from(this.obstacleInput.entries()).map(
+                    ([type, panel]) => new Obstacle(
+                        new PlacementInfo(
+                            panel.getDimensions(),
+                            panel.getWall(),
+                            panel.getDistance()
+                        ),
+                        type)
+                )
             )
         );
     }

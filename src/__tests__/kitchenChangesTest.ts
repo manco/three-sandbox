@@ -90,7 +90,7 @@ test('kitchen can change module with front texture of front', () => {
         new Scene()
     );
 
-    kitchen.initFloorAndWalls(new Dimensions3D(moduleWithFront.width, 1000, 1000), ["A"]);
+    kitchen.initFloorAndWalls(new Dimensions3D(moduleWithFront.width, 1000, 1000), ["A"], []);
 
     kitchen.setModuleFunction(
         moduleWithFront,

@@ -1,13 +1,7 @@
-import {Html} from "./dom";
-
 export class SmartDoc {
     constructor(private readonly doc: Document) {}
     getElementById(elementId: string): HTMLElement | null {
         return this.doc.getElementById(elementId);
-    }
-
-    getInput(elementId: string): HTMLInputElement{
-        return (this.getElementById(elementId) as HTMLInputElement);
     }
 
     createSelect(): HTMLSelectElement {
@@ -45,10 +39,6 @@ export class SmartDoc {
         return b;
     }
 
-    findByIdPrefix<T extends HTMLElement>(idPrefix:string): T[] {
-        return Html.toArray<T>(this.doc.querySelectorAll(`[id^=\"${idPrefix}\"]`));
-    }
-
     createImageInput(imageSrc: string) {
         const elem = this.createInput("image");
         elem.src = imageSrc;
@@ -58,6 +48,12 @@ export class SmartDoc {
     createInput(type: string) {
         const elem = this.doc.createElement("input") as HTMLInputElement;
         elem.type = type;
+        return elem;
+    }
+
+    createInputOfId(id:string, type: string) {
+        const elem = this.createInput(type);
+        elem.id = id;
         return elem;
     }
 

@@ -19,10 +19,6 @@ export class Maps {
         return new Map(Array.from(map, ([k, v]) => [k, fun(v)] as [K, T]));
     }
 
-    static mapEntries<K, V, T>(map: Map<K, V>, fun: (x:V) => T): Map<K, T> {
-        return new Map(Array.from(map, ([k, v]) => [k, fun(v)] as [K, T]));
-    }
-
     static filterKeys<K, V>(map: Map<K, V>, predicate: (V) => boolean): Map<K, V> {
         return new Map(Array.from(map).filter(([k, ]) => predicate(k)));
     }

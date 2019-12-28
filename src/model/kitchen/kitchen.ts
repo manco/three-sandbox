@@ -143,8 +143,10 @@ export class Kitchen extends Observable {
 
     initFloorAndWalls(
         dimensions: Dimensions3D,
-        wallNames: string[]
+        wallNames: string[],
+        obstacles: Obstacle[]
     ): void {
+        this.obstacles = obstacles;
         this.floor = FloorFactory.create(dimensions.width, dimensions.depth);
         this.scene.add(this.floor);
 

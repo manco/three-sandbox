@@ -15,6 +15,7 @@ import {Slot} from "../model/kitchen/kitchen";
 import {ModuleFunction} from "../model/modules/types";
 import {Arrays} from "../utils/lang";
 import {Dimensions3D} from "../model/kitchen/kitchen";
+import {Obstacle} from "../model/kitchen/obstacle";
 
 export class Actions {
     constructor(
@@ -37,11 +38,11 @@ export class Actions {
         this.kitchen.modules.all().forEach(m => m.initWireframe());
     }
 
-    loadKitchen(dims: Dimensions3D, wallNames : string[]):void {
+    loadKitchen(dims: Dimensions3D, wallNames : string[], obstacles: Obstacle[]):void {
         this.kitchen.removeAll();
         this.undoable.drop();
         this.removed = [];
-        this.kitchen.initFloorAndWalls(dims, wallNames);
+        this.kitchen.initFloorAndWalls(dims, wallNames, obstacles);
     }
 
     changeColor(modules: ModuleType, toColor: ColorType): void {
