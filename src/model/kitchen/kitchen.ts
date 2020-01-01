@@ -68,6 +68,7 @@ export class Wall {
         this.mesh.geometry.computeBoundingBox();
     }
 
+    //gdyby Put brał cały Wall, moznaby wewnatrz wyciagac depth, width itp
     execute(command: Put, slotWidth:number, mesh:Mesh):void {
         this.rotateMesh(mesh);
         this.translateMesh(mesh);
@@ -169,12 +170,14 @@ export class Kitchen extends Observable {
             //introduce command objects:
             //add module, add expanded, add blende
             this.walls.forEach(wall => {
-                const maxIndex = this.settlement.modulesCount.get(wall.name);
+                const settlement = this.settlement.forWalls.get(wall.name);
+
+                const maxIndex = settlement.modulesCount;
                 for (let i = 1; i < maxIndex; i++) {
                     const m = this.moduleLibrary.createForType(type);
                     this.addModule([wall.name, i], m);
                 }
-                const resizeStrategy = ResizeStrategyFactory.byHoleSize(this.settlement.wallHoleSize.get(wall.name));
+                const resizeStrategy = ResizeStrategyFactory.byHoleSize(settlement.wallHoleSize);
 
                 switch (resizeStrategy.reason) {
                     case ResizeReason.EXPANSION:
@@ -193,21 +196,20 @@ export class Kitchen extends Observable {
 
     addModule(slot:Slot, m: Module) {
 
-        const [wallName, ] = slot;
-        const wall = this.walls.get(wallName);
+        const [wallName, index] = slot;
         const command = m.isCorner() ?
             new PutCorner(
                 this.moduleLibrary.slotWidth(),
-                slot,
-                this.settlement
+                index,
+                this.settlement.forWalls.get(wallName)
             ) :
             new PutModule(
                 this.moduleLibrary.slotWidth(),
-                slot,
-                this.settlement,
+                index,
+                this.settlement.forWalls.get(wallName),
                 m
             );
-        wall.execute(command, this.moduleLibrary.slotWidth(), m.mesh);
+        this.walls.get(wallName).execute(command, this.moduleLibrary.slotWidth(), m.mesh);
         this.restoreModule(slot, m);
     }
 

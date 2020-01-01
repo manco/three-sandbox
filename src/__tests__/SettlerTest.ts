@@ -22,15 +22,15 @@ test('settler should identify two corners with fill directions and count modules
      expect(result.corners).toContainEqual(new Corner("A", "B"));
      expect(result.corners).toContainEqual(new Corner("D", "A"));
 
-     expect(result.modulesCount.get("A")).toBe(5);
-     expect(result.modulesCount.get("B")).toBe(2);
-     expect(result.modulesCount.get("D")).toBe(2);
+     expect(result.forWalls.get("A").modulesCount).toBe(5);
+     expect(result.forWalls.get("B").modulesCount).toBe(2);
+     expect(result.forWalls.get("D").modulesCount).toBe(2);
 
-     expect(result.fillDirection.get("A")).toEqual(Direction.TO_LEFT);
-     expect(result.fillDirection.get("B")).toEqual(Direction.TO_RIGHT);
-     expect(result.fillDirection.get("D")).toEqual(Direction.TO_LEFT);
+     expect(result.forWalls.get("A").fillDirection).toEqual(Direction.TO_LEFT);
+     expect(result.forWalls.get("B").fillDirection).toEqual(Direction.TO_RIGHT);
+     expect(result.forWalls.get("D").fillDirection).toEqual(Direction.TO_LEFT);
 
-     expect(result.modulesOffsetForIndex.get("A")(1)).toEqual(-70);
-     expect(result.modulesOffsetForIndex.get("B")(1)).toEqual(70);
-     expect(result.modulesOffsetForIndex.get("D")(1)).toEqual(-70);
+     expect(result.forWalls.get("A").modulesOffsetForIndex(1)).toEqual(-70);
+     expect(result.forWalls.get("B").modulesOffsetForIndex(1)).toEqual(70);
+     expect(result.forWalls.get("D").modulesOffsetForIndex(1)).toEqual(-70);
 });
