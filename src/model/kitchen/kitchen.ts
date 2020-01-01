@@ -27,6 +27,9 @@ import {Settler} from "./Settler";
 import {Settlement} from "./Settler";
 import {Direction} from "./Settler";
 import {Obstacle} from "./obstacle";
+import {Put} from "./put";
+import {PutCorner} from "./put";
+import {PutModule} from "./put";
 
 class FloorFactory {
     public static create(width:number, depth:number): Mesh {
@@ -53,7 +56,7 @@ export class Wall {
 
     constructor(
         readonly name:string,
-        readonly width:number,
+        private readonly width:number,
         height:number,
         private readonly depth:number,
         readonly translateMesh:MutateMeshFun = Lang.noop,
@@ -65,32 +68,20 @@ export class Wall {
         this.mesh.geometry.computeBoundingBox();
     }
 
-    put(module:Module, index:number, settlement:Settlement, slotWidth:number): void {
+    execute(command: Put, slotWidth:number, mesh:Mesh):void {
+        this.rotateMesh(mesh);
+        this.translateMesh(mesh);
 
-        this.rotateMesh(module.mesh);
-        this.translateMesh(module.mesh);
+        mesh.translateX(-this.mesh.geometry.boundingBox.max.x);
+        mesh.translateY(-this.depth);
 
-        module.mesh.translateX(-this.mesh.geometry.boundingBox.max.x);
-        module.mesh.translateY(-this.depth);
+        mesh.translateY(command.tY());
+        mesh.translateX(command.tX());
 
-        module.mesh.translateX(slotWidth/2);
-
-        const tY = module.isCorner() ? slotWidth : module.depth;
-        module.mesh.translateY(- tY/2);
-
-        const offset = settlement.modulesOffsetForIndex.get(this.name)(index);
-        module.mesh.translateX(offset);
-
-        const direction = settlement.fillDirection.get(this.name);
-        if (direction === Direction.TO_LEFT) module.mesh.translateX(this.width - slotWidth);
-
-        //don't know how does it help
-        if (direction === Direction.TO_RIGHT) module.mesh.translateX(this.depth);
-
-        if (module.isResized()) {
-            module.mesh.translateX(Direction.signum(direction) * (module.width - slotWidth) / 2)
-        }
+        if (command.direction === Direction.TO_LEFT) mesh.translateX(this.width - slotWidth);
+        else mesh.translateX(this.depth);
     }
+
     private static createMesh(name:string, width:number, height:number, depth:number): Mesh {
         const material = new MeshLambertMaterial( {
             color: 0xbdbdbd,
@@ -129,7 +120,7 @@ export class Kitchen extends Observable {
 
     private readonly raycaster = new Raycaster();
     private readonly walls: Map<string, Wall> = new Map();
-    private obstacles: Obstacle[];
+    private obstacles: Obstacle[] = [];
     private settlement: Settlement = null;
     private floor: Mesh = null;
     constructor(
@@ -174,6 +165,9 @@ export class Kitchen extends Observable {
                 );
                 this.addModule([corner.left, 0], m);
             });
+
+            //introduce command objects:
+            //add module, add expanded, add blende
             this.walls.forEach(wall => {
                 const maxIndex = this.settlement.modulesCount.get(wall.name);
                 for (let i = 1; i < maxIndex; i++) {
@@ -199,9 +193,21 @@ export class Kitchen extends Observable {
 
     addModule(slot:Slot, m: Module) {
 
-        const [wallName, i] = slot;
+        const [wallName, ] = slot;
         const wall = this.walls.get(wallName);
-        wall.put(m, i, this.settlement, this.moduleLibrary.slotWidth());
+        const command = m.isCorner() ?
+            new PutCorner(
+                this.moduleLibrary.slotWidth(),
+                slot,
+                this.settlement
+            ) :
+            new PutModule(
+                this.moduleLibrary.slotWidth(),
+                slot,
+                this.settlement,
+                m
+            );
+        wall.execute(command, this.moduleLibrary.slotWidth(), m.mesh);
         this.restoreModule(slot, m);
     }
 
