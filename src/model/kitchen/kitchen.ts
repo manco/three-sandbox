@@ -12,8 +12,6 @@ import {ResizeReason} from "../modules/resizing";
 import {ModuleTypesAll} from "../modules/types";
 import {ModuleType} from "../modules/types";
 import {ModuleSubtype} from "../modules/types";
-import {ModuleTypeToSubtype} from "../modules/types";
-import {ModuleTypeCorners} from "../modules/types";
 import {ModuleSubtypeToModuleFunction} from "../modules/types";
 import {ModuleFunction} from "../modules/types";
 import {ColorTypeLibrary} from "../colors";
@@ -44,11 +42,13 @@ class FloorFactory {
     }
 }
 
-export type Slot = [string, number]
+export type Slot = [WallName, number]
+
+export type WallName = string
 
 export class Wall {
 
-    static readonly Names = ["A", "B", "C", "D"];
+    static readonly Names:WallName[] = ["A", "B", "C", "D"];
 
     readonly mesh: Mesh;
 
@@ -157,21 +157,30 @@ export class Kitchen extends Observable {
     }
 
     private fillWallsWithModules(): void {
+
         ModuleTypesAll.forEach(type => {
-            this.settlement.corners.forEach(corner => {
-                const m = this.moduleLibrary.createForTypes(
-                    type,
-                    ModuleTypeToSubtype.get(type)[0],
-                    ModuleTypeCorners.get(type)
-                );
-                this.addModule([corner.left, 0], m);
-            });
+
+            this.settler().settle2(this.walls).forEach (
+                (puts, wallName) => {
+                    if (puts.length > 0) {
+                        this.putModule(
+                            puts[0],
+                            [wallName, 0],
+                            this.moduleLibrary.createCorner(type)
+                        );
+                    }
+                }
+            );
 
             //introduce command objects:
             //add module, add expanded, add blende
+            //A putCorner, putModule, putModule, putModule, putBlende
+            //B putCorner, putModule, putModule, putExpanded
             this.walls.forEach(wall => {
+
                 const settlement = this.settlement.forWalls.get(wall.name);
 
+                //change for do while with accumulative offset
                 const maxIndex = settlement.modulesCount;
                 for (let i = 1; i < maxIndex; i++) {
                     const m = this.moduleLibrary.createForType(type);
@@ -200,8 +209,7 @@ export class Kitchen extends Observable {
         const command = m.isCorner() ?
             new PutCorner(
                 this.moduleLibrary.slotWidth(),
-                index,
-                this.settlement.forWalls.get(wallName)
+                this.settlement.forWalls.get(wallName).fillDirection
             ) :
             new PutModule(
                 this.moduleLibrary.slotWidth(),
@@ -210,6 +218,11 @@ export class Kitchen extends Observable {
                 m
             );
         this.walls.get(wallName).execute(command, this.moduleLibrary.slotWidth(), m.mesh);
+        this.restoreModule(slot, m);
+    }
+
+    putModule(command:Put, slot:Slot, m:Module) {
+        this.walls.get(slot[0]).execute(command, this.moduleLibrary.slotWidth(), m.mesh);
         this.restoreModule(slot, m);
     }
 
@@ -229,7 +242,11 @@ export class Kitchen extends Observable {
     }
 
     private settle() {
-        return new Settler(this.moduleLibrary.slotWidth(), this.moduleLibrary.cornerWidth()).settle(this.walls);
+        return this.settler().settle(this.walls);
+    }
+
+    private settler() {
+        return new Settler(this.moduleLibrary.slotWidth(), this.moduleLibrary.cornerWidth());
     }
 
     byRaycast(camera: Camera, xy:Coords):Module | null {

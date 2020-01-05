@@ -2,12 +2,10 @@ import {Direction} from "./Settler";
 import {WallSettlement} from "./Settler";
 
 export abstract class Put {
-    constructor(
+    protected constructor(
         protected readonly slotWidth:number,
-        index:number,
-        settlement:WallSettlement,
-        private readonly offset = settlement.modulesOffsetForIndex(index),
-        public readonly direction = settlement.fillDirection
+        private readonly offset,
+        public readonly direction
     ) {}
 
     tX():number {
@@ -19,6 +17,14 @@ export abstract class Put {
 
 }
 export class PutCorner extends Put {
+
+    constructor(
+        protected readonly slotWidth:number,
+        direction: Direction
+    ) {
+        super(slotWidth, 0, direction);
+    }
+
     tY() { return -this.slotWidth/2; }
 
     _tX() {
@@ -31,9 +37,13 @@ export class PutModule extends Put {
         protected readonly slotWidth:number,
         index:number,
         settlement:WallSettlement,
-        private readonly module,
+        private readonly module
     ) {
-        super(slotWidth, index, settlement);
+        super(
+            slotWidth,
+            settlement.modulesOffsetForIndex(index),
+            settlement.fillDirection
+        );
     }
 
     tY() { return -this.module.depth/2; }

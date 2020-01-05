@@ -1,5 +1,8 @@
 import {Wall} from "./kitchen";
 import {Maps} from "../../utils/lang";
+import {Put} from "./put";
+import {WallName} from "./kitchen";
+import {PutCorner} from "./put";
 
 export enum Direction {
     TO_LEFT = "TO_LEFT", TO_RIGHT = "TO_RIGHT"
@@ -8,7 +11,7 @@ export namespace Direction {
     export const signum = (direction: Direction) => direction === Direction.TO_LEFT ? -1 : 1;
 }
 export class Corner {
-    constructor(public readonly left:string, public readonly right:string) {}
+    constructor(public readonly left:WallName, public readonly right:WallName) {}
 
     contains(wall: string) {
         return this.left === wall || this.right === wall;
@@ -37,7 +40,26 @@ export class Settler {
         private readonly cornerWidth:number
     ) {}
 
-    settle(walls:Map<string, Wall>): Settlement {
+    settle2(walls:Map<WallName, Wall>): Map<WallName, Put[]> {
+        return Maps.mapValues(walls, wall => this.settle3(wall, this.setupCorners(walls)))
+    }
+
+    //maybe not all corners needed
+    private settle3(wall: Wall, corners: Corner[]): Put[] {
+
+        const commands = [];
+
+        const direction = this.goLeftIfCornerOnRight(wall.name, corners);
+
+        const maybeCorner = this.findCornerOnLeft(wall.name, corners); //'direction' already did it
+        if (maybeCorner !== undefined) {
+            commands.push(new PutCorner(this.slotWidth, direction));
+        }
+
+        return commands;
+    }
+
+    settle(walls:Map<WallName, Wall>): Settlement {
 
         const corners: Corner[] = this.setupCorners(walls);
 
@@ -67,8 +89,12 @@ export class Settler {
         return wall.floorWidth - cornersCount * this.cornerWidth;
     }
 
-    private goLeftIfCornerOnRight(wall: string, corners: Corner[]): Direction {
-        return corners.find(c => c.left === wall) !== undefined ? Direction.TO_LEFT : Direction.TO_RIGHT;
+    private goLeftIfCornerOnRight(wall: WallName, corners: Corner[]): Direction {
+        return this.findCornerOnLeft(wall, corners) !== undefined ? Direction.TO_LEFT : Direction.TO_RIGHT;
+    }
+
+    private findCornerOnLeft(wall: WallName, corners: Corner[]) {
+        return corners.find(c => c.left === wall);
     }
 
     private calcCornerOffset(wall: string, direction:Direction, corners: Corner[]) {

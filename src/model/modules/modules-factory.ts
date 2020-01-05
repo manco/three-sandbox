@@ -9,6 +9,7 @@ import {ModuleSubtypeToModuleFunction} from "./types";
 import {ModuleFunction} from "./types";
 import {ResizeStrategy} from "./resizing";
 import {ResizeStrategyFactory} from "./resizing";
+import {ModuleTypeCorners} from "./types";
 
 export default class ModulesFactory {
     private _slotWidth: number;
@@ -45,6 +46,14 @@ export default class ModulesFactory {
         );
         module.initWireframe();
         return module;
+    }
+
+    createCorner(type:ModuleType) {
+        return this.createForTypes(
+            type,
+            ModuleTypeToSubtype.get(type)[0],
+            ModuleTypeCorners.get(type)
+        )
     }
 
     public slotWidth() {
