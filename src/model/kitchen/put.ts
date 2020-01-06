@@ -7,18 +7,25 @@ import {Wall} from "./kitchen";
 export abstract class Put {
     protected constructor(
         protected readonly moduleLibrary:ModulesFactory,
-        public readonly wall: Wall,
+        public readonly wall: Wall, //should be passed in 'execute' method
         private readonly offset,
-        public readonly direction
+        protected readonly direction
     ) {}
 
     public abstract readonly module;
+    protected readonly slotWidth = this.moduleLibrary.slotWidth();
 
     tX():number {
-        return this.moduleLibrary.slotWidth()/2 + this.offset + this._tX();
+        return this.slotWidth/2 +
+            this.offset +
+            (this.direction === Direction.TO_LEFT ? this.wall.width - this.slotWidth : this.wall.depth) +
+            this._tX();
     }
-    abstract tY():number;
+    tY():number {
+        return -this.wall.depth + this._tY();
+    }
     abstract _tX():number;
+    abstract _tY():number;
 
 
 }
@@ -36,7 +43,7 @@ export class PutCorner extends Put {
 
     public readonly module;
 
-    tY() { return -this.moduleLibrary.slotWidth()/2; }
+    _tY() { return -this.slotWidth/2; }
 
     _tX() {
         return 0;
@@ -62,7 +69,7 @@ export class PutModule extends Put {
 
     public readonly module;
 
-    tY() { return -this.module.depth/2; } //maybe same as for corner?
+    _tY() { return -this.module.depth/2; }
 
     _tX() {
         return 0;
@@ -90,6 +97,6 @@ export class PutResized extends PutModule {
     public readonly module;
 
     _tX() {
-        return Direction.signum(this.direction) * (this.module.width - this.moduleLibrary.slotWidth()) / 2;
+        return Direction.signum(this.direction) * (this.module.width - this.slotWidth) / 2;
     }
 }

@@ -20,7 +20,6 @@ import {MultiMaps} from "../../utils/lang";
 import {Maps} from "../../utils/lang";
 import {FrontsLibrary} from "../modules/module-functions";
 import {Settler} from "./Settler";
-import {Direction} from "./Settler";
 import {Obstacle} from "./obstacle";
 import {Put} from "./put";
 
@@ -51,9 +50,9 @@ export class Wall {
 
     constructor(
         readonly name:WallName,
-        private readonly width:number,
+        readonly width:number,
         height:number,
-        private readonly depth:number,
+        readonly depth:number,
         readonly translateMesh:MutateMeshFun = Lang.noop,
         readonly rotateMesh:MutateMeshFun = Lang.noop
     ) {
@@ -63,19 +62,16 @@ export class Wall {
         this.mesh.geometry.computeBoundingBox();
     }
 
-    //gdyby Put brał cały Wall, moznaby wewnatrz wyciagac depth, width itp
-    execute(command: Put, slotWidth:number, mesh:Mesh):void {
+    execute(command: Put):void {
+        const mesh = command.module.mesh;
+
         this.rotateMesh(mesh);
         this.translateMesh(mesh);
 
         mesh.translateX(-this.mesh.geometry.boundingBox.max.x);
-        mesh.translateY(-this.depth);
 
         mesh.translateY(command.tY());
         mesh.translateX(command.tX());
-
-        if (command.direction === Direction.TO_LEFT) mesh.translateX(this.width - slotWidth);
-        else mesh.translateX(this.depth);
     }
 
     private static createMesh(name:string, width:number, height:number, depth:number): Mesh {
@@ -154,19 +150,19 @@ export class Kitchen extends Observable {
         this.settler = new Settler(this.moduleLibrary);
         this.settler.settle(ModuleTypesAll, this.walls);
         for (const [i, put] of this.settler.allPuts.entries()) {
-            this.putModule(put,[put.wall.name, i]);
+            this.putModule(put,i);
         }
     }
 
-    putModule(command:Put, slot:Slot) {
+    putModule(command:Put, index:number) {
         console.log(command);
-        this.walls.get(slot[0]).execute(command, this.moduleLibrary.slotWidth(), command.module.mesh);
-        this.restoreModule(slot, command.module);
+        command.wall.execute(command); //wtf
+        this.restoreModule([command.wall.name, index], command.module);
     }
 
     restoreModule(slot:Slot, m: Module) {
         this.scene.add(m.mesh);
-        this.index(m, slot);
+        this.index(m, slot); //TODO make Slot a unique index on scene. Check what breaks then
         this.notify(new Message("ADD", [m, Kitchen.label(slot)]));
     }
 
@@ -229,12 +225,12 @@ export class Kitchen extends Observable {
     }
 
     setModuleFunction(module: Module, moduleFunction: ModuleFunction): void {
-        const slot = this.remove(module);
+        const [, index] = this.remove(module);
         const newModule = this.moduleLibrary.createForTypes(module.type, module.subtype, moduleFunction, module.resize, module.color);
         this.setColor(newModule, newModule.color);
 
         const oldPut = this.settler.findCommandByModule(module);
-        this.putModule(oldPut, slot);//FIXME
+        this.putModule(oldPut, index);//FIXME
         this.notify(new Message("MODULE_CHANGED", newModule));
     }
 }
