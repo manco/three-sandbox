@@ -34,14 +34,12 @@ export class MultiMaps {
 }
 
 export class Arrays {
+
+    //does this shit work?
     static remove<T>(arr: T[], item: T): void {
         const index = arr.indexOf(item);
         if (index > -1) {
             arr.splice(index, 1);
         }
-    }
-
-    static groupBy<K, V>(arr: V[], fmap: (v:V) => K): Map<K, V> {
-        return new Map(arr.map(w => [fmap(w), w] as [K, V]));
     }
 }

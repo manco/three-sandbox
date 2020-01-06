@@ -1,8 +1,13 @@
 import {Wall} from "./kitchen";
+import {WallName} from "./kitchen";
 import {Maps} from "../../utils/lang";
 import {Put} from "./put";
-import {WallName} from "./kitchen";
 import {PutCorner} from "./put";
+import {PutModule} from "./put";
+import {PutResized} from "./put";
+import {ModuleType} from "../modules/types";
+import ModulesFactory from "../modules/modules-factory";
+import {ResizeBlende} from "../modules/resizing";
 
 export enum Direction {
     TO_LEFT = "TO_LEFT", TO_RIGHT = "TO_RIGHT"
@@ -19,15 +24,12 @@ export class Corner {
 }
 export class Settlement {
     constructor(
-        public readonly corners:Corner[],
         public readonly forWalls: Map<string, WallSettlement>
     ) {}
 }
 
 export class WallSettlement {
     constructor(
-        public readonly modulesCount: number,
-        public readonly wallHoleSize: number,
         public readonly fillDirection: Direction,
         public readonly modulesOffsetForIndex: (index:number) => number
     ) {}
@@ -36,27 +38,51 @@ export class WallSettlement {
 export class Settler {
 
     constructor(
-        private readonly slotWidth:number,
-        private readonly cornerWidth:number
+        private readonly moduleLibrary: ModulesFactory,
+        private readonly slotWidth:number = moduleLibrary.slotWidth(),
+        private readonly cornerWidth:number = moduleLibrary.cornerWidth()
     ) {}
 
-    settle2(walls:Map<WallName, Wall>): Map<WallName, Put[]> {
-        return Maps.mapValues(walls, wall => this.settle3(wall, this.setupCorners(walls)))
+    //TODO moduleType is a smell here
+    settle2(type: ModuleType, walls:Map<WallName, Wall>): Map<WallName, Put[]> {
+        return Maps.mapValues(walls, wall => this.settle3(type, wall, this.setupCorners(walls)))
     }
 
     //maybe not all corners needed
-    private settle3(wall: Wall, corners: Corner[]): Put[] {
+    private settle3(type: ModuleType, wall: Wall, corners: Corner[]): Put[] {
 
-        const commands = [];
+        const commands = new Array<Put>();
 
         const direction = this.goLeftIfCornerOnRight(wall.name, corners);
+        const offsetSignum = Direction.signum(direction);
 
-        const maybeCorner = this.findCornerOnLeft(wall.name, corners); //'direction' already did it
-        if (maybeCorner !== undefined) {
-            commands.push(new PutCorner(this.slotWidth, direction));
+
+        let startingOffset = offsetSignum * this.calcCornerOffset(wall.name, direction, corners);
+        if (this.findCornerOnLeft(wall.name, corners) !== undefined) {
+            commands.push(new PutCorner(this.moduleLibrary, direction, type));
         }
 
-        return commands;
+        const step = (space:number, offset:number) => {
+            const spaceLeft = space - this.slotWidth;
+            const nextOffset = offset + (offsetSignum * this.slotWidth);
+            // console.log(`${spaceLeft}, ${nextOffset}`);
+            if (spaceLeft > 0) {
+                return [this.putModuleOrExpansion(spaceLeft, offset, direction, type)].concat(step(spaceLeft, nextOffset));
+            } else {
+                return [new PutResized(this.moduleLibrary, offset, direction, type, new ResizeBlende(space))];
+            }
+        };
+
+        return commands.concat(step(this.spaceForModules(wall, corners), startingOffset));
+    }
+
+    //TODO doesnt work quite well?
+    private putModuleOrExpansion(spaceLeft: number, offset: number, direction: Direction, type: ModuleType): PutModule {
+        // const nextHole = spaceLeft - this.slotWidth;
+        // if (ResizeStrategyFactory.shouldExpand(nextHole))
+        //     return new PutResized(this.moduleLibrary, offset, direction, type, new ResizeExpansion(nextHole));
+        // else
+            return new PutModule(this.moduleLibrary, offset, direction, type);
     }
 
     settle(walls:Map<WallName, Wall>): Settlement {
@@ -66,27 +92,20 @@ export class Settler {
         const wallSettlements = Maps.mapValues(walls, wall => {
             const direction = this.goLeftIfCornerOnRight(wall.name, corners);
             return new WallSettlement(
-                this.count(wall, corners),
-                this.holeSize(wall, corners),
                 direction,
                 this.indexOffset(wall.name, direction, corners)
             );
         });
 
-        return new Settlement(corners, wallSettlements);
-    }
-
-    private count(wall:Wall, corners:Corner[]) {
-        return Math.floor(this.spaceForModules(wall, corners) / this.slotWidth);
-    }
-
-    private holeSize(wall:Wall, corners:Corner[]): number {
-        return this.spaceForModules(wall, corners) % this.slotWidth;
+        return new Settlement(wallSettlements);
     }
 
     private spaceForModules(wall:Wall, corners:Corner[]) {
-        const cornersCount = corners.filter(c => c.contains(wall.name)).length;
-        return wall.floorWidth - cornersCount * this.cornerWidth;
+        return wall.floorWidth - this.wallCorners(corners, wall).length * this.cornerWidth;
+    }
+
+    private wallCorners(corners: Corner[], wall: Wall) {
+        return corners.filter(c => c.contains(wall.name));
     }
 
     private goLeftIfCornerOnRight(wall: WallName, corners: Corner[]): Direction {
@@ -107,7 +126,7 @@ export class Settler {
         return 0;
     }
 
-    private indexOffset(wallName:string, direction:Direction, corners: Corner[]) {
+    private indexOffset(wallName:WallName, direction:Direction, corners: Corner[]) {
         return (index) => {
             if (index === 0) return 0;
             return (Direction.signum(direction) * ((index - 1) * this.slotWidth + this.calcCornerOffset(wallName, direction, corners)));

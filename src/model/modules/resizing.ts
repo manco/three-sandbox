@@ -3,8 +3,8 @@ import {Module} from "./module";
 export abstract class ResizeStrategy {
     protected constructor(
         public readonly reason: ResizeReason,
-        readonly toSize: number,
-        readonly constFactor: number
+        private readonly toSize: number,
+        private readonly constFactor: number
     ) {}
 
     applyOn(module: Module) {
@@ -40,7 +40,9 @@ export class ResizeStrategyFactory {
 
     static readonly NOOP = new NoResize();
 
+    static shouldExpand(size: number) { return (size <= 20) }
+
     static byHoleSize(size: number) {
-        return (size <= 20) ? new ResizeExpansion(size) : new ResizeBlende(size);
+        return this.shouldExpand(size) ? new ResizeExpansion(size) : new ResizeBlende(size);
     }
 }

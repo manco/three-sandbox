@@ -1,15 +1,19 @@
 import {Direction} from "./Settler";
-import {WallSettlement} from "./Settler";
+import ModulesFactory from "../modules/modules-factory";
+import {ModuleType} from "../modules/types";
+import {ResizeStrategy} from "../modules/resizing";
 
 export abstract class Put {
     protected constructor(
-        protected readonly slotWidth:number,
+        protected readonly moduleLibrary:ModulesFactory,
         private readonly offset,
         public readonly direction
     ) {}
 
+    public abstract readonly module;
+
     tX():number {
-        return this.slotWidth/2 + this.offset + this._tX();
+        return this.moduleLibrary.slotWidth()/2 + this.offset + this._tX();
     }
     abstract tY():number;
     abstract _tX():number;
@@ -19,13 +23,17 @@ export abstract class Put {
 export class PutCorner extends Put {
 
     constructor(
-        protected readonly slotWidth:number,
-        direction: Direction
+        moduleLibrary:ModulesFactory,
+        direction: Direction,
+        type: ModuleType
     ) {
-        super(slotWidth, 0, direction);
+        super(moduleLibrary, 0, direction);
+        this.module = moduleLibrary.createCorner(type);
     }
 
-    tY() { return -this.slotWidth/2; }
+    public readonly module;
+
+    tY() { return -this.moduleLibrary.slotWidth()/2; }
 
     _tX() {
         return 0;
@@ -34,23 +42,47 @@ export class PutCorner extends Put {
 }
 export class PutModule extends Put {
     constructor(
-        protected readonly slotWidth:number,
-        index:number,
-        settlement:WallSettlement,
-        private readonly module
+        moduleLibrary:ModulesFactory,
+        offset:number,
+        direction:Direction,
+        type:ModuleType
     ) {
         super(
-            slotWidth,
-            settlement.modulesOffsetForIndex(index),
-            settlement.fillDirection
+            moduleLibrary,
+            offset,
+            direction
         );
+        this.module = moduleLibrary.createForType(type);
     }
 
-    tY() { return -this.module.depth/2; }
+    public readonly module;
+
+    tY() { return -this.module.depth/2; } //maybe same as for corner?
 
     _tX() {
-        return this.module.isResized() ?
-            (Direction.signum(this.direction) * (this.module.width - this.slotWidth) / 2) :
-            0;
+        return 0;
+    }
+}
+export class PutResized extends PutModule {
+    constructor(
+        moduleLibrary:ModulesFactory,
+        offset:number,
+        direction:Direction,
+        type:ModuleType,
+        resize: ResizeStrategy
+    ) {
+        super(
+            moduleLibrary,
+            offset,
+            direction,
+            type
+        );
+        this.module = moduleLibrary.createForType(type, resize);
+    }
+
+    public readonly module;
+
+    _tX() {
+        return Direction.signum(this.direction) * (this.module.width - this.moduleLibrary.slotWidth()) / 2;
     }
 }

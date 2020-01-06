@@ -7,8 +7,6 @@ import {Intersection} from "three";
 import {Object3D} from "three";
 import {MutateMeshFun} from "../../utils/meshes";
 import {Module} from "../modules/module";
-import {ResizeStrategyFactory} from "../modules/resizing";
-import {ResizeReason} from "../modules/resizing";
 import {ModuleTypesAll} from "../modules/types";
 import {ModuleType} from "../modules/types";
 import {ModuleSubtype} from "../modules/types";
@@ -26,7 +24,6 @@ import {Settlement} from "./Settler";
 import {Direction} from "./Settler";
 import {Obstacle} from "./obstacle";
 import {Put} from "./put";
-import {PutCorner} from "./put";
 import {PutModule} from "./put";
 
 class FloorFactory {
@@ -160,70 +157,36 @@ export class Kitchen extends Observable {
 
         ModuleTypesAll.forEach(type => {
 
-            this.settler().settle2(this.walls).forEach (
+            this.settler().settle2(type, this.walls).forEach (
                 (puts, wallName) => {
-                    if (puts.length > 0) {
-                        this.putModule(
-                            puts[0],
-                            [wallName, 0],
-                            this.moduleLibrary.createCorner(type)
-                        );
+                    console.log(puts);
+                    for (let i = 0; i < puts.length; i++) {
+                        this.putModule(puts[i],[wallName, i]);
                     }
                 }
             );
-
-            //introduce command objects:
-            //add module, add expanded, add blende
-            //A putCorner, putModule, putModule, putModule, putBlende
-            //B putCorner, putModule, putModule, putExpanded
-            this.walls.forEach(wall => {
-
-                const settlement = this.settlement.forWalls.get(wall.name);
-
-                //change for do while with accumulative offset
-                const maxIndex = settlement.modulesCount;
-                for (let i = 1; i < maxIndex; i++) {
-                    const m = this.moduleLibrary.createForType(type);
-                    this.addModule([wall.name, i], m);
-                }
-                const resizeStrategy = ResizeStrategyFactory.byHoleSize(settlement.wallHoleSize);
-
-                switch (resizeStrategy.reason) {
-                    case ResizeReason.EXPANSION:
-                        const m = this.moduleLibrary.createForType(type, resizeStrategy);
-                        this.addModule([wall.name, maxIndex], m);
-                        break;
-                    case ResizeReason.BLENDE:
-                        this.addModule([wall.name, maxIndex], this.moduleLibrary.createForType(type));
-                        const blende = this.moduleLibrary.createForType(type, resizeStrategy);
-                        this.addModule([wall.name, maxIndex+1], blende);
-                        break;
-                }
-            });
         });
     }
 
     addModule(slot:Slot, m: Module) {
 
         const [wallName, index] = slot;
-        const command = m.isCorner() ?
-            new PutCorner(
-                this.moduleLibrary.slotWidth(),
-                this.settlement.forWalls.get(wallName).fillDirection
-            ) :
+        const wallSettlement = this.settlement.forWalls.get(wallName);
+        const command =
             new PutModule(
-                this.moduleLibrary.slotWidth(),
-                index,
-                this.settlement.forWalls.get(wallName),
-                m
+                this.moduleLibrary,
+                wallSettlement.modulesOffsetForIndex(index),
+                wallSettlement.fillDirection,
+                m.type
             );
         this.walls.get(wallName).execute(command, this.moduleLibrary.slotWidth(), m.mesh);
         this.restoreModule(slot, m);
     }
 
-    putModule(command:Put, slot:Slot, m:Module) {
-        this.walls.get(slot[0]).execute(command, this.moduleLibrary.slotWidth(), m.mesh);
-        this.restoreModule(slot, m);
+    putModule(command:Put, slot:Slot) {
+        console.log(command);
+        this.walls.get(slot[0]).execute(command, this.moduleLibrary.slotWidth(), command.module.mesh);
+        this.restoreModule(slot, command.module);
     }
 
     restoreModule(slot:Slot, m: Module) {
@@ -246,7 +209,7 @@ export class Kitchen extends Observable {
     }
 
     private settler() {
-        return new Settler(this.moduleLibrary.slotWidth(), this.moduleLibrary.cornerWidth());
+        return new Settler(this.moduleLibrary);
     }
 
     byRaycast(camera: Camera, xy:Coords):Module | null {
