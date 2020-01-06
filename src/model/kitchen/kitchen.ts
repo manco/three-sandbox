@@ -117,7 +117,7 @@ export class Kitchen extends Observable {
     public readonly revIndexes = new ReverseIndexes();
 
     private readonly raycaster = new Raycaster();
-    private readonly walls: Map<string, Wall> = new Map();
+    private readonly walls: Map<WallName, Wall> = new Map();
     private obstacles: Obstacle[] = [];
     private settlement: Settlement = null;
     private floor: Mesh = null;
@@ -132,14 +132,14 @@ export class Kitchen extends Observable {
 
     initFloorAndWalls(
         dimensions: Dimensions3D,
-        wallNames: string[],
+        wallNames: WallName[],
         obstacles: Obstacle[]
     ): void {
         this.obstacles = obstacles;
         this.floor = FloorFactory.create(dimensions.width, dimensions.depth);
         this.scene.add(this.floor);
 
-        const factories: Map<string, () => Wall> = WallFactories(dimensions.width, dimensions.depth, dimensions.height);
+        const factories: Map<WallName, () => Wall> = WallFactories(dimensions.width, dimensions.depth, dimensions.height);
         wallNames.forEach(name => this.addWall(factories.get(name)()));
 
         this.fillWallsWithModules();
@@ -165,22 +165,6 @@ export class Kitchen extends Observable {
                 }
             );
         });
-    }
-
-    addModule(slot:Slot, m: Module) {
-
-        const [wallName, index] = slot;
-        const wallSettlement = this.settlement.forWalls.get(wallName);
-        const command =
-            new PutModule(
-                this.moduleLibrary,
-                this.walls.get(wallName),
-                wallSettlement.modulesOffsetForIndex(index),
-                wallSettlement.fillDirection,
-                m.type
-            );
-        this.walls.get(wallName).execute(command, this.moduleLibrary.slotWidth(), m.mesh);
-        this.restoreModule(slot, m);
     }
 
     putModule(command:Put, slot:Slot) {
@@ -261,12 +245,12 @@ export class Kitchen extends Observable {
         const slot = this.remove(module);
         const newModule = this.moduleLibrary.createForTypes(module.type, module.subtype, moduleFunction, module.resize, module.color);
         this.setColor(newModule, newModule.color);
-        this.addModule(slot, newModule);
+        // this.addModule(slot, newModule);
         this.notify(new Message("MODULE_CHANGED", newModule));
     }
 }
 
-export const WallFactories = (width:number, depth:number, height:number):Map<string, () => Wall> => {
+export const WallFactories = (width:number, depth:number, height:number):Map<WallName, () => Wall> => {
 
     const wallDepth = 8;
     const widthAdjusted = width + wallDepth;
@@ -317,7 +301,7 @@ export class Indexes {
         return Maps.getOrDefault(this.byWall(wall), index, new Map());
     }
 
-    private byWall(wall: string): Map<number, Map<ModuleType, Module>> {
+    private byWall(wall: WallName): Map<number, Map<ModuleType, Module>> {
         return Maps.getOrDefault(this._bySlot, wall, new Map());
     }
 

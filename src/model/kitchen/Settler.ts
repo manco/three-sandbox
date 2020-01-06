@@ -65,7 +65,6 @@ export class Settler {
         const step = (space:number, offset:number) => {
             const spaceLeft = space - this.slotWidth;
             const nextOffset = offset + (offsetSignum * this.slotWidth);
-            // console.log(`${spaceLeft}, ${nextOffset}`);
             if (spaceLeft > 0) {
                 return [this.putModuleOrExpansion(spaceLeft, wall, offset, direction, type)].concat(step(spaceLeft, nextOffset));
             } else {
@@ -101,7 +100,7 @@ export class Settler {
         return corners.find(c => c.left === wall);
     }
 
-    private calcCornerOffset(wall: string, direction:Direction, corners: Corner[]) {
+    private calcCornerOffset(wall: WallName, direction:Direction, corners: Corner[]) {
         if (direction === Direction.TO_LEFT)
             return corners.find(c => c.left === wall) !== undefined ? this.cornerWidth : 0;
 
@@ -111,14 +110,7 @@ export class Settler {
         return 0;
     }
 
-    private indexOffset(wallName:WallName, direction:Direction, corners: Corner[]) {
-        return (index) => {
-            if (index === 0) return 0;
-            return (Direction.signum(direction) * ((index - 1) * this.slotWidth + this.calcCornerOffset(wallName, direction, corners)));
-        }
-    }
-
-    private setupCorners(walls:Map<string, Wall>) {
+    private setupCorners(walls:Map<WallName, Wall>) {
         const corners = new Array<Corner>();
 
         const addCornerIfExist = (left, right) => {
