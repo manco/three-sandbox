@@ -152,17 +152,10 @@ export class Kitchen extends Observable {
 
     private fillWallsWithModules(): void {
         this.settler = new Settler(this.moduleLibrary);
-        ModuleTypesAll.forEach(type => {
-
-            this.settler.settle2(type, this.walls).forEach (
-                (puts, wallName) => {
-                    console.log(puts);
-                    for (let i = 0; i < puts.length; i++) {
-                        this.putModule(puts[i],[wallName, i]);
-                    }
-                }
-            );
-        });
+        this.settler.settle(ModuleTypesAll, this.walls);
+        for (const [i, put] of this.settler.allPuts.entries()) {
+            this.putModule(put,[put.wall.name, i]);
+        }
     }
 
     putModule(command:Put, slot:Slot) {
@@ -239,7 +232,9 @@ export class Kitchen extends Observable {
         const slot = this.remove(module);
         const newModule = this.moduleLibrary.createForTypes(module.type, module.subtype, moduleFunction, module.resize, module.color);
         this.setColor(newModule, newModule.color);
-        // this.putModule(null, slot);
+
+        const oldPut = this.settler.findCommandByModule(module);
+        this.putModule(oldPut, slot);//FIXME
         this.notify(new Message("MODULE_CHANGED", newModule));
     }
 }

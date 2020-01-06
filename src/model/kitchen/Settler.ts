@@ -8,6 +8,7 @@ import {PutResized} from "./put";
 import {ModuleType} from "../modules/types";
 import ModulesFactory from "../modules/modules-factory";
 import {ResizeBlende} from "../modules/resizing";
+import {Module} from "../modules/module";
 
 export enum Direction {
     TO_LEFT = "TO_LEFT", TO_RIGHT = "TO_RIGHT"
@@ -22,18 +23,6 @@ export class Corner {
         return this.left === wall || this.right === wall;
     }
 }
-export class Settlement {
-    constructor(
-        public readonly forWalls: Map<string, WallSettlement>
-    ) {}
-}
-
-export class WallSettlement {
-    constructor(
-        public readonly fillDirection: Direction,
-        public readonly modulesOffsetForIndex: (index:number) => number
-    ) {}
-}
 
 export class Settler {
 
@@ -43,9 +32,21 @@ export class Settler {
         private readonly cornerWidth:number = moduleLibrary.cornerWidth()
     ) {}
 
-    //TODO moduleType is a smell here
-    settle2(type: ModuleType, walls:Map<WallName, Wall>): Map<WallName, Put[]> {
-        return Maps.mapValues(walls, wall => this.settleWall(type, wall, this.setupCorners(walls)))
+    private _allPuts = new Array<Put>();
+    get allPuts() { return this._allPuts };
+
+    findCommandByModule(module:Module) { return this._allPuts.find(p => p.module === module) }
+
+    settle(types: ModuleType[], walls:Map<WallName, Wall>): void {
+        this._allPuts = [];
+        types.forEach(
+            type => {
+                Maps.mapValues(walls, wall => {
+                    const puts = this.settleWall(type, wall, this.setupCorners(walls));
+                    this._allPuts.push(...puts);
+                });
+            }
+        );
     }
 
     //maybe not all corners needed

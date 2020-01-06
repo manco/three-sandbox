@@ -11,3 +11,8 @@ optymalizacja:
 O Przycisk 'zamów' i wysłanie emaila <--- jak to zabezpieczyć? (re-captcha?)
 O gdzie zahostowac assety?
 O pomyslec o latwym dodawaniu assetow
+
+operacyjnie:
+
+1. PutModule(module)
+2. PutModule(Wall)
