@@ -2,10 +2,12 @@ import {Direction} from "./Settler";
 import ModulesFactory from "../modules/modules-factory";
 import {ModuleType} from "../modules/types";
 import {ResizeStrategy} from "../modules/resizing";
+import {Wall} from "./kitchen";
 
 export abstract class Put {
     protected constructor(
         protected readonly moduleLibrary:ModulesFactory,
+        public readonly wall: Wall,
         private readonly offset,
         public readonly direction
     ) {}
@@ -24,10 +26,11 @@ export class PutCorner extends Put {
 
     constructor(
         moduleLibrary:ModulesFactory,
+        wall: Wall,
         direction: Direction,
         type: ModuleType
     ) {
-        super(moduleLibrary, 0, direction);
+        super(moduleLibrary, wall, 0, direction);
         this.module = moduleLibrary.createCorner(type);
     }
 
@@ -43,12 +46,14 @@ export class PutCorner extends Put {
 export class PutModule extends Put {
     constructor(
         moduleLibrary:ModulesFactory,
+        wall: Wall,
         offset:number,
         direction:Direction,
         type:ModuleType
     ) {
         super(
             moduleLibrary,
+            wall,
             offset,
             direction
         );
@@ -66,6 +71,7 @@ export class PutModule extends Put {
 export class PutResized extends PutModule {
     constructor(
         moduleLibrary:ModulesFactory,
+        wall: Wall,
         offset:number,
         direction:Direction,
         type:ModuleType,
@@ -73,6 +79,7 @@ export class PutResized extends PutModule {
     ) {
         super(
             moduleLibrary,
+            wall,
             offset,
             direction,
             type

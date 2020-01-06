@@ -52,7 +52,7 @@ export class Wall {
     readonly floorWidth = this.width - this.depth;
 
     constructor(
-        readonly name:string,
+        readonly name:WallName,
         private readonly width:number,
         height:number,
         private readonly depth:number,
@@ -142,7 +142,6 @@ export class Kitchen extends Observable {
         const factories: Map<string, () => Wall> = WallFactories(dimensions.width, dimensions.depth, dimensions.height);
         wallNames.forEach(name => this.addWall(factories.get(name)()));
 
-        this.settlement = this.settle();
         this.fillWallsWithModules();
 
         this.notify(new Message("LOADED", dimensions));
@@ -175,6 +174,7 @@ export class Kitchen extends Observable {
         const command =
             new PutModule(
                 this.moduleLibrary,
+                this.walls.get(wallName),
                 wallSettlement.modulesOffsetForIndex(index),
                 wallSettlement.fillDirection,
                 m.type
@@ -202,10 +202,6 @@ export class Kitchen extends Observable {
     private index(module:Module, slot:Slot) {
         this.modules.add(module, slot);
         this.revIndexes.add(module, slot);
-    }
-
-    private settle() {
-        return this.settler().settle(this.walls);
     }
 
     private settler() {

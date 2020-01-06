@@ -18,7 +18,7 @@ export namespace Direction {
 export class Corner {
     constructor(public readonly left:WallName, public readonly right:WallName) {}
 
-    contains(wall: string) {
+    contains(wall: WallName) {
         return this.left === wall || this.right === wall;
     }
 }
@@ -45,11 +45,11 @@ export class Settler {
 
     //TODO moduleType is a smell here
     settle2(type: ModuleType, walls:Map<WallName, Wall>): Map<WallName, Put[]> {
-        return Maps.mapValues(walls, wall => this.settle3(type, wall, this.setupCorners(walls)))
+        return Maps.mapValues(walls, wall => this.settleWall(type, wall, this.setupCorners(walls)))
     }
 
     //maybe not all corners needed
-    private settle3(type: ModuleType, wall: Wall, corners: Corner[]): Put[] {
+    private settleWall(type: ModuleType, wall: Wall, corners: Corner[]): Put[] {
 
         const commands = new Array<Put>();
 
@@ -59,7 +59,7 @@ export class Settler {
 
         let startingOffset = offsetSignum * this.calcCornerOffset(wall.name, direction, corners);
         if (this.findCornerOnLeft(wall.name, corners) !== undefined) {
-            commands.push(new PutCorner(this.moduleLibrary, direction, type));
+            commands.push(new PutCorner(this.moduleLibrary, wall, direction, type));
         }
 
         const step = (space:number, offset:number) => {
@@ -67,9 +67,9 @@ export class Settler {
             const nextOffset = offset + (offsetSignum * this.slotWidth);
             // console.log(`${spaceLeft}, ${nextOffset}`);
             if (spaceLeft > 0) {
-                return [this.putModuleOrExpansion(spaceLeft, offset, direction, type)].concat(step(spaceLeft, nextOffset));
+                return [this.putModuleOrExpansion(spaceLeft, wall, offset, direction, type)].concat(step(spaceLeft, nextOffset));
             } else {
-                return [new PutResized(this.moduleLibrary, offset, direction, type, new ResizeBlende(space))];
+                return [new PutResized(this.moduleLibrary, wall, offset, direction, type, new ResizeBlende(space))];
             }
         };
 
@@ -77,27 +77,12 @@ export class Settler {
     }
 
     //TODO doesnt work quite well?
-    private putModuleOrExpansion(spaceLeft: number, offset: number, direction: Direction, type: ModuleType): PutModule {
+    private putModuleOrExpansion(spaceLeft: number, wall: Wall, offset: number, direction: Direction, type: ModuleType): PutModule {
         // const nextHole = spaceLeft - this.slotWidth;
         // if (ResizeStrategyFactory.shouldExpand(nextHole))
         //     return new PutResized(this.moduleLibrary, offset, direction, type, new ResizeExpansion(nextHole));
         // else
-            return new PutModule(this.moduleLibrary, offset, direction, type);
-    }
-
-    settle(walls:Map<WallName, Wall>): Settlement {
-
-        const corners: Corner[] = this.setupCorners(walls);
-
-        const wallSettlements = Maps.mapValues(walls, wall => {
-            const direction = this.goLeftIfCornerOnRight(wall.name, corners);
-            return new WallSettlement(
-                direction,
-                this.indexOffset(wall.name, direction, corners)
-            );
-        });
-
-        return new Settlement(wallSettlements);
+            return new PutModule(this.moduleLibrary, wall, offset, direction, type);
     }
 
     private spaceForModules(wall:Wall, corners:Corner[]) {
