@@ -20,11 +20,9 @@ import {MultiMaps} from "../../utils/lang";
 import {Maps} from "../../utils/lang";
 import {FrontsLibrary} from "../modules/module-functions";
 import {Settler} from "./Settler";
-import {Settlement} from "./Settler";
 import {Direction} from "./Settler";
 import {Obstacle} from "./obstacle";
 import {Put} from "./put";
-import {PutModule} from "./put";
 
 class FloorFactory {
     public static create(width:number, depth:number): Mesh {
@@ -119,7 +117,7 @@ export class Kitchen extends Observable {
     private readonly raycaster = new Raycaster();
     private readonly walls: Map<WallName, Wall> = new Map();
     private obstacles: Obstacle[] = [];
-    private settlement: Settlement = null;
+    private settler: Settler;
     private floor: Mesh = null;
     constructor(
         private readonly moduleLibrary : ModulesFactory,
@@ -153,10 +151,10 @@ export class Kitchen extends Observable {
     }
 
     private fillWallsWithModules(): void {
-
+        this.settler = new Settler(this.moduleLibrary);
         ModuleTypesAll.forEach(type => {
 
-            this.settler().settle2(type, this.walls).forEach (
+            this.settler.settle2(type, this.walls).forEach (
                 (puts, wallName) => {
                     console.log(puts);
                     for (let i = 0; i < puts.length; i++) {
@@ -186,10 +184,6 @@ export class Kitchen extends Observable {
     private index(module:Module, slot:Slot) {
         this.modules.add(module, slot);
         this.revIndexes.add(module, slot);
-    }
-
-    private settler() {
-        return new Settler(this.moduleLibrary);
     }
 
     byRaycast(camera: Camera, xy:Coords):Module | null {
@@ -245,7 +239,7 @@ export class Kitchen extends Observable {
         const slot = this.remove(module);
         const newModule = this.moduleLibrary.createForTypes(module.type, module.subtype, moduleFunction, module.resize, module.color);
         this.setColor(newModule, newModule.color);
-        // this.addModule(slot, newModule);
+        // this.putModule(null, slot);
         this.notify(new Message("MODULE_CHANGED", newModule));
     }
 }

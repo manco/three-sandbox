@@ -57,10 +57,14 @@ export default class ModulesFactory {
     }
 
     public slotWidth() {
+        if (this._slotWidth === undefined)
+            throw new Error("modulesFactory not ready!");
         return this._slotWidth;
     }
 
     public cornerWidth() {
+        if (this._cornerWidth === undefined)
+            throw new Error("modulesFactory not ready!");
         return this._cornerWidth;
     }
 }
