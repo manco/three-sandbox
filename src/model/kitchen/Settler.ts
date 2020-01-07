@@ -63,21 +63,24 @@ export class Settler {
         }
 
         const step = (space:number, offset:number) => {
+
+            if (space <= 0) return [];
+
+            const put = (space < this.slotWidth) ?
+                new PutResized(this.slotWidth, wall, offset, direction, this.moduleLibrary.createForType(type, new ResizeBlende(space))) :
+                this.putModuleOrExpansion(space, wall, offset, direction, type);
+
             const spaceLeft = space - this.slotWidth;
             const nextOffset = offset + (offsetSignum * this.slotWidth);
-            if (spaceLeft > 0) {
-                //TODO make last rec call returning []
-                return [this.putModuleOrExpansion(spaceLeft, wall, offset, direction, type)].concat(step(spaceLeft, nextOffset));
-            } else {
-                return [new PutResized(this.slotWidth, wall, offset, direction, this.moduleLibrary.createForType(type, new ResizeBlende(space)))];
-            }
+
+            return [put].concat(step(spaceLeft, nextOffset))
         };
 
         return commands.concat(step(this.spaceForModules(wall, corners), startingOffset));
     }
 
     //TODO doesnt work quite well?
-    private putModuleOrExpansion(spaceLeft: number, wall: Wall, offset: number, direction: Direction, type: ModuleType): PutModule {
+    private putModuleOrExpansion(space: number, wall: Wall, offset: number, direction: Direction, type: ModuleType): PutModule {
         // const nextHole = spaceLeft - this.slotWidth;
         // if (ResizeStrategyFactory.shouldExpand(nextHole))
         //     return new PutResized(this.moduleLibrary, offset, direction, type, new ResizeExpansion(nextHole));
