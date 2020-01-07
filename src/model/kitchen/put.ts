@@ -1,19 +1,15 @@
 import {Direction} from "./Settler";
-import ModulesFactory from "../modules/modules-factory";
-import {ModuleType} from "../modules/types";
-import {ResizeStrategy} from "../modules/resizing";
 import {Wall} from "./kitchen";
+import {Module} from "../modules/module";
 
 export abstract class Put {
-    protected constructor(
-        protected readonly moduleLibrary:ModulesFactory,
+    constructor(
+        protected readonly slotWidth:number,
         public readonly wall: Wall, //should be passed in 'execute' method
-        private readonly offset,
-        protected readonly direction
+        public readonly offset,
+        public readonly direction,
+        public readonly module: Module
     ) {}
-
-    public abstract readonly module;
-    protected readonly slotWidth = this.moduleLibrary.slotWidth();
 
     tX():number {
         return this.slotWidth/2 +
@@ -32,16 +28,13 @@ export abstract class Put {
 export class PutCorner extends Put {
 
     constructor(
-        moduleLibrary:ModulesFactory,
+        slotWidth:number,
         wall: Wall,
         direction: Direction,
-        type: ModuleType
+        module: Module
     ) {
-        super(moduleLibrary, wall, 0, direction);
-        this.module = moduleLibrary.createCorner(type);
+        super(slotWidth, wall, 0, direction, module);
     }
-
-    public readonly module;
 
     _tY() { return -this.slotWidth/2; }
 
@@ -51,24 +44,6 @@ export class PutCorner extends Put {
 
 }
 export class PutModule extends Put {
-    constructor(
-        moduleLibrary:ModulesFactory,
-        wall: Wall,
-        offset:number,
-        direction:Direction,
-        type:ModuleType
-    ) {
-        super(
-            moduleLibrary,
-            wall,
-            offset,
-            direction
-        );
-        this.module = moduleLibrary.createForType(type);
-    }
-
-    public readonly module;
-
     _tY() { return -this.module.depth/2; }
 
     _tX() {
@@ -76,27 +51,8 @@ export class PutModule extends Put {
     }
 }
 export class PutResized extends PutModule {
-    constructor(
-        moduleLibrary:ModulesFactory,
-        wall: Wall,
-        offset:number,
-        direction:Direction,
-        type:ModuleType,
-        resize: ResizeStrategy
-    ) {
-        super(
-            moduleLibrary,
-            wall,
-            offset,
-            direction,
-            type
-        );
-        this.module = moduleLibrary.createForType(type, resize);
-    }
-
-    public readonly module;
-
     _tX() {
+        //approx 0 if not resized
         return Direction.signum(this.direction) * (this.module.width - this.slotWidth) / 2;
     }
 }

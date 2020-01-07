@@ -8,7 +8,6 @@ import {PutResized} from "./put";
 import {ModuleType} from "../modules/types";
 import ModulesFactory from "../modules/modules-factory";
 import {ResizeBlende} from "../modules/resizing";
-import {Module} from "../modules/module";
 
 export enum Direction {
     TO_LEFT = "TO_LEFT", TO_RIGHT = "TO_RIGHT"
@@ -35,7 +34,7 @@ export class Settler {
     private _allPuts = new Array<Put>();
     get allPuts() { return this._allPuts };
 
-    findCommandByModule(module:Module) { return this._allPuts.find(p => p.module === module) }
+    findCommandByIndex(index:number) { return this._allPuts[index] }
 
     settle(types: ModuleType[], walls:Map<WallName, Wall>): void {
         this._allPuts = [];
@@ -60,16 +59,17 @@ export class Settler {
 
         let startingOffset = offsetSignum * this.calcCornerOffset(wall.name, corners);
         if (direction === Direction.TO_LEFT) {
-            commands.push(new PutCorner(this.moduleLibrary, wall, direction, type));
+            commands.push(new PutCorner(this.slotWidth, wall, direction, this.moduleLibrary.createCorner(type)));
         }
 
         const step = (space:number, offset:number) => {
             const spaceLeft = space - this.slotWidth;
             const nextOffset = offset + (offsetSignum * this.slotWidth);
             if (spaceLeft > 0) {
+                //TODO make last rec call returning []
                 return [this.putModuleOrExpansion(spaceLeft, wall, offset, direction, type)].concat(step(spaceLeft, nextOffset));
             } else {
-                return [new PutResized(this.moduleLibrary, wall, offset, direction, type, new ResizeBlende(space))];
+                return [new PutResized(this.slotWidth, wall, offset, direction, this.moduleLibrary.createForType(type, new ResizeBlende(space)))];
             }
         };
 
@@ -82,7 +82,7 @@ export class Settler {
         // if (ResizeStrategyFactory.shouldExpand(nextHole))
         //     return new PutResized(this.moduleLibrary, offset, direction, type, new ResizeExpansion(nextHole));
         // else
-            return new PutModule(this.moduleLibrary, wall, offset, direction, type);
+            return new PutModule(this.slotWidth, wall, offset, direction, this.moduleLibrary.createForType(type));
     }
 
     private spaceForModules(wall:Wall, corners:Corner[]) {
@@ -102,10 +102,10 @@ export class Settler {
     }
 
     private calcCornerOffset(wall: WallName, corners: Corner[]) {
-        if (this.hasCornerOnRight(wall, corners))
+        if (this.hasCornerOnRight(wall, corners) || corners.find(c => c.right === wall) !== undefined)
             return this.cornerWidth;
         else
-            return corners.find(c => c.right === wall) !== undefined ? this.cornerWidth : 0;
+            return 0;
     }
 
     private setupCorners(walls:Map<WallName, Wall>) {
