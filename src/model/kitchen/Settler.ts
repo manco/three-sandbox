@@ -8,6 +8,8 @@ import {PutResized} from "./put";
 import {ModuleType} from "../modules/types";
 import ModulesFactory from "../modules/modules-factory";
 import {ResizeBlende} from "../modules/resizing";
+import {ResizeStrategyFactory} from "../modules/resizing";
+import {ResizeExpansion} from "../modules/resizing";
 
 export enum Direction {
     TO_LEFT = "TO_LEFT", TO_RIGHT = "TO_RIGHT"
@@ -64,14 +66,14 @@ export class Settler {
 
         const step = (space:number, offset:number) => {
 
-            if (space <= 0) return [];
+            if (space <= 0.1) return [];
 
             const put = (space < this.slotWidth) ?
                 new PutResized(this.slotWidth, wall, offset, direction, this.moduleLibrary.createForType(type, new ResizeBlende(space))) :
                 this.putModuleOrExpansion(space, wall, offset, direction, type);
 
-            const spaceLeft = space - this.slotWidth;
-            const nextOffset = offset + (offsetSignum * this.slotWidth);
+            const spaceLeft = space - put.module.width;
+            const nextOffset = offset + (offsetSignum * put.module.width);
 
             return [put].concat(step(spaceLeft, nextOffset))
         };
@@ -79,13 +81,12 @@ export class Settler {
         return commands.concat(step(this.spaceForModules(wall, corners), startingOffset));
     }
 
-    //TODO doesnt work quite well?
     private putModuleOrExpansion(space: number, wall: Wall, offset: number, direction: Direction, type: ModuleType): PutModule {
-        // const nextHole = spaceLeft - this.slotWidth;
-        // if (ResizeStrategyFactory.shouldExpand(nextHole))
-        //     return new PutResized(this.moduleLibrary, offset, direction, type, new ResizeExpansion(nextHole));
-        // else
-            return new PutModule(this.slotWidth, wall, offset, direction, this.moduleLibrary.createForType(type));
+        const nextHole = space - this.slotWidth;
+        if (ResizeStrategyFactory.shouldExpand(nextHole)) {
+            return new PutResized(this.slotWidth, wall, offset, direction, this.moduleLibrary.createForType(type, new ResizeExpansion(nextHole)));
+        }
+        return new PutModule(this.slotWidth, wall, offset, direction, this.moduleLibrary.createForType(type));
     }
 
     private spaceForModules(wall:Wall, corners:Corner[]) {
