@@ -62,8 +62,8 @@ export class GuiPanel {
         Events.onInputChange(
             selectBox,
             (event) => {
-                const inputValue = Number.parseInt((event.target as HTMLSelectElement).value);
-                this.actions.setModuleSubtype(module, ModuleSubtype[ModuleSubtype[inputValue]]);
+                const inputValue = (event.target as HTMLSelectElement).value;
+                this.actions.setModuleSubtype(module, ModuleSubtype[inputValue]);
             }
         );
         if (module.isCorner() || module.isResized()) selectBox.disabled = true;

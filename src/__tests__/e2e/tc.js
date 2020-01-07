@@ -7,19 +7,19 @@ test('Test1', async t => {
 
     const kitchenHasStandingUnderSinkInWood = ClientFunction(
         () => {
-            const standing = kitchen.modules.byType(0);
-            const standingSink = standing.find(m => m.subtype === 4);
+            const standing = kitchen.modules.byType("STANDING");
+            const standingSink = standing.find(m => m.subtype === "UNDER_SINK");
             return
-                standingSink.color === 3
-               && standingSink.getFrontTexture().name === '313'
+                standingSink.color === "WOOD"
+               && standingSink.getFrontTexture().name === 'WOODUNDER_SINK'
                 ;
         }
     );
 
     const setupKitchen = () => {
         return t
-            .click('#checkbox-wallB')
-            .click('#checkbox-wallC')
+            .click('#B')
+            .click('#C')
             .click('#drawKitchenButton');
     }
 
@@ -31,18 +31,18 @@ test('Test1', async t => {
     }
 
     const selectSubtypeForModule = (moduleListId, moduleItem, subtype) => {
-        const selectedItem = Selector(moduleListId).child('li').withAttribute('value', moduleItem) //'65006'
-        const selectedSubtype = selectedItem.child('select').child('option').withAttribute('value', subtype) //'1'
+        const selectedItem = Selector(moduleListId).child('li').withAttribute('value', moduleItem)
+        const selectedSubtype = selectedItem.child('select').child('option').withAttribute('value', subtype)
 
         return t.click(selectedItem).click(selectedSubtype)
     }
 
     await setupKitchen();
-    await setColorForModuleType('#modulesList-2-color', '2'); //hanging, black
-    await setColorForModuleType('#modulesList-1-color', '2'); //tabletop, black
-    await selectSubtypeForModule('#modulesList-1', '65006', '1'); // set sink
-    await selectSubtypeForModule('#modulesList-1',  '68000', '3'); //set oven-tabletop
-    await setColorForModuleType('#modulesList-0-color', '3'); //standing, wood
+    await setColorForModuleType('#modulesList-HANGING-color', 'GRAY'); //hanging, gray
+    await setColorForModuleType('#modulesList-TABLETOP-color', 'GRAY'); //tabletop, gray
+    await selectSubtypeForModule('#modulesList-TABLETOP', '65014', 'SINK'); // set sink
+    await selectSubtypeForModule('#modulesList-TABLETOP',  '68026', 'OVEN_TABLETOP'); //set oven-tabletop
+    await setColorForModuleType('#modulesList-STANDING-color', 'WOOD'); //standing, wood
         // set drawers
 
         await t

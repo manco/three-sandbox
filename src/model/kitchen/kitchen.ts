@@ -156,7 +156,6 @@ export class Kitchen extends Observable {
     }
 
     putModule(command:Put, index:number) {
-        console.log(command);
         command.wall.execute(command); //wtf
         this.restoreModule([command.wall.name, index], command.module);
     }
