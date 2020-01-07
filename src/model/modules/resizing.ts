@@ -14,7 +14,7 @@ export abstract class ResizeStrategy {
 }
 
 export enum ResizeReason {
-    NOOP, EXPANSION, BLENDE
+    NOOP = "NOOP", EXPANSION = "EXPANSION", BLENDE = "BLENDE"
 }
 
 export class ResizeExpansion extends ResizeStrategy {

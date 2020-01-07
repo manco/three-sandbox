@@ -15,7 +15,7 @@ export class PlacementInfo {
 }
 
 export enum ObstacleType {
-    DOOR, WINDOW, RADIATOR
+    DOOR = "DOOR", WINDOW = "WINDOW", RADIATOR = "RADIATOR"
 }
 export const ObstacleTypeAll = [ ObstacleType.DOOR, ObstacleType.WINDOW, ObstacleType.RADIATOR ];
 

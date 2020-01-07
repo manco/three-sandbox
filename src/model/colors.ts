@@ -2,7 +2,7 @@ import {TexturesLibrary} from "../utils/textures";
 import {TextureDefinition} from "../utils/textures";
 
 export enum ColorType {
-    WHITE, GRAYLIGHT, GRAY, WOOD
+    WHITE = "WHITE", GRAYLIGHT = "GRAYLIGHT", GRAY = "GRAY", WOOD = "WOOD"
 }
 
 export const ColorTypeUrls = [

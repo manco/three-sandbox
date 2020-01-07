@@ -74,5 +74,5 @@ export class Controls extends Observable {
 }
 
 export enum MouseMode {
-    PAN_ONLY, ROTATE_ONLY, NONE
+    PAN_ONLY = "PAN_ONLY", ROTATE_ONLY = "ROTATE_ONLY", NONE = "NONE"
 }

@@ -1,13 +1,13 @@
 import {TextureDefinition} from "../../utils/textures";
 
 export enum ModuleType {
-    STANDING, TABLETOP, HANGING
+    STANDING = "STANDING", TABLETOP = "TABLETOP", HANGING = "HANGING"
 }
 
 export enum ModuleSubtype {
-    SHELVES, //hanging
-    SINK, TABLETOP, OVEN_TABLETOP, //tabletop
-    UNDER_SINK, DRAWERS, FRIDGE, WASHER, DISHWASHER, OVEN //standing
+    SHELVES = "SHELVES", //hanging
+    SINK = "SINK", TABLETOP = "TABLETOP", OVEN_TABLETOP = "OVEN_TABLETOP", //tabletop
+    UNDER_SINK = "UNDER_SINK", DRAWERS = "DRAWERS", FRIDGE = "FRIDGE", WASHER = "WASHER", DISHWASHER = "DISHWASHER", OVEN = "OVEN" //standing
 }
 
 export const ModuleTypeToSubtype: Map<ModuleType, ModuleSubtype[]> = new Map([
@@ -23,29 +23,29 @@ export const BoundedSubtypes:Map<ModuleSubtype, ModuleSubtype> = new Map([
 );
 
 export enum ModuleFunction {
-    SHELVES,
-    CORNER_SHELVES,
+    SHELVES = "SHELVES",
+    CORNER_SHELVES = "CORNER_SHELVES",
 
-    TABLETOP,
-    CORNER_TABLETOP,
-    OVEN_TABLETOP,
-    CHAMBER_1,
-    CHAMBER_DRAINER,
-    CHAMBER_2,
+    TABLETOP = "TABLETOP",
+    CORNER_TABLETOP = "CORNER_TABLETOP",
+    OVEN_TABLETOP = "OVEN_TABLETOP",
+    CHAMBER_1 = "CHAMBER_1",
+    CHAMBER_DRAINER = "CHAMBER_DRAINER",
+    CHAMBER_2 = "CHAMBER_2",
 
-    NO_DRAWERS,
-    CORNER_NO_DRAWERS,
-    BIG_2,
-    AVG_2_BIG_1,
-    AVG_4,
-    SMALL_2_AVG_1_BIG_1,
-    SMALL_2_AVG_3,
-    OVEN_1,
-    UNDER_SINK,
-    WASHER_1,
-    DISHWASHER_1,
-    FRIDGE_1,
-    FRIDGE_2
+    NO_DRAWERS = "NO_DRAWERS",
+    CORNER_NO_DRAWERS = "CORNER_NO_DRAWERS",
+    BIG_2 = "BIG_2",
+    AVG_2_BIG_1 = "AVG_2_BIG_1",
+    AVG_4 = "AVG_4",
+    SMALL_2_AVG_1_BIG_1 = "SMALL_2_AVG_1_BIG_1",
+    SMALL_2_AVG_3 = "SMALL_2_AVG_3",
+    OVEN_1 = "OVEN_1",
+    UNDER_SINK = "UNDER_SINK",
+    WASHER_1 = "WASHER_1",
+    DISHWASHER_1 = "DISHWASHER_1",
+    FRIDGE_1 = "FRIDGE_1",
+    FRIDGE_2 = "FRIDGE_2"
 }
 
 export const ModuleTypeCorners: Map<ModuleType, ModuleFunction> = new Map([
