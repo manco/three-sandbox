@@ -23,7 +23,6 @@ import {Settler} from "./Settler";
 import {Obstacle} from "./obstacle";
 import {Put} from "./put";
 import {PutModule} from "./put";
-import {PutResized} from "./put";
 
 class FloorFactory {
     public static create(width:number, depth:number): Mesh {
@@ -232,7 +231,7 @@ export class Kitchen extends Observable {
         this.setColor(newModule, newModule.color);
 
         const oldPut = this.settler.findCommandByIndex(index);
-        const put = new (newModule.isResized() ? PutResized : PutModule)(this.moduleLibrary.slotWidth(), oldPut.wall, oldPut.offset, oldPut.direction, newModule);
+        const put = new PutModule(this.moduleLibrary.slotWidth(), oldPut.wall, oldPut.offset, oldPut.direction, newModule);
         this.putModule(put, index);
         this.notify(new Message("MODULE_CHANGED", newModule));
     }

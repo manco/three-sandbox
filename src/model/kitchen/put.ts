@@ -47,11 +47,6 @@ export class PutModule extends Put {
     _tY() { return -this.module.depth/2; }
 
     _tX() {
-        return 0;
-    }
-}
-export class PutResized extends PutModule {
-    _tX() {
         //approx 0 if not resized
         return Direction.signum(this.direction) * (this.module.width - this.slotWidth) / 2;
     }

@@ -40,9 +40,9 @@ export class ResizeStrategyFactory {
 
     static readonly NOOP = new NoResize();
 
-    static shouldExpand(size: number) { return (size <= 20) }
-
-    static byHoleSize(size: number) {
-        return this.shouldExpand(size) ? new ResizeExpansion(size) : new ResizeBlende(size);
+    static bySpace(space:number, slotWidth:number) {
+        if (space > slotWidth + 20) return ResizeStrategyFactory.NOOP;
+        if (space > slotWidth) return new ResizeExpansion(space - slotWidth);
+        return new ResizeBlende(space);
     }
 }
