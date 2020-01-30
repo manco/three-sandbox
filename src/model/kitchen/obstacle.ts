@@ -1,7 +1,7 @@
 export class Obstacle {
     constructor (
-    private readonly placement:PlacementInfo,
-    private readonly type:ObstacleType
+        readonly placement:PlacementInfo,
+        readonly type:ObstacleType
     //private readonly mesh;
     ) {}
 }
@@ -9,9 +9,11 @@ export class Obstacle {
 export class PlacementInfo {
     constructor(
         private readonly dimensions: Dimensions2D,
-        private readonly wallName: string,
-        private readonly distance: number
+        readonly wallName: string,
+        private readonly distanceToAxis: number //distance from right wall to obstacle axis
     ) {}
+    distanceToRightEdge():number { return this.distanceToAxis - this.dimensions.width/2; }
+    distanceToLeftEdge():number { return this.distanceToAxis + this.dimensions.width/2; }
 }
 
 export enum ObstacleType {

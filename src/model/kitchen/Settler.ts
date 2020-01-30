@@ -3,10 +3,11 @@ import {WallName} from "./kitchen";
 import {Maps} from "../../utils/lang";
 import {Put} from "./put";
 import {PutCorner} from "./put";
+import {PutModule} from "./put";
 import {ModuleType} from "../modules/types";
 import ModulesFactory from "../modules/modules-factory";
 import {ResizeStrategyFactory} from "../modules/resizing";
-import {PutModule} from "./put";
+import {Obstacle} from "./obstacle";
 
 export enum Direction {
     TO_LEFT = "TO_LEFT", TO_RIGHT = "TO_RIGHT"
@@ -37,26 +38,24 @@ export class Settler {
 
     settle(types: ModuleType[], walls:Map<WallName, Wall>): void {
         this._allPuts = [];
+        const allCorners = this.setupCorners(new Set<WallName>(walls.keys()));
         types.forEach(
             type => {
-                const allCorners = this.setupCorners(walls);
                 Maps.mapValues(walls, wall => {
-                    const puts = this.settleWall(type, wall, this.wallCorners(allCorners, wall));
+                    const puts = this.settleWall(type, wall, this.wallCorners(allCorners, wall.name), []);
                     this._allPuts.push(...puts);
                 });
             }
         );
     }
 
-    //maybe not all corners needed
-    private settleWall(type: ModuleType, wall: Wall, corners: Corner[]): Put[] {
+    settleWall(type: ModuleType, wall: Wall, corners: Corner[], obstacles: Obstacle[]): Put[] {
 
         const commands = new Array<Put>();
 
         const direction = this.goLeftIfCornerOnRight(wall.name, corners);
         const offsetSignum = Direction.signum(direction);
 
-        let startingOffset = offsetSignum * this.calcCornerOffset(wall.name, corners);
         if (direction === Direction.TO_LEFT) {
             commands.push(new PutCorner(this.slotWidth, wall, direction, this.moduleLibrary.createCorner(type)));
         }
@@ -76,15 +75,48 @@ export class Settler {
             return [put].concat(step(spaceLeft, nextOffset))
         };
 
-        return commands.concat(step(this.spaceForModules(wall, corners), startingOffset));
+        const wallObstacles = obstacles.filter(o => o.placement.wallName === wall.name);
+
+        // other approach:
+        // identify all bounds (corners, obstacles), sort them
+        // create list of sector boundaries, map steps over it, put PutObstacle between steps
+
+        const bounds = this.computeBounds(wall, corners);
+
+        const putsBetweenBounds:Put[][] = [];
+        for (let i = 0; i+1 < bounds.length; i++) {
+            const current = bounds[i];
+            const next = bounds[i+1];
+
+            const offset = current.to;
+            const space = Math.abs(next.from - offset);
+
+            putsBetweenBounds[i] = step(space, offsetSignum * offset);
+        }
+        //PutObstacle inbetween somehow?
+
+        return commands.concat(...putsBetweenBounds)
     }
 
-    private spaceForModules(wall:Wall, corners:Corner[]) {
-        return wall.floorWidth - corners.length * this.cornerWidth;
+    computeBounds(wall: Wall, corners: Corner[]) {
+
+        const bounds: Array<{ to, from }> = [
+            {
+                from: 0,
+                to: (corners.length > 0) ? this.cornerWidth : 0
+            },
+            {
+                from: (corners.length > 1) ? wall.floorWidth - this.cornerWidth : wall.floorWidth,
+                to: wall.floorWidth
+            }
+        ];
+
+        if (bounds.length <2) throw "bounds computed erronously, less than 2 bounds";
+        return bounds;
     }
 
-    private wallCorners(corners: Corner[], wall: Wall) {
-        return corners.filter(c => c.contains(wall.name));
+    private wallCorners(corners: Corner[], wallName: WallName): Corner[] {
+        return corners.filter(c => c.contains(wallName));
     }
 
     private goLeftIfCornerOnRight(wall: WallName, corners: Corner[]): Direction {
@@ -95,14 +127,7 @@ export class Settler {
         return corners.find(c => c.left === wall) !== undefined;
     }
 
-    private calcCornerOffset(wall: WallName, corners: Corner[]) {
-        if (this.hasCornerOnRight(wall, corners) || corners.find(c => c.right === wall) !== undefined)
-            return this.cornerWidth;
-        else
-            return 0;
-    }
-
-    private setupCorners(walls:Map<WallName, Wall>) {
+    private setupCorners(walls:Set<WallName>) {
         const corners = new Array<Corner>();
 
         const addCornerIfExist = (left, right) => {
