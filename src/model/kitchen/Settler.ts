@@ -23,6 +23,8 @@ export class Corner {
     }
 }
 
+type Bound = { from, to };
+
 export class Settler {
 
     constructor(
@@ -36,13 +38,13 @@ export class Settler {
 
     findCommandByIndex(index:number) { return this._allPuts[index] }
 
-    settle(types: ModuleType[], walls:Map<WallName, Wall>): void {
+    settle(types: ModuleType[], walls:Map<WallName, Wall>, obstacles: Obstacle[]): void {
         this._allPuts = [];
         const allCorners = this.setupCorners(new Set<WallName>(walls.keys()));
         types.forEach(
             type => {
                 Maps.mapValues(walls, wall => {
-                    const puts = this.settleWall(type, wall, this.wallCorners(allCorners, wall.name), []);
+                    const puts = this.settleWall(type, wall, this.wallCorners(allCorners, wall.name), obstacles);
                     this._allPuts.push(...puts);
                 });
             }
@@ -61,7 +63,7 @@ export class Settler {
         }
 
         const step = (space:number, offset:number) => {
-
+            console.log(`step: space=${space}, offset=${offset}`);
             if (space <= 0.1) return [];
 
             const put = new PutModule(
@@ -70,6 +72,8 @@ export class Settler {
             );
 
             const spaceLeft = space - put.module.width;
+            if (isNaN(spaceLeft)) console.log(`wtf: moduleWIdth=${put.module.width}`);
+
             const nextOffset = offset + (offsetSignum * put.module.width);
 
             return [put].concat(step(spaceLeft, nextOffset))
@@ -81,7 +85,7 @@ export class Settler {
         // identify all bounds (corners, obstacles), sort them
         // create list of sector boundaries, map steps over it, put PutObstacle between steps
 
-        const bounds = this.computeBounds(wall, corners);
+        const bounds = this.computeBounds(wall, corners, wallObstacles);
 
         const putsBetweenBounds:Put[][] = [];
         for (let i = 0; i+1 < bounds.length; i++) {
@@ -98,9 +102,9 @@ export class Settler {
         return commands.concat(...putsBetweenBounds)
     }
 
-    computeBounds(wall: Wall, corners: Corner[]) {
+    computeBounds(wall: Wall, corners: Corner[], obstacles: Obstacle[]) {
 
-        const bounds: Array<{ to, from }> = [
+        const bounds: Array<Bound> = [
             {
                 from: 0,
                 to: (corners.length > 0) ? this.cornerWidth : 0
@@ -110,6 +114,9 @@ export class Settler {
                 to: wall.floorWidth
             }
         ];
+
+        bounds.push(...obstacles.map(o => { return { from: o.placement.distanceToRightEdge(), to: o.placement.distanceToLeftEdge()}}));
+        bounds.sort((a:Bound, b:Bound) => a.to - b.to); //ascending!
 
         if (bounds.length <2) throw "bounds computed erronously, less than 2 bounds";
         return bounds;

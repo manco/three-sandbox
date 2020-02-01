@@ -149,7 +149,7 @@ export class Kitchen extends Observable {
 
     private fillWallsWithModules(): void {
         this.settler = new Settler(this.moduleLibrary);
-        this.settler.settle(ModuleTypesAll, this.walls);
+        this.settler.settle(ModuleTypesAll, this.walls, this.obstacles.filter(o => isFinite(o.placement.distanceToLeftEdge()) ));
         for (const [i, put] of this.settler.allPuts.entries()) {
             this.putModule(put,i);
         }
