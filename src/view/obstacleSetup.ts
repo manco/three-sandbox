@@ -64,6 +64,10 @@ export class ObstacleSetup {
         );
     }
 
+    isValid():boolean {
+        return isFinite(this.getDistance()) && this.getDimensions().isValid() && this.getWall() !== undefined
+    }
+
     private br() {
         return this.doc.br();
     }

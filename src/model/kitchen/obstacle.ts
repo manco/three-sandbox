@@ -26,4 +26,5 @@ export class Dimensions2D {
         public readonly width:number,
         public readonly height:number
     ) {}
+    isValid(): Boolean { return isFinite(this.width) && isFinite(this.height) }
 }

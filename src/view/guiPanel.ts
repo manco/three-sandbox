@@ -40,7 +40,9 @@ export class GuiPanel {
             () => actions.loadKitchen(
                 this.kitchenSetup.kitchenDimensions(),
                 this.kitchenSetup.guiCheckboxesValues(),
-                Array.from(this.obstacleInput.entries()).map(
+                Array.from(this.obstacleInput.entries())
+                    .filter(([,panel]) => panel.isValid())
+                    .map(
                     ([type, panel]) => new Obstacle(
                         new PlacementInfo(
                             panel.getDimensions(),
