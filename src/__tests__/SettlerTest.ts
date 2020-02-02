@@ -133,6 +133,7 @@ test('settler should compute bounds', () => {
 
     //when
     const bounds = settler.computeBounds(
+        ModuleType.STANDING,
         walls.get("A"),
         [new Corner("A", "B"), new Corner("D", "A")],
         []

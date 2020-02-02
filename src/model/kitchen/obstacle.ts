@@ -1,9 +1,20 @@
+import {ModuleType} from "../modules/types";
+
 export class Obstacle {
     constructor (
         readonly placement:PlacementInfo,
         readonly type:ObstacleType
     //private readonly mesh;
     ) {}
+
+    overlapping(type: ModuleType): boolean {
+        if (this.type === ObstacleType.DOOR) return true;
+        if (this.type === ObstacleType.WINDOW) return type === ModuleType.HANGING;
+        return type === ModuleType.STANDING ||
+            (type === ModuleType.TABLETOP && this.placement.height() + 20 >= (90 - 20)) ||
+            (type === ModuleType.HANGING && this.placement.height() + 20 >= (150 - 20))
+            ;
+    }
 }
 
 export class PlacementInfo {
@@ -14,6 +25,7 @@ export class PlacementInfo {
     ) {}
     distanceToRightEdge():number { return this.distanceToAxis - this.dimensions.width/2; }
     distanceToLeftEdge():number { return this.distanceToAxis + this.dimensions.width/2; }
+    height():number { return this.dimensions.height; }
 }
 
 export enum ObstacleType {

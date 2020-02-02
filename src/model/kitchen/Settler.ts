@@ -1,13 +1,10 @@
-import {Wall} from "./kitchen";
-import {WallName} from "./kitchen";
+import {Wall, WallName} from "./kitchen";
 import {Maps} from "../../utils/lang";
-import {Put} from "./put";
-import {PutCorner} from "./put";
-import {PutModule} from "./put";
+import {Put, PutCorner, PutModule} from "./put";
 import {ModuleType} from "../modules/types";
 import ModulesFactory from "../modules/modules-factory";
 import {ResizeStrategyFactory} from "../modules/resizing";
-import {Obstacle} from "./obstacle";
+import {Obstacle, ObstacleType} from "./obstacle";
 
 export enum Direction {
     TO_LEFT = "TO_LEFT", TO_RIGHT = "TO_RIGHT"
@@ -63,7 +60,6 @@ export class Settler {
         }
 
         const step = (space:number, offset:number) => {
-            console.log(`step: space=${space}, offset=${offset}`);
             if (space <= 0.1) return [];
 
             const put = new PutModule(
@@ -72,8 +68,6 @@ export class Settler {
             );
 
             const spaceLeft = space - put.module.width;
-            if (isNaN(spaceLeft)) console.log(`wtf: moduleWIdth=${put.module.width}`);
-
             const nextOffset = offset + (offsetSignum * put.module.width);
 
             return [put].concat(step(spaceLeft, nextOffset))
@@ -81,11 +75,7 @@ export class Settler {
 
         const wallObstacles = obstacles.filter(o => o.placement.wallName === wall.name);
 
-        // other approach:
-        // identify all bounds (corners, obstacles), sort them
-        // create list of sector boundaries, map steps over it, put PutObstacle between steps
-
-        const bounds = this.computeBounds(wall, corners, wallObstacles);
+        const bounds = this.computeBounds(type, wall, corners, wallObstacles);
 
         const putsBetweenBounds:Put[][] = [];
         for (let i = 0; i+1 < bounds.length; i++) {
@@ -102,7 +92,7 @@ export class Settler {
         return commands.concat(...putsBetweenBounds)
     }
 
-    computeBounds(wall: Wall, corners: Corner[], obstacles: Obstacle[]) {
+    computeBounds(type: ModuleType, wall: Wall, corners: Corner[], obstacles: Obstacle[]) {
 
         const bounds: Array<Bound> = [
             {
@@ -115,7 +105,10 @@ export class Settler {
             }
         ];
 
-        bounds.push(...obstacles.map(o => { return { from: o.placement.distanceToRightEdge(), to: o.placement.distanceToLeftEdge()}}));
+        const obstaclesBounds = obstacles
+            .filter(o => o.overlapping(type))
+            .map(o => { return { from: o.placement.distanceToRightEdge(), to: o.placement.distanceToLeftEdge()}});
+        bounds.push(...obstaclesBounds);
         bounds.sort((a:Bound, b:Bound) => a.to - b.to); //ascending!
 
         if (bounds.length <2) throw "bounds computed erronously, less than 2 bounds";
