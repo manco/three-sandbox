@@ -1,22 +1,21 @@
-import {ObstacleType} from "../model/kitchen/obstacle";
-import {Dimensions2D} from "../model/kitchen/obstacle";
+import {Dimensions2D, ObstacleType, ObstacleTypeAll} from "../model/kitchen/obstacle";
 import {SmartDoc} from "./html/smart-doc";
-import {Labels} from "./labels";
 import {Html} from "./html/dom";
 import {Wall} from "../model/kitchen/kitchen";
+import {Labels} from "./labels";
 
 export class ObstacleSetup {
 
     readonly html: HTMLDivElement;
 
+    private readonly typeInput:HTMLSelectElement;
     private readonly wallInput:HTMLSelectElement;
     private readonly distanceInput:HTMLInputElement;
     private readonly widthInput: HTMLInputElement;
     private readonly heightInput: HTMLInputElement;
 
     constructor(
-        public readonly type: ObstacleType,
-        private readonly doc: SmartDoc,
+        private readonly doc: SmartDoc
     ) {
         this.html = doc.createDiv();
 
@@ -26,12 +25,19 @@ export class ObstacleSetup {
         this.widthInput = this.dimInput("width");
         this.heightInput = this.dimInput("height");
 
+        this.typeInput = Html.select(
+            this.doc,
+            ObstacleTypeAll.map(o => ObstacleSetup.optionVT(o, Labels.ObstacleTypesLabels.get(o)))
+        );
+
         this.wallInput = Html.select(
             this.doc,
-            Wall.Names.map(ObstacleSetup.option)
+            Wall.Names.map(ObstacleSetup.optionV)
         );
 
         [
+            this.typeInput,
+            this.br(),
             doc.createLabel(this.widthInput, "szerokość"),
             this.widthInput,
             this.br(),
@@ -45,8 +51,8 @@ export class ObstacleSetup {
             this.br()
         ].forEach(e => placementDiv.appendChild(e));
 
-        const label = this.doc.createLabel(placementDiv, Labels.ObstacleTypesLabels.get(type));
-        this.html.append(label, placementDiv, this.br());
+        // const label = this.doc.createLabel(placementDiv, Labels.ObstacleTypesLabels.get(type));
+        this.html.append(/*label, */placementDiv, this.br());
     }
 
     getDistance():number {
@@ -64,6 +70,10 @@ export class ObstacleSetup {
         );
     }
 
+    getType(): ObstacleType {
+        return ObstacleType[this.typeInput.value];
+    }
+
     isValid():boolean {
         return isFinite(this.getDistance()) && this.getDimensions().isValid() && this.getWall() !== undefined
     }
@@ -78,5 +88,6 @@ export class ObstacleSetup {
         return input;
     }
 
-    private static option(val: string) { return {text:val, value:val} }
+    private static optionV(val: string) { return ObstacleSetup.optionVT(val, val) }
+    private static optionVT(val: string, txt:string) { return {text:txt, value:val} }
 }

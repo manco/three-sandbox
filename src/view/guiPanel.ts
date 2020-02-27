@@ -1,8 +1,5 @@
 import {SmartDoc} from "./html/smart-doc";
-import {ModuleType} from "../model/modules/types";
-import {ModuleTypesAll} from "../model/modules/types";
-import {ModuleTypeToSubtype} from "../model/modules/types";
-import {ModuleSubtype} from "../model/modules/types";
+import {ModuleSubtype, ModuleType, ModuleTypesAll, ModuleTypeToSubtype} from "../model/modules/types";
 import {Labels} from "./labels";
 import {Events} from "./html/events";
 import {ColorModal} from "./colorModal";
@@ -10,10 +7,8 @@ import {Actions} from "../controller/actions";
 import {Module} from "../model/modules/module";
 import {Html} from "./html/dom";
 import {ObstacleSetup} from "./obstacleSetup";
-import {ObstacleTypeAll} from "../model/kitchen/obstacle";
+import {Obstacle, PlacementInfo} from "../model/kitchen/obstacle";
 import {KitchenSetup} from "./kitchenSetup";
-import {Obstacle} from "../model/kitchen/obstacle";
-import {PlacementInfo} from "../model/kitchen/obstacle";
 
 export class GuiPanel {
     private readonly panel: HTMLElement = this.doc.getElementById("gui-panel");
@@ -30,7 +25,7 @@ export class GuiPanel {
 
         this.panel.append(this.addObstacleButton, this.doc.br());
 
-        this.obstacleInput = ObstacleTypeAll.map(t => new ObstacleSetup(t, doc));
+        this.obstacleInput = [new ObstacleSetup(doc)];
         this.obstacleInput.map(p => p.html).forEach(p => this.panel.appendChild(p));
 
         this.panel.append(this.drawKitchenButton, this.doc.br());
@@ -58,7 +53,7 @@ export class GuiPanel {
                             panel.getWall(),
                             panel.getDistance()
                         ),
-                        panel.type)
+                        panel.getType())
                 )
             )
         );
