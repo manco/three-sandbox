@@ -15,7 +15,7 @@ export class ObstacleSetup {
     private readonly heightInput: HTMLInputElement;
 
     constructor(
-        private readonly type: ObstacleType,
+        public readonly type: ObstacleType,
         private readonly doc: SmartDoc,
     ) {
         this.html = doc.createDiv();

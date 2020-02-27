@@ -9,7 +9,6 @@ import {ColorModal} from "./colorModal";
 import {Actions} from "../controller/actions";
 import {Module} from "../model/modules/module";
 import {Html} from "./html/dom";
-import {ObstacleType} from "../model/kitchen/obstacle";
 import {ObstacleSetup} from "./obstacleSetup";
 import {ObstacleTypeAll} from "../model/kitchen/obstacle";
 import {KitchenSetup} from "./kitchenSetup";
@@ -21,14 +20,14 @@ export class GuiPanel {
     private readonly kitchenSetup = new KitchenSetup(this.doc);
     private readonly drawKitchenButton = this.doc.createButton("drawKitchenButton", "Rysuj");
     private readonly colorModal:ColorModal = new ColorModal(this.doc, this.actions);
-    private readonly obstacleInput: Map<ObstacleType, ObstacleSetup> = new Map();
+    private readonly obstacleInput: ObstacleSetup[];
     private readonly modulesLists: Map<ModuleType, HTMLElement> = new Map();
 
     constructor(private readonly doc: SmartDoc, private readonly actions: Actions) {
 
         this.panel.prepend(...this.kitchenSetup.html);
 
-        ObstacleTypeAll.forEach(t => this.obstacleInput.set(t, new ObstacleSetup(t, doc)));
+        this.obstacleInput = ObstacleTypeAll.map(t => new ObstacleSetup(t, doc));
         Array.from(this.obstacleInput.values()).map(p => p.html).forEach(p => this.panel.appendChild(p));
 
         this.panel.append(this.drawKitchenButton, this.doc.br());
@@ -40,16 +39,16 @@ export class GuiPanel {
             () => actions.loadKitchen(
                 this.kitchenSetup.kitchenDimensions(),
                 this.kitchenSetup.guiCheckboxesValues(),
-                Array.from(this.obstacleInput.entries())
-                    .filter(([,panel]) => panel.isValid())
+                this.obstacleInput
+                    .filter(panel => panel.isValid())
                     .map(
-                    ([type, panel]) => new Obstacle(
+                    panel => new Obstacle(
                         new PlacementInfo(
                             panel.getDimensions(),
                             panel.getWall(),
                             panel.getDistance()
                         ),
-                        type)
+                        panel.type)
                 )
             )
         );
