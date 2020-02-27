@@ -20,6 +20,7 @@ export class GuiPanel {
     private readonly kitchenSetup = new KitchenSetup(this.doc);
     private readonly drawKitchenButton = this.doc.createButton("drawKitchenButton", "Rysuj");
     private readonly colorModal:ColorModal = new ColorModal(this.doc, this.actions);
+    private readonly addObstacleButton = this.doc.createButton("addObstacleButton", "Dodaj przeszkodę");
     private readonly obstacleInput: ObstacleSetup[];
     private readonly modulesLists: Map<ModuleType, HTMLElement> = new Map();
 
@@ -27,12 +28,21 @@ export class GuiPanel {
 
         this.panel.prepend(...this.kitchenSetup.html);
 
+        this.panel.append(this.addObstacleButton, this.doc.br());
+
         this.obstacleInput = ObstacleTypeAll.map(t => new ObstacleSetup(t, doc));
-        Array.from(this.obstacleInput.values()).map(p => p.html).forEach(p => this.panel.appendChild(p));
+        this.obstacleInput.map(p => p.html).forEach(p => this.panel.appendChild(p));
 
         this.panel.append(this.drawKitchenButton, this.doc.br());
 
         ModuleTypesAll.forEach(t => this.modulesLists.set(t, this.createModulesListHtml(t)));
+
+        Events.onClick(
+            this.addObstacleButton,
+            () => {
+                //this.panel.appendChild() Obstacle must have selectable type
+            }
+        );
 
         Events.onClick(
             this.drawKitchenButton,
