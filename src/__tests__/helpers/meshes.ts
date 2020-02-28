@@ -6,8 +6,8 @@ export class Meshes {
     static DefaultCornerName = "someCornerMesh";
     static box(name = Meshes.DefaultMeshName, width = 60, height = 300, depth = 60): Mesh {
         const g = new BoxBufferGeometry( width, height, depth , 2, 2, 2);
-        const m = new Mesh(g);
         g.computeBoundingBox();
+        const m = new Mesh(g);
         m.name = name;
         return m;
     };
