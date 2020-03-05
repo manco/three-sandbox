@@ -6,6 +6,7 @@ import {ModuleTypesAll} from "../model/modules/types";
 import {Meshes} from "./helpers/meshes";
 import {Meshes as M} from "../utils/meshes";
 import {MeshFactory} from "../utils/meshes-factory";
+import ObstacleFactory from "../model/kitchen/obstacle-factory";
 
 jest.mock("../model/colors");
 jest.mock("../model/modules/module-functions");
@@ -23,11 +24,13 @@ MeshFactory.mockImplementation(() => {
 const slotWidth = M.meshWidthX(Meshes.box());
 
 const modulesFactory = new ModulesFactory(new MeshFactory(), slotWidth);
+const obstacleFactory = new ObstacleFactory(new MeshFactory());
 
 test('kitchen creates floor, wall and wall modules', () => {
 
     const scene = new Scene();
     new Kitchen(
+        obstacleFactory,
         modulesFactory,
         null,
         null,
@@ -45,6 +48,7 @@ test('kitchen can remove everything from scene and indexes', () => {
 
     const scene = new Scene();
     const kitchen = new Kitchen(
+        obstacleFactory,
         modulesFactory,
         null,
         null,

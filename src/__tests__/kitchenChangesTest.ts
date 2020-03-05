@@ -10,6 +10,7 @@ import ModulesFactory from "../model/modules/modules-factory";
 import {Meshes} from "./helpers/meshes";
 import {ModuleType} from "../model/modules/types";
 import {ModuleFunction} from "../model/modules/types";
+import ObstacleFactory from "../model/kitchen/obstacle-factory";
 
 jest.mock("../model/modules/modules-factory");
 jest.mock("../model/colors");
@@ -43,18 +44,21 @@ FrontsLibrary.mockImplementation(() => {
 });
 
 
-test('kitchen can change module back texture', () => {
-
-    const module = Modules.module();
-
-    const kitchen = new Kitchen(
+function createKitchen() {
+    return new Kitchen(
+        new ObstacleFactory(null),
         new ModulesFactory(null, null),
         new ColorTypeLibrary(),
         new FrontsLibrary(null),
         new Scene()
     );
+}
 
-    kitchen.setColor(
+test('kitchen can change module back texture', () => {
+
+    const module = Modules.module();
+
+    createKitchen().setColor(
         module,
         ColorType.WHITE
     );
@@ -66,14 +70,7 @@ test('kitchen can change module-with-front texture of back', () => {
 
     const module = Modules.module();
 
-    const kitchen = new Kitchen(
-        new ModulesFactory(null, null),
-        new ColorTypeLibrary(),
-        new FrontsLibrary(null),
-        new Scene()
-    );
-
-    kitchen.setColor(
+    createKitchen().setColor(
         module,
         ColorType.WHITE
     );
@@ -83,12 +80,7 @@ test('kitchen can change module-with-front texture of back', () => {
 
 test('kitchen can change module with front texture of front', () => {
 
-    const kitchen = new Kitchen(
-        new ModulesFactory(null, null),
-        new ColorTypeLibrary(),
-        new FrontsLibrary(null),
-        new Scene()
-    );
+    const kitchen = createKitchen();
 
     kitchen.initFloorAndWalls(new Dimensions3D(moduleWithFront.width, 1000, 1000), ["A"], []);
 

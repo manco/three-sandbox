@@ -14,19 +14,21 @@ import {MeshFactory} from "./utils/meshes-factory";
 import {Module} from "./model/modules/module";
 import {Stack} from "./model/stack";
 import {Slot} from "./model/kitchen/kitchen";
+import ObstacleFactory from "./model/kitchen/obstacle-factory";
 
 // @ts-ignore
 window.THREE = THREE;
 
 const meshFactory = new MeshFactory();
 const modulesLibrary = new ModulesFactory(meshFactory);
+const obstacleFactory = new ObstacleFactory(meshFactory);
 
 const scene = SceneFactory.create();
 // @ts-ignore
 window.scene = scene;
 
 const colorTypeLibrary = new ColorTypeLibrary();
-const kitchen = new Kitchen(modulesLibrary, colorTypeLibrary, new FrontsLibrary(colorTypeLibrary), scene);
+const kitchen = new Kitchen(obstacleFactory, modulesLibrary, colorTypeLibrary, new FrontsLibrary(colorTypeLibrary), scene);
 // @ts-ignore
 window.kitchen = kitchen;
 

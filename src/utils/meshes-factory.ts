@@ -1,5 +1,5 @@
 import {PromisingLoader} from "./loader";
-import {BoxBufferGeometry, Mesh} from "three";
+import {Mesh} from "three";
 import {MeshLambertMaterial} from "three";
 import {Meshes} from "./meshes";
 
@@ -56,18 +56,19 @@ const ExternalMeshMetaData = [
     ['standing_21', 'models/szuflady_2+1.obj'],
     ['standing_23', 'models/szuflady_2+3.obj'],
     ['standing_4', 'models/szuflady_4.obj'],
-    ['fridge', 'models/lodowka.obj']
+    ['fridge', 'models/lodowka.obj'],
+    ['door', 'obstacles/door.obj']
 ];
 
 const SimpleMeshes: [string, Mesh][] = [
-    ['door', box('door', 100, 200, 10)],
-    ['window', box('window', 100, 100, 10)],
-    ['radiator', box('radiator', 100, 60, 10)]
+    // ['door', box('door', 100, 200, 10)],
+    // ['window', box('window', 100, 100, 10)],
+    // ['radiator', box('radiator', 100, 60, 10)]
 ];
 
-function box(name:string, width:number, height:number, depth:number): Mesh {
-    const g = new BoxBufferGeometry( width, height, depth , 2, 2, 2);
-    const m = new Mesh(g);
-    m.name = name;
-    return m;
-}
+// function box(name:string, width:number, height:number, depth:number): Mesh {
+//     const g = new BoxBufferGeometry( width, depth, height, 2, 2, 2);
+//     const m = new Mesh(g);
+//     m.name = name;
+//     return m;
+// }

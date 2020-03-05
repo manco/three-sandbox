@@ -1,18 +1,26 @@
 import {ModuleType} from "../modules/types";
+import {Mesh} from "three";
 
 export class Obstacle {
     constructor (
         readonly placement:PlacementInfo,
         readonly type:ObstacleType
-    //private readonly mesh;
     ) {}
+
+    private _mesh;
+
+    get mesh() { return this._mesh; }
+
+    init(mesh: Mesh) {
+        this._mesh = mesh;
+    }
 
     overlapping(type: ModuleType): boolean {
         if (this.type === ObstacleType.DOOR) return true;
         if (this.type === ObstacleType.WINDOW) return type === ModuleType.HANGING;
         return type === ModuleType.STANDING ||
-            (type === ModuleType.TABLETOP && this.placement.height() + 20 >= (90 - 20)) ||
-            (type === ModuleType.HANGING && this.placement.height() + 20 >= (150 - 20))
+            (type === ModuleType.TABLETOP && this.placement.height + 20 >= (90 - 20)) ||
+            (type === ModuleType.HANGING && this.placement.height + 20 >= (150 - 20))
             ;
     }
 }
@@ -23,9 +31,11 @@ export class PlacementInfo {
         readonly wallName: string,
         private readonly distanceToAxis: number //distance from right wall to obstacle axis
     ) {}
-    distanceToRightEdge():number { return this.distanceToAxis - this.dimensions.width/2; }
-    distanceToLeftEdge():number { return this.distanceToAxis + this.dimensions.width/2; }
-    height():number { return this.dimensions.height; }
+    public readonly height :number = this.dimensions.height;
+    public readonly width :number = this.dimensions.width;
+    public readonly distanceToRightEdge :number = this.distanceToAxis - this.width/2;
+    public readonly distanceToLeftEdge :number = this.distanceToAxis + this.width/2;
+
 }
 
 export enum ObstacleType {

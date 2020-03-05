@@ -1,10 +1,10 @@
 import {Wall, WallName} from "./kitchen";
 import {Maps} from "../../utils/lang";
-import {Put, PutCorner, PutModule} from "./put";
+import {PutCorner, PutFurniture, PutObstacle} from "./put";
 import {ModuleType} from "../modules/types";
 import ModulesFactory from "../modules/modules-factory";
 import {ResizeStrategyFactory} from "../modules/resizing";
-import {Obstacle, ObstacleType} from "./obstacle";
+import {Obstacle} from "./obstacle";
 
 export enum Direction {
     TO_LEFT = "TO_LEFT", TO_RIGHT = "TO_RIGHT"
@@ -30,27 +30,37 @@ export class Settler {
         private readonly cornerWidth:number = moduleLibrary.cornerWidth()
     ) {}
 
-    private _allPuts = new Array<Put>();
+    private _allPuts = new Array<PutFurniture>();
     get allPuts() { return this._allPuts };
+
+    private _obstaclePuts = new Array<PutObstacle>();
+    get obstaclePuts() { return this._obstaclePuts; }
 
     findCommandByIndex(index:number) { return this._allPuts[index] }
 
     settle(types: ModuleType[], walls:Map<WallName, Wall>, obstacles: Obstacle[]): void {
         this._allPuts = [];
+        this._obstaclePuts = [];
         const allCorners = this.setupCorners(new Set<WallName>(walls.keys()));
-        types.forEach(
-            type => {
-                Maps.mapValues(walls, wall => {
-                    const puts = this.settleWall(type, wall, this.wallCorners(allCorners, wall.name), obstacles);
+        Maps.mapValues(walls, wall => {
+            const wallObstacles = obstacles.filter(o => o.placement.wallName === wall.name);
+            types.forEach(
+                type => {
+                    const puts = this.settleWall(
+                        type, wall,
+                        this.wallCorners(allCorners, wall.name),
+                        wallObstacles
+                    );
                     this._allPuts.push(...puts);
                 });
+            this._obstaclePuts.push(...wallObstacles.map(o => new PutObstacle(wall, o)));
             }
         );
     }
 
-    settleWall(type: ModuleType, wall: Wall, corners: Corner[], obstacles: Obstacle[]): Put[] {
+    settleWall(type: ModuleType, wall: Wall, corners: Corner[], wallObstacles: Obstacle[]): PutFurniture[] {
 
-        const commands = new Array<Put>();
+        const commands = new Array<PutFurniture>();
 
         const direction = this.goLeftIfCornerOnRight(wall.name, corners);
         const offsetSignum = Direction.signum(direction);
@@ -62,7 +72,7 @@ export class Settler {
         const step = (space:number, offset:number) => {
             if (space <= 0.1) return [];
 
-            const put = new PutModule(
+            const put = new PutFurniture(
                 this.slotWidth, wall, offset, direction,
                 this.moduleLibrary.createForType(type, ResizeStrategyFactory.bySpace(space, this.slotWidth))
             );
@@ -73,11 +83,9 @@ export class Settler {
             return [put].concat(step(spaceLeft, nextOffset))
         };
 
-        const wallObstacles = obstacles.filter(o => o.placement.wallName === wall.name);
-
         const bounds = this.computeBounds(type, wall, corners, wallObstacles);
 
-        const putsBetweenBounds:Put[][] = [];
+        const putsBetweenBounds:PutFurniture[][] = [];
         for (let i = 0; i+1 < bounds.length; i++) {
             const current = bounds[i];
             const next = bounds[i+1];
@@ -87,14 +95,13 @@ export class Settler {
 
             putsBetweenBounds[i] = step(space, offsetSignum * offset);
         }
-        //PutObstacle inbetween somehow?
 
         return commands.concat(...putsBetweenBounds)
     }
 
     computeBounds(type: ModuleType, wall: Wall, corners: Corner[], obstacles: Obstacle[]) {
 
-        const bounds: Array<Bound> = [
+        const bounds: Bound[] = [
             {
                 from: 0,
                 to: (corners.length > 0) ? this.cornerWidth : 0
@@ -107,7 +114,7 @@ export class Settler {
 
         const obstaclesBounds = obstacles
             .filter(o => o.overlapping(type))
-            .map(o => { return { from: o.placement.distanceToRightEdge(), to: o.placement.distanceToLeftEdge()}});
+            .map(o => { return { from: o.placement.distanceToRightEdge, to: o.placement.distanceToLeftEdge}});
         bounds.push(...obstaclesBounds);
         bounds.sort((a:Bound, b:Bound) => a.to - b.to); //ascending!
 

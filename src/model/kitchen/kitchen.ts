@@ -22,7 +22,8 @@ import {FrontsLibrary} from "../modules/module-functions";
 import {Settler} from "./Settler";
 import {Obstacle} from "./obstacle";
 import {Put} from "./put";
-import {PutModule} from "./put";
+import {PutFurniture} from "./put";
+import ObstacleFactory from "./obstacle-factory";
 
 class FloorFactory {
     public static create(width:number, depth:number): Mesh {
@@ -64,11 +65,10 @@ export class Wall {
     }
 
     execute(command: Put):void {
-        const mesh = command.module.mesh;
+        const mesh = command.mesh;
 
         this.rotateMesh(mesh);
         this.translateMesh(mesh);
-
         mesh.translateX(-this.mesh.geometry.boundingBox.max.x);
 
         mesh.translateY(command.tY());
@@ -117,6 +117,7 @@ export class Kitchen extends Observable {
     private settler: Settler;
     private floor: Mesh = null;
     constructor(
+        private readonly obstacleFactory:ObstacleFactory,
         private readonly moduleLibrary : ModulesFactory,
         private readonly colorLibrary: ColorTypeLibrary,
         private readonly frontsLibrary: FrontsLibrary,
@@ -124,13 +125,20 @@ export class Kitchen extends Observable {
     ) {
         super();
     }
-
     initFloorAndWalls(
         dimensions: Dimensions3D,
         wallNames: WallName[],
         obstacles: Obstacle[]
     ): void {
+        /*
+            FIXME
+            1. PutObstacle translateY dopiescic
+            2. walidacja kuchni jest potrzebna (czy obstacle moze byc w odleglosci 500 od sciany?)
+            3. resize mesha po .create
+         */
         this.obstacles = obstacles;
+        this.obstacles.forEach(o => o.init(this.obstacleFactory.create(o.type)));
+
         this.floor = FloorFactory.create(dimensions.width, dimensions.depth);
         this.scene.add(this.floor);
 
@@ -153,9 +161,13 @@ export class Kitchen extends Observable {
         for (const [i, put] of this.settler.allPuts.entries()) {
             this.putModule(put,i);
         }
+        this.settler.obstaclePuts.forEach(put => {
+            put.wall.execute(put);
+            this.scene.add(put.mesh);
+        });
     }
 
-    putModule(command:Put, index:number) {
+    putModule(command:PutFurniture, index:number) {
         command.wall.execute(command); //wtf
         this.restoreModule([command.wall.name, index], command.module);
     }
@@ -201,6 +213,7 @@ export class Kitchen extends Observable {
     removeAll(): void {
         this.walls.forEach(wall => this.scene.remove(wall.mesh));
         this.walls.clear();
+        this.scene.remove(...this.obstacles.map(o => o.mesh));
         this.obstacles = [];
         this.scene.remove(...this.allModuleMeshes());
         this.modules.clear();
@@ -230,7 +243,7 @@ export class Kitchen extends Observable {
         this.setColor(newModule, newModule.color);
 
         const oldPut = this.settler.findCommandByIndex(index);
-        const put = new PutModule(this.moduleLibrary.slotWidth(), oldPut.wall, oldPut.offset, oldPut.direction, newModule);
+        const put = new PutFurniture(this.moduleLibrary.slotWidth(), oldPut.wall, oldPut.offset, oldPut.direction, newModule);
         this.putModule(put, index);
         this.notify(new Message("MODULE_CHANGED", newModule));
     }
