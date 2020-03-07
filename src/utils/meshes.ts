@@ -15,6 +15,11 @@ export class Meshes {
         return bbox.max.y - bbox.min.y;
     }
 
+    static meshHeightZ(m:Mesh): number {
+        const bbox = m.geometry.boundingBox;
+        return bbox.max.z - bbox.min.z;
+    }
+
     static hasFront(mesh: Mesh) {
         return Array.isArray(mesh.material);
     }

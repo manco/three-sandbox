@@ -29,7 +29,7 @@ export class PlacementInfo {
     constructor(
         private readonly dimensions: Dimensions2D,
         readonly wallName: string,
-        private readonly distanceToAxis: number //distance from right wall to obstacle axis
+        public readonly distanceToAxis: number //distance from right wall to obstacle axis
     ) {}
     public readonly height :number = this.dimensions.height;
     public readonly width :number = this.dimensions.width;

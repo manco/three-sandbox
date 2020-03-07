@@ -134,10 +134,10 @@ export class Kitchen extends Observable {
             FIXME
             1. PutObstacle translateY dopiescic
             2. walidacja kuchni jest potrzebna (czy obstacle moze byc w odleglosci 500 od sciany?)
-            3. resize mesha po .create
+            3. translate resize'owanego mesha do srodka
          */
         this.obstacles = obstacles;
-        this.obstacles.forEach(o => o.init(this.obstacleFactory.create(o.type)));
+        this.obstacles.forEach(o => o.init(this.obstacleFactory.create(o)));
 
         this.floor = FloorFactory.create(dimensions.width, dimensions.depth);
         this.scene.add(this.floor);
