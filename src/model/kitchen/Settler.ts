@@ -83,7 +83,7 @@ export class Settler {
             return [put].concat(step(spaceLeft, nextOffset))
         };
 
-        const bounds = this.computeBounds(type, wall, corners, wallObstacles);
+        const bounds = this.computeBounds(type, wall, corners, wallObstacles, direction);
 
         const putsBetweenBounds:PutFurniture[][] = [];
         for (let i = 0; i+1 < bounds.length; i++) {
@@ -99,7 +99,7 @@ export class Settler {
         return commands.concat(...putsBetweenBounds)
     }
 
-    computeBounds(type: ModuleType, wall: Wall, corners: Corner[], obstacles: Obstacle[]) {
+    computeBounds(type: ModuleType, wall: Wall, corners: Corner[], obstacles: Obstacle[], direction: Direction) {
 
         const bounds: Bound[] = [
             {
@@ -114,7 +114,10 @@ export class Settler {
 
         const obstaclesBounds = obstacles
             .filter(o => o.overlapping(type))
-            .map(o => { return { from: o.placement.distanceToRightEdge, to: o.placement.distanceToLeftEdge}});
+            .map(o => { return { from: o.placement.distanceToRightEdge, to: o.placement.distanceToLeftEdge}})
+            .map(b => (direction === Direction.TO_LEFT) ? { from: wall.floorWidth - b.to, to: wall.floorWidth - b.from } : b)
+        ;
+
         bounds.push(...obstaclesBounds);
         bounds.sort((a:Bound, b:Bound) => a.to - b.to); //ascending!
 

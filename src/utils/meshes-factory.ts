@@ -11,7 +11,6 @@ export class MeshFactory {
         if (this.prototypes === null) {
             return Promise
                 .all(ExternalMeshMetaData.map(this.load))
-                .then(meshes => meshes.concat(SimpleMeshes))
                 .then(this.initMeshes);
         } else {
             return Promise.resolve();
@@ -20,6 +19,7 @@ export class MeshFactory {
 
     private initMeshes = (meshes: [string, Mesh][]) => {
         meshes.forEach(([, mesh]) => mesh.geometry.computeBoundingBox());
+        meshes.forEach(([name, mesh]) => { if (name === 'window') mesh.translateZ(80); }); //FIXME when actual models delivered
         this.prototypes = new Map<string, Mesh>(meshes);
     };
 
@@ -57,18 +57,7 @@ const ExternalMeshMetaData = [
     ['standing_23', 'models/szuflady_2+3.obj'],
     ['standing_4', 'models/szuflady_4.obj'],
     ['fridge', 'models/lodowka.obj'],
-    ['door', 'obstacles/door.obj']
+    ['door', 'obstacles/stub.obj'],
+    ['window', 'obstacles/stub.obj'],
+    ['radiator', 'obstacles/stub.obj']
 ];
-
-const SimpleMeshes: [string, Mesh][] = [
-    // ['door', box('door', 100, 200, 10)],
-    // ['window', box('window', 100, 100, 10)],
-    // ['radiator', box('radiator', 100, 60, 10)]
-];
-
-// function box(name:string, width:number, height:number, depth:number): Mesh {
-//     const g = new BoxBufferGeometry( width, depth, height, 2, 2, 2);
-//     const m = new Mesh(g);
-//     m.name = name;
-//     return m;
-// }

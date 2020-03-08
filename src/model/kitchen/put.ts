@@ -29,8 +29,8 @@ export class PutObstacle extends Put {
     public readonly mesh = this.obstacle.mesh;
     _tX(): number {
         return this.wall.depth +
-            this.obstacle.placement.distanceToAxis -
-            this.obstacle.placement.width/2;
+            this.obstacle.placement.distanceToAxis;
+           // this.obstacle.placement.width/2;
     }
 
     _tY(): number {

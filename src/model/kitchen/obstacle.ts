@@ -7,6 +7,16 @@ export class Obstacle {
         readonly type:ObstacleType
     ) {}
 
+    static of(
+        width:number,
+        height:number,
+        wallName: string,
+        distanceToAxis: number,
+        type:ObstacleType
+    ) {
+        return new Obstacle(new PlacementInfo(new Dimensions2D(width, height), wallName, distanceToAxis), type);
+    }
+
     private _mesh;
 
     get mesh() { return this._mesh; }

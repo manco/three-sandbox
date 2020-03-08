@@ -1,4 +1,4 @@
-import {Corner, Settler} from "../model/kitchen/Settler";
+import {Corner, Direction, Settler} from "../model/kitchen/Settler";
 import {ModuleType} from "../model/modules/types";
 import {WallFactories} from "../model/kitchen/kitchen";
 import {Maps} from "../utils/lang";
@@ -6,7 +6,7 @@ import ModulesFactory from "../model/modules/modules-factory";
 import {Meshes} from "./helpers/meshes";
 import {MeshFactory} from "../utils/meshes-factory";
 import {ResizeReason} from "../model/modules/resizing";
-import {Dimensions2D, Obstacle, ObstacleType, PlacementInfo} from "../model/kitchen/obstacle";
+import {Obstacle, ObstacleType} from "../model/kitchen/obstacle";
 
 jest.mock("../model/colors");
 jest.mock("../model/modules/module-functions");
@@ -108,7 +108,7 @@ test('settler should settle modules on space skipping obstacle', () => {
         ModuleType.STANDING,
         walls.get("B"),
         [new Corner("A", "B")],
-        [new Obstacle(new PlacementInfo(new Dimensions2D(90, 260), "B", 200), ObstacleType.DOOR)]
+        [Obstacle.of(90, 260, "B", 200, ObstacleType.DOOR)]
     );
 
 
@@ -116,8 +116,7 @@ test('settler should settle modules on space skipping obstacle', () => {
     //expect(puts.map(put => put.offset)).toEqual([70, 130, 190, 250]); TODO rethink proper offsets
 });
 
-
-test('settler should compute bounds', () => {
+test('settler should compute bounds for right settlement', () => {
 
     const givenNames = ["A", "B", "C", "D"];
     const walls =
@@ -132,15 +131,32 @@ test('settler should compute bounds', () => {
     const settler = new Settler(modulesFactory);
 
     //when
-    const bounds = settler.computeBounds(
+    const abda = [new Corner("A", "B"), new Corner("D", "A")];
+    const door = [Obstacle.of(100, 200, "A", 200, ObstacleType.DOOR)];
+
+    const boundsWhenRight = settler.computeBounds(
         ModuleType.STANDING,
         walls.get("A"),
-        [new Corner("A", "B"), new Corner("D", "A")],
-        []
+        abda,
+        door,
+        Direction.TO_RIGHT
+    );
+
+    const boundsWhenLeft = settler.computeBounds(
+        ModuleType.STANDING,
+        walls.get("A"),
+        abda,
+        door,
+        Direction.TO_LEFT
     );
 
 
     //then
-    expect(bounds).toContainEqual({to:70, from:0});
-    expect(bounds).toContainEqual({to:420, from:350});
+    expect(boundsWhenRight).toContainEqual({to:70, from:0});
+    expect(boundsWhenRight).toContainEqual({to:420, from:350});
+    expect(boundsWhenRight).toContainEqual({to:250, from:150});
+
+    expect(boundsWhenLeft).toContainEqual({to:70, from:0});
+    expect(boundsWhenLeft).toContainEqual({to:420, from:350});
+    expect(boundsWhenLeft).toContainEqual({to:270, from:170});
 });
